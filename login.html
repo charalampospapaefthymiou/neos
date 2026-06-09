@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>neos — Anmelden</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#080a0f;--bg2:#0d1117;--bg3:#111827;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f4ff;--text2:#8b95b0;--text3:#5a6480;--accent:#6c63ff;--accent2:#a78bfa;--accent3:#c4b5fd;--teal:#14b8a6;--teal2:#2dd4bf;--error:#f87171;--success:#34d399; }
+    body { font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden; }
+    .orb1 { position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(108,99,255,0.1) 0%,transparent 70%);top:-200px;left:-100px;pointer-events:none; }
+    .orb2 { position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(20,184,166,0.08) 0%,transparent 70%);bottom:-100px;right:-100px;pointer-events:none; }
+    .card { background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:48px;width:100%;max-width:440px;position:relative;z-index:1;box-shadow:0 40px 120px rgba(0,0,0,0.5); }
+    .logo { font-size:28px;font-weight:800;letter-spacing:-1px;text-align:center;margin-bottom:8px;text-decoration:none;color:var(--text);display:block; }
+    .logo span { color:var(--accent2); }
+    .tagline { text-align:center;font-size:14px;color:var(--text3);margin-bottom:36px; }
+    .tabs { display:flex;background:rgba(255,255,255,0.04);border-radius:12px;padding:4px;margin-bottom:32px; }
+    .tab { flex:1;padding:10px;text-align:center;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;border-radius:9px;transition:all 0.2s;border:none;background:none; }
+    .tab.active { background:var(--bg3);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3); }
+    .btn-google { width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;background:rgba(255,255,255,0.05);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-bottom:20px; }
+    .btn-google:hover { background:rgba(255,255,255,0.09);border-color:rgba(255,255,255,0.2); }
+    .btn-google svg { width:18px;height:18px;flex-shrink:0; }
+    .divider { display:flex;align-items:center;gap:12px;margin-bottom:20px; }
+    .divider::before,.divider::after { content:'';flex:1;height:1px;background:var(--border); }
+    .divider span { font-size:12px;color:var(--text3); }
+    .form-group { margin-bottom:16px; }
+    label { display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px; }
+    input { width:100%;padding:12px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:all 0.2s; }
+    input:focus { border-color:rgba(108,99,255,0.5);background:rgba(108,99,255,0.05);box-shadow:0 0 0 3px rgba(108,99,255,0.1); }
+    input::placeholder { color:var(--text3); }
+    .btn-submit { width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:all 0.2s;box-shadow:0 0 30px rgba(108,99,255,0.3);margin-top:8px; }
+    .btn-submit:hover { transform:translateY(-1px);box-shadow:0 0 45px rgba(108,99,255,0.5); }
+    .btn-submit:disabled { opacity:0.6;cursor:not-allowed;transform:none; }
+    .message { margin-top:16px;padding:12px 14px;border-radius:10px;font-size:13px;font-weight:500;display:none; }
+    .message.error { background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);color:var(--error);display:block; }
+    .message.success { background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.2);color:var(--success);display:block; }
+    .back-link { display:block;text-align:center;margin-top:24px;font-size:13px;color:var(--text3);text-decoration:none; }
+    .back-link a { color:var(--accent2);text-decoration:none; }
+    .form-panel { display:none; }
+    .form-panel.active { display:block; }
+  </style>
+</head>
+<body>
+  <div class="orb1"></div>
+  <div class="orb2"></div>
+  <div class="card">
+    <a href="/" class="logo">ne<span>os</span></a>
+    <p class="tagline">Dein KI-Assistent für mehr Wiederbuchungen</p>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Einloggen</button>
+      <button class="tab" onclick="switchTab('signup')">Registrieren</button>
+    </div>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Mit Google fortfahren
+    </button>
+    <div class="divider"><span>oder</span></div>
+    <div id="loginForm" class="form-panel active">
+      <div class="form-group"><label>E-Mail</label><input type="email" id="loginEmail" placeholder="deine@email.de" /></div>
+      <div class="form-group"><label>Passwort</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
+      <button class="btn-submit" onclick="handleLogin()">Einloggen</button>
+      <div id="loginMessage" class="message"></div>
+    </div>
+    <div id="signupForm" class="form-panel">
+      <div class="form-group"><label>Name</label><input type="text" id="signupName" placeholder="Dein Name" /></div>
+      <div class="form-group"><label>E-Mail</label><input type="email" id="signupEmail" placeholder="deine@email.de" /></div>
+      <div class="form-group"><label>Passwort</label><input type="password" id="signupPassword" placeholder="Min. 8 Zeichen" /></div>
+      <button class="btn-submit" onclick="handleSignup()">Konto erstellen</button>
+      <div id="signupMessage" class="message"></div>
+    </div>
+    <p class="back-link">← <a href="/">Zurück zur Startseite</a></p>
+  </div>
+  <script>
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'signup') switchTab('signup');
+    sb.auth.getSession().then(({ data: { session } }) => { if (session) window.location.href = '/app'; });
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+      if (tab === 'login') { document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('loginForm').classList.add('active'); }
+      else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('signupForm').classList.add('active'); }
+    }
+    async function signInWithGoogle() {
+      const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/app' } });
+      if (error) showMessage('loginMessage', error.message, 'error');
+    }
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!email || !password) return showMessage('loginMessage', 'Bitte alle Felder ausfüllen.', 'error');
+      const btn = document.querySelector('#loginForm .btn-submit');
+      btn.disabled = true; btn.textContent = 'Einloggen...';
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { showMessage('loginMessage', 'E-Mail oder Passwort falsch.', 'error'); btn.disabled = false; btn.textContent = 'Einloggen'; }
+      else { window.location.href = '/app'; }
+    }
+    async function handleSignup() {
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      if (!name || !email || !password) return showMessage('signupMessage', 'Bitte alle Felder ausfüllen.', 'error');
+      if (password.length < 8) return showMessage('signupMessage', 'Passwort muss mindestens 8 Zeichen haben.', 'error');
+      const btn = document.querySelector('#signupForm .btn-submit');
+      btn.disabled = true; btn.textContent = 'Konto erstellen...';
+      const { error } = await sb.auth.signUp({ email, password, options: { data: { full_name: name }, emailRedirectTo: window.location.origin + '/app' } });
+      if (error) { showMessage('signupMessage', error.message, 'error'); btn.disabled = false; btn.textContent = 'Konto erstellen'; }
+      else { showMessage('signupMessage', '✓ Bitte bestätige deine E-Mail-Adresse.', 'success'); btn.disabled = false; btn.textContent = 'Konto erstellen'; }
+    }
+    function showMessage(id, text, type) { const el = document.getElementById(id); el.textContent = text; el.className = 'message ' + type; }
+  </script>
+</body>
+</html>
