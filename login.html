@@ -73,8 +73,8 @@
     <p class="back-link">← <a href="/">Zurück zur Startseite</a></p>
   </div>
   <script>
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const SUPABASE_URL = 'https://tfzdwuzytoehjkicaaei.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmemR3dXp5dG9laGpraWNhYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDE3MjEsImV4cCI6MjA5NjU3NzcyMX0.NatCjPqlCyaKzX7TZK2VsE0jErRfexaNC193px_jxsE';
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('tab') === 'signup') switchTab('signup');
