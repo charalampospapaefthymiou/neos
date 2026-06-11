@@ -220,19 +220,17 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 <div class="content">
 <div class="page active" id="page-dashboard">
-<div class="plan-banner"><div class="plan-info">Aktiver Plan: <span class="plan-name-display" id="dashboardPlanName">Trial</span><div class="usage-bar-wrap"><div class="usage-bar"><div class="usage-bar-fill" style="width:42%"></div></div><div class="usage-label">84 / 200 Kunden aktiv</div></div></div><button class="btn-sm btn-primary-sm" onclick="showPage('upgrade',null)">⚡ Upgraden</button></div>
+<div class="plan-banner"><div class="plan-info">Aktiver Plan: <span class="plan-name-display" id="dashboardPlanName">Trial</span><div class="usage-bar-wrap"><div class="usage-bar"><div class="usage-bar-fill" id="usageFill" style="width:0%"></div></div><div class="usage-label" id="usageLabel">– Kunden aktiv</div></div></div><button class="btn-sm btn-primary-sm" onclick="showPage('upgrade',null)">⚡ Upgraden</button></div>
 <div class="stats-grid">
-<div class="stat-card"><div class="stat-card-label">Aktive Kunden</div><div class="stat-card-value">84</div><div class="stat-card-change">+12 diesen Monat</div></div>
-<div class="stat-card"><div class="stat-card-label">Reaktivierungen</div><div class="stat-card-value">23</div><div class="stat-card-change">+8 vs. Vormonat</div></div>
-<div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)">7</div><div class="stat-card-change down">Handlung empfohlen</div></div>
-<div class="stat-card"><div class="stat-card-label">Ø Mehrumsatz</div><div class="stat-card-value" style="color:var(--success)">€1.240</div><div class="stat-card-change">diesen Monat</div></div>
+<div class="stat-card"><div class="stat-card-label">Aktive Kunden</div><div class="stat-card-value" id="statActive">–</div><div class="stat-card-change" id="statActiveSub">&nbsp;</div></div>
+<div class="stat-card"><div class="stat-card-label">Reaktivierungen</div><div class="stat-card-value" id="statReact">0</div><div class="stat-card-change" id="statReactSub">noch keine Kampagnen</div></div>
+<div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)" id="statRisk">–</div><div class="stat-card-change down" id="statRiskSub">&nbsp;</div></div>
+<div class="stat-card"><div class="stat-card-label">Umsatz</div><div class="stat-card-value" style="color:var(--success)" id="statRevenue">€0</div><div class="stat-card-change">diesen Monat</div></div>
 </div>
 <div class="three-col">
 <div class="card"><div class="card-header"><span class="card-title">🎯 Churn-Radar — Heute kontaktieren</span><button class="btn-sm btn-ghost-sm" onclick="showPage('clients',null)">Alle ansehen</button></div>
-<div class="card-body"><div class="churn-list">
-<div class="churn-item"><div class="churn-avatar">AM</div><div class="churn-info"><div class="churn-name">Anna Müller</div><div class="churn-detail">Letzter Besuch: vor 94 Tagen · Botox Stirn</div></div><span class="churn-badge badge-red">Kritisch</span><button class="btn-send" onclick="showToast('Nachricht an Anna Müller gesendet ✓','success')">Senden</button></div>
-<div class="churn-item"><div class="churn-avatar">LP</div><div class="churn-info"><div class="churn-name">Lisa Paulsen</div><div class="churn-detail">Letzter Besuch: vor 71 Tagen · Gesichtsbehandlung</div></div><span class="churn-badge badge-orange">Warnung</span><button class="btn-send" onclick="showToast('Nachricht an Lisa Paulsen gesendet ✓','success')">Senden</button></div>
-<div class="churn-item"><div class="churn-avatar">TK</div><div class="churn-info"><div class="churn-name">Thomas Klein</div><div class="churn-detail">Letzter Besuch: vor 63 Tagen · Massage</div></div><span class="churn-badge badge-orange">Warnung</span><button class="btn-send" onclick="showToast('Nachricht an Thomas Klein gesendet ✓','success')">Senden</button></div>
+<div class="card-body"><div class="churn-list" id="churnList">
+<div style="color:var(--text2);font-size:13px;padding:12px 0;">Lade Daten…</div>
 </div></div></div>
 <div class="card"><div class="card-header"><span class="card-title">⚡ Schnellaktionen</span></div>
 <div class="card-body"><div class="actions-grid">
@@ -290,7 +288,7 @@ td.name{font-weight:600;color:var(--text);}
   </div>
   <div class="upgrade-header">
     <div class="upgrade-eyebrow">Pläne &amp; Preise</div>
-    <div class="upgrade-title">Zähle deinen Plan</div>
+    <div class="upgrade-title">Wähle deinen Plan</div>
     <div class="upgrade-sub">Kein Setup-Aufwand. Keine versteckten Kosten. Jederzeit kündbar.</div>
   </div>
   <div class="pricing-grid">
@@ -382,6 +380,7 @@ sb.auth.getSession().then(({data:{session}})=>{
   document.getElementById("userName").textContent=name;
   document.getElementById("userAvatar").textContent=name.charAt(0).toUpperCase();
   loadUserPlan();
+  loadDashboardData();
 });
 
 async function loadUserPlan(){
@@ -469,27 +468,107 @@ function showPage(name,btn){
   if(btn)btn.classList.add("active");
   if(name==="clients")renderClientsTable(clientsData);
 }
-const clientsData=[
-  {name:"Anna Müller",date:"2026-03-15",days:94,treatment:"Botox Stirn",risk:"critical"},
-  {name:"Lisa Paulsen",date:"2026-04-02",days:71,treatment:"Gesichtsbehandlung",risk:"warning"},
-  {name:"Thomas Klein",date:"2026-04-10",days:63,treatment:"Massage",risk:"warning"},
-  {name:"Maria Schmidt",date:"2026-05-01",days:42,treatment:"Maniküre",risk:"ok"},
-  {name:"Sandra Brandt",date:"2026-05-15",days:28,treatment:"Gesichtsbehandlung",risk:"ok"},
-  {name:"Julia Weber",date:"2026-05-20",days:23,treatment:"Haarschnitt",risk:"ok"},
-  {name:"Michael Berg",date:"2026-04-28",days:45,treatment:"Massage",risk:"ok"}
-];
+// ===== Echte Daten aus Supabase =====
+let clientsData=[];
 let currentFilter="all";
+
+function riskFromDays(days){
+  if(days===null)return"new";
+  if(days>=90)return"critical";
+  if(days>=60)return"warning";
+  return"ok";
+}
+
+async function loadDashboardData(){
+  const{data:customers,error}=await sb.from('customers')
+    .select('id,name,phone,email,created_at,appointments(starts_at,status,price,treatments(name))')
+    .order('created_at',{ascending:false});
+  if(error){console.error('Daten laden:',error);showToast('Fehler beim Laden der Daten','error');return;}
+  const now=Date.now();
+  clientsData=(customers||[]).map(c=>{
+    const past=(c.appointments||[]).filter(a=>a.status!=='cancelled'&&new Date(a.starts_at).getTime()<=now)
+      .sort((a,b)=>new Date(b.starts_at)-new Date(a.starts_at));
+    const last=past[0]||null;
+    const days=last?Math.floor((now-new Date(last.starts_at).getTime())/86400000):null;
+    return{id:c.id,name:c.name,phone:c.phone,
+      date:last?last.starts_at.slice(0,10):"–",
+      days,treatment:last?.treatments?.name||"–",
+      risk:riskFromDays(days)};
+  });
+  // Monatsumsatz aus abgeschlossenen Terminen
+  const monthStart=new Date();monthStart.setDate(1);monthStart.setHours(0,0,0,0);
+  let revenue=0;
+  (customers||[]).forEach(c=>(c.appointments||[]).forEach(a=>{
+    if(a.status==='completed'&&a.price&&new Date(a.starts_at)>=monthStart)revenue+=Number(a.price);
+  }));
+  renderDashboard(revenue);
+  renderClientsTable(clientsData);
+}
+
+function renderDashboard(revenue){
+  const total=clientsData.length;
+  const atRisk=clientsData.filter(c=>c.risk==='critical'||c.risk==='warning');
+  document.getElementById('statActive').textContent=total;
+  document.getElementById('statActiveSub').textContent=total===0?"Lege deinen ersten Kunden an":"in deiner Kartei";
+  document.getElementById('statRisk').textContent=atRisk.length;
+  document.getElementById('statRiskSub').textContent=atRisk.length>0?"Handlung empfohlen":"alles im grünen Bereich";
+  document.getElementById('statRevenue').textContent="€"+revenue.toLocaleString('de-DE');
+  document.getElementById('usageLabel').textContent=total+" Kunden aktiv";
+  document.getElementById('usageFill').style.width=Math.min(100,total)+"%";
+  const list=document.getElementById('churnList');
+  if(total===0){
+    list.innerHTML='<div style="color:var(--text2);font-size:13px;padding:12px 0;">Noch keine Kunden. Lege über „+ Kunde hinzufügen" deinen ersten Kunden an — inklusive letzter Behandlung, damit der Churn-Radar arbeiten kann.</div>';
+    return;
+  }
+  if(atRisk.length===0){
+    list.innerHTML='<div style="color:var(--text2);font-size:13px;padding:12px 0;">🎉 Keine gefährdeten Kunden — alle waren kürzlich da.</div>';
+    return;
+  }
+  list.innerHTML=atRisk.sort((a,b)=>(b.days||0)-(a.days||0)).slice(0,5).map(c=>{
+    const initials=c.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    const crit=c.risk==='critical';
+    return `<div class="churn-item"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}</div><div class="churn-detail">Letzter Besuch: vor ${c.days} Tagen · ${c.treatment}</div></div><span class="churn-badge ${crit?'badge-red':'badge-orange'}">${crit?'Kritisch':'Warnung'}</span><button class="btn-send" onclick="showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></div>`;
+  }).join("");
+}
+
 function renderClientsTable(data){
   const filtered=currentFilter==="all"?data:data.filter(c=>c.risk===currentFilter);
-  const riskMap={critical:["Kritisch","badge-red","dot-red"],warning:["Warnung","badge-orange","dot-orange"],ok:["OK","badge-green","dot-green"]};
-  document.getElementById("clientsBody").innerHTML=filtered.map(c=>{
+  const riskMap={critical:["Kritisch","badge-red","dot-red"],warning:["Warnung","badge-orange","dot-orange"],ok:["OK","badge-green","dot-green"],new:["Neu","badge-green","dot-green"]};
+  const body=document.getElementById("clientsBody");
+  if(filtered.length===0){body.innerHTML='<tr><td colspan="6" style="color:var(--text2);padding:20px;">Keine Kunden gefunden.</td></tr>';return;}
+  body.innerHTML=filtered.map(c=>{
     const[label,badge,dot]=riskMap[c.risk];
-    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${c.days} Tage</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="showToast('Nachricht gesendet ✓','success')">Senden</button></td></tr>`;
+    const daysTxt=c.days===null?"–":c.days+" Tage";
+    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></td></tr>`;
   }).join("");
 }
 function setFilter(f,btn){currentFilter=f;document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderClientsTable(clientsData);}
 function filterClients(q){const filtered=clientsData.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.treatment.toLowerCase().includes(q.toLowerCase()));renderClientsTable(filtered);}
-function addClient(){const name=document.getElementById("newClientName").value.trim();if(!name){showToast("Bitte Name eingeben","error");return;}clientsData.unshift({name,date:document.getElementById("newClientDate").value||"2026-06-09",days:0,treatment:document.getElementById("newClientTreatment").value,risk:"ok"});closeModal("addClient");showToast(name+" wurde hinzugeføgt ✓","success");}
+
+async function addClient(){
+  const name=document.getElementById("newClientName").value.trim();
+  if(!name){showToast("Bitte Name eingeben","error");return;}
+  const email=document.getElementById("newClientEmail").value.trim()||null;
+  const phone=document.getElementById("newClientPhone").value.trim()||null;
+  const lastDate=document.getElementById("newClientDate").value;
+  const treatmentName=document.getElementById("newClientTreatment").value;
+  const{data:cust,error}=await sb.from('customers')
+    .insert({salon_id:currentUser.id,name,email,phone}).select().single();
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  if(lastDate){
+    let{data:tr}=await sb.from('treatments').select('id').eq('name',treatmentName).limit(1);
+    let trId=tr&&tr[0]?.id;
+    if(!trId){
+      const ins=await sb.from('treatments').insert({salon_id:currentUser.id,name:treatmentName}).select().single();
+      trId=ins.data?.id;
+    }
+    await sb.from('appointments').insert({salon_id:currentUser.id,customer_id:cust.id,treatment_id:trId,starts_at:lastDate+"T12:00:00Z",status:'completed'});
+  }
+  closeModal("addClient");
+  ["newClientName","newClientEmail","newClientPhone","newClientDate","newClientNotes"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  showToast(name+" wurde hinzugefügt ✓","success");
+  loadDashboardData();
+}
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
 function openModal(n){document.getElementById("modal-"+n).classList.add("open");}
 function closeModal(n){document.getElementById("modal-"+n).classList.remove("open");}
