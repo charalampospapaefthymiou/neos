@@ -97,12 +97,12 @@ export default async function handler(req) {
       // Slot nochmal validieren (Race-Schutz)
       const free = await computeSlots(salon, date, treatment_id);
       if (!free.includes(time)) return json({ error: 'Dieser Termin ist leider gerade vergeben worden. Bitte wähle einen anderen.' }, 409);
-      // Kundin finden oder anlegen (Telefon-Match, sonst neu)
+      // Kundin finden oder anlegen (Telefon-Match, normalisiert — Formatierung egal)
       const digits = phone.replace(/[^0-9]/g, '').slice(-9);
       let customer = null;
       if (digits.length >= 6) {
-        const cands = await rest(`customers?salon_id=eq.${salon.id}&phone=ilike.*${digits}&select=id,name`);
-        customer = cands[0] || null;
+        const cands = await rest(`customers?salon_id=eq.${salon.id}&phone=not.is.null&select=id,name,phone&limit=2000`);
+        customer = cands.find(c => (c.phone || '').replace(/[^0-9]/g, '').endsWith(digits)) || null;
       }
       if (!customer) {
         const ins = await rest('customers', {
