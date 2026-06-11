@@ -214,6 +214,22 @@ td.name{font-weight:600;color:var(--text);}
 .upgrade-success-banner .icon{font-size:24px;}
 .upgrade-success-text{font-size:14px;font-weight:600;color:var(--success);}
 .upgrade-success-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+/* Kalender */
+.cal-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.cal-nav{display:flex;gap:6px;align-items:center;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
+.cal-day{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;padding:10px;min-height:120px;}
+.cal-day.today{border-color:rgba(108,99,255,0.5);background:rgba(108,99,255,0.05);}
+.cal-day-head{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;}
+.cal-day.today .cal-day-head{color:var(--accent2);}
+.cal-appt{border-radius:9px;padding:7px 9px;margin-bottom:6px;font-size:12px;cursor:pointer;border:1px solid transparent;line-height:1.4;}
+.cal-appt .t{font-weight:700;}
+.cal-appt.st-booked{background:rgba(108,99,255,0.13);border-color:rgba(108,99,255,0.3);}
+.cal-appt.st-requested{background:rgba(251,146,60,0.12);border-color:rgba(251,146,60,0.35);}
+.cal-appt.st-completed{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.25);color:var(--text2);}
+.cal-appt.st-no_show{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);}
+.cal-empty{font-size:11px;color:var(--text3,#555c6e);}
+@media(max-width:768px){.cal-grid{grid-template-columns:1fr;}.cal-day{min-height:auto;}}
 </style>
 </head>
 <body>
@@ -222,7 +238,8 @@ td.name{font-weight:600;color:var(--text);}
 <nav class="sidebar-nav">
 <div class="nav-label">Übersicht</div>
 <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span> Dashboard</button>
-<button class="nav-item" onclick="showPage('clients',this)"><span class="icon">👥</span> Kunden<span class="nav-badge">3</span></button>
+<button class="nav-item" onclick="showPage('clients',this)"><span class="icon">👥</span> Kunden</button>
+<button class="nav-item" onclick="showPage('calendar',this)"><span class="icon">📅</span> Termine</button>
 <div class="nav-label">KI-Tools</div>
 <button class="nav-item" onclick="showPage('campaigns',this)"><span class="icon">🚀</span> Kampagnen</button>
 <button class="nav-item" onclick="showPage('suggestions',this)"><span class="icon">✨</span> KI-Empfehlungen</button>
@@ -273,6 +290,16 @@ td.name{font-weight:600;color:var(--text);}
 <div class="page" id="page-clients">
 <div class="card"><div class="table-controls"><input class="search-input" placeholder="🔍 Kunden suchen..." oninput="filterClients(this.value)" /><button class="filter-btn active" onclick="setFilter('all',this)">Alle</button><button class="filter-btn" onclick="setFilter('critical',this)">Kritisch</button><button class="filter-btn" onclick="setFilter('warning',this)">Warnung</button><button class="filter-btn" onclick="setFilter('ok',this)">OK</button><button class="filter-btn" onclick="openModal('import')">📥 Importieren</button></div>
 <div class="table-wrap"><table><thead><tr><th>Name</th><th>Letzte Behandlung</th><th>Tage seit Besuch</th><th>Behandlung</th><th>Risiko</th><th>Aktion</th></tr></thead><tbody id="clientsBody"></tbody></table></div></div>
+</div>
+<div class="page" id="page-calendar">
+<div class="card"><div class="card-header cal-head"><span class="card-title" id="calLabel">Termine</span>
+<div class="cal-nav">
+<button class="btn-sm btn-ghost-sm" onclick="calShift(-7)">‹</button>
+<button class="btn-sm btn-ghost-sm" onclick="calToday()">Heute</button>
+<button class="btn-sm btn-ghost-sm" onclick="calShift(7)">›</button>
+<button class="btn-sm btn-primary-sm" onclick="openApptModal()">+ Termin</button>
+</div></div>
+<div class="card-body"><div class="cal-grid" id="calGrid"></div></div></div>
 </div>
 <div class="page" id="page-campaigns">
 <div class="campaign-list">
@@ -396,6 +423,14 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-addAppt">
+<div class="modal"><div class="modal-title">📅 Termin anlegen</div><div class="modal-form">
+<div class="form-group"><label>Kundin / Kunde</label><select id="apCustomer"></select></div>
+<div class="form-group"><label>Behandlung</label><select id="apTreatment"></select></div>
+<div class="form-group"><label>Datum</label><input type="date" id="apDate" /></div>
+<div class="form-group"><label>Uhrzeit</label><input type="time" id="apTime" step="900" /></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('addAppt')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="saveAppt()">Termin speichern</button></div></div>
+</div>
 <div class="modal-overlay" id="modal-import">
 <div class="modal"><div class="modal-title">📥 Kunden importieren</div><div class="modal-form">
 <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Exportiere deine Kundenliste aus deiner bisherigen Software (Treatwell, Fresha, Planity, Excel...) als CSV — oder kopiere die Tabelle einfach direkt aus Excel hierher. Die KI erkennt die Spalten automatisch.</div>
@@ -458,7 +493,7 @@ td.name{font-weight:600;color:var(--text);}
 <button onclick="showPage('dashboard',null);setBottomNav(this)" class="active"><span class="bn-icon">📊</span>Dashboard</button>
 <button onclick="showPage('clients',null);setBottomNav(this)"><span class="bn-icon">👥</span>Kunden</button>
 <button onclick="openModal('addClient')"><span class="bn-icon">➕</span>Neu</button>
-<button onclick="showPage('campaigns',null);setBottomNav(this)"><span class="bn-icon">🚀</span>Kampagnen</button>
+<button onclick="showPage('calendar',null);setBottomNav(this)"><span class="bn-icon">📅</span>Termine</button>
 <button onclick="showPage('settings',null);setBottomNav(this)"><span class="bn-icon">⚙️</span>Mehr</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -566,7 +601,7 @@ async function startCheckout(plan){
 })();
 
 async function logout(){await sb.auth.signOut();window.location.href="/login";}
-const pageTitles={dashboard:"Dashboard",clients:"Kunden",campaigns:"Kampagnen",suggestions:"KI-Empfehlungen",photos:"Fotos",settings:"Einstellungen",upgrade:"Plan upgraden"};
+const pageTitles={dashboard:"Dashboard",clients:"Kunden",calendar:"Termine",campaigns:"Kampagnen",suggestions:"KI-Empfehlungen",photos:"Fotos",settings:"Einstellungen",upgrade:"Plan upgraden"};
 function showPage(name,btn){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
@@ -574,6 +609,7 @@ function showPage(name,btn){
   document.getElementById("pageTitle").textContent=pageTitles[name]||name;
   if(btn)btn.classList.add("active");
   if(name==="clients")renderClientsTable(clientsData);
+  if(name==="calendar")loadCalendar();
 }
 // ===== Echte Daten aus Supabase =====
 let clientsData=[];
@@ -678,6 +714,59 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Kalender =====
+let calMonday=null;
+function mondayOf(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.getDate()-wd);x.setHours(12,0,0,0);return x;}
+function calToday(){calMonday=mondayOf(new Date());loadCalendar();}
+function calShift(days){calMonday=new Date(calMonday.getTime()+days*86400000);loadCalendar();}
+
+async function loadCalendar(){
+  if(!calMonday)calMonday=mondayOf(new Date());
+  const days=[...Array(7)].map((_,i)=>new Date(calMonday.getTime()+i*86400000).toISOString().slice(0,10));
+  const from=days[0],to=days[6];
+  document.getElementById('calLabel').textContent='📅 '+from.split('-').reverse().slice(0,2).join('.')+'. – '+to.split('-').reverse().join('.');
+  const{data,error}=await sb.from('appointments')
+    .select('id,starts_at,status,customer_id,customers(name),treatments(name)')
+    .gte('starts_at',from+'T00:00:00Z').lte('starts_at',to+'T23:59:59Z')
+    .neq('status','cancelled').order('starts_at');
+  if(error){showToast('Kalender: '+error.message,'error');return;}
+  const byDay={};(data||[]).forEach(a=>{const k=a.starts_at.slice(0,10);(byDay[k]=byDay[k]||[]).push(a);});
+  const names=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  const todayIso=new Date(Date.now()).toISOString().slice(0,10);
+  const stLabel={requested:'Anfrage',booked:'',completed:'✓',no_show:'No-Show'};
+  document.getElementById('calGrid').innerHTML=days.map((iso,i)=>{
+    const appts=(byDay[iso]||[]).map(a=>
+      `<div class="cal-appt st-${a.status}" onclick="openCustomerProfile('${a.customer_id}')"><span class="t">${a.starts_at.slice(11,16)}</span> ${a.customers?.name||'–'}<br>${a.treatments?.name||''}${stLabel[a.status]?' · <b>'+stLabel[a.status]+'</b>':''}</div>`
+    ).join('');
+    return `<div class="cal-day${iso===todayIso?' today':''}"><div class="cal-day-head">${names[i]} ${iso.slice(8,10)}.${iso.slice(5,7)}.</div>${appts||'<div class="cal-empty">–</div>'}</div>`;
+  }).join('');
+}
+
+async function openApptModal(){
+  const custSel=document.getElementById('apCustomer');
+  custSel.innerHTML=clientsData.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')||'<option value="">Erst Kunden anlegen</option>';
+  const{data:trs}=await sb.from('treatments').select('id,name').eq('active',true).order('name');
+  document.getElementById('apTreatment').innerHTML=(trs||[]).map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+  document.getElementById('apDate').value=new Date().toISOString().slice(0,10);
+  openModal('addAppt');
+}
+
+async function saveAppt(){
+  const customer_id=document.getElementById('apCustomer').value;
+  const treatment_id=document.getElementById('apTreatment').value||null;
+  const date=document.getElementById('apDate').value,time=document.getElementById('apTime').value;
+  if(!customer_id||!date||!time){showToast('Bitte alles ausfüllen','error');return;}
+  let dur=60;
+  if(treatment_id){const{data:t}=await sb.from('treatments').select('duration_min').eq('id',treatment_id).single();dur=t?.duration_min||60;}
+  const[h,m]=time.split(':').map(Number);
+  const end=`${String(Math.floor((h*60+m+dur)/60)).padStart(2,'0')}:${String((h*60+m+dur)%60).padStart(2,'0')}`;
+  const{error}=await sb.from('appointments').insert({salon_id:currentUser.id,customer_id,treatment_id,starts_at:`${date}T${time}:00Z`,ends_at:`${date}T${end}:00Z`,status:'booked'});
+  if(error){showToast(error.message,'error');return;}
+  closeModal('addAppt');
+  showToast('Termin angelegt ✓','success');
+  loadCalendar();loadDashboardData();
+}
 
 // ===== Online-Buchungen: Einstellungen + Anfragen =====
 const dayNames={1:'Mo',2:'Di',3:'Mi',4:'Do',5:'Fr',6:'Sa',0:'So'};
