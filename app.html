@@ -269,7 +269,7 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 </div>
 <div class="page" id="page-clients">
-<div class="card"><div class="table-controls"><input class="search-input" placeholder="🔍 Kunden suchen..." oninput="filterClients(this.value)" /><button class="filter-btn active" onclick="setFilter('all',this)">Alle</button><button class="filter-btn" onclick="setFilter('critical',this)">Kritisch</button><button class="filter-btn" onclick="setFilter('warning',this)">Warnung</button><button class="filter-btn" onclick="setFilter('ok',this)">OK</button></div>
+<div class="card"><div class="table-controls"><input class="search-input" placeholder="🔍 Kunden suchen..." oninput="filterClients(this.value)" /><button class="filter-btn active" onclick="setFilter('all',this)">Alle</button><button class="filter-btn" onclick="setFilter('critical',this)">Kritisch</button><button class="filter-btn" onclick="setFilter('warning',this)">Warnung</button><button class="filter-btn" onclick="setFilter('ok',this)">OK</button><button class="filter-btn" onclick="openModal('import')">📥 Importieren</button></div>
 <div class="table-wrap"><table><thead><tr><th>Name</th><th>Letzte Behandlung</th><th>Tage seit Besuch</th><th>Behandlung</th><th>Risiko</th><th>Aktion</th></tr></thead><tbody id="clientsBody"></tbody></table></div></div>
 </div>
 <div class="page" id="page-campaigns">
@@ -376,6 +376,14 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-import">
+<div class="modal"><div class="modal-title">📥 Kunden importieren</div><div class="modal-form">
+<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Exportiere deine Kundenliste aus deiner bisherigen Software (Treatwell, Fresha, Planity, Excel...) als CSV — oder kopiere die Tabelle einfach direkt aus Excel hierher. Die KI erkennt die Spalten automatisch.</div>
+<div class="form-group"><label>CSV-Datei</label><input type="file" id="importFile" accept=".csv,.txt,.tsv" onchange="handleImportFile(this)" /></div>
+<div class="form-group"><label>… oder hier einfügen (Strg+V aus Excel)</label><textarea id="importPaste" rows="5" placeholder="Name	Telefon	Letzter Besuch&#10;Anna Müller	+49151234	15.03.2026"></textarea></div>
+<div id="importPreview" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('import')">Abbrechen</button><button class="btn-sm btn-primary-sm" id="importBtn" onclick="runImport()">✨ Spalten erkennen &amp; importieren</button></div></div>
+</div>
 <div class="modal-overlay" id="modal-profile">
 <div class="modal">
 <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
@@ -436,12 +444,20 @@ td.name{font-weight:600;color:var(--text);}
 <div class="toast" id="toast"></div>
 <script>
 const SUPABASE_URL="https://tfzdwuzytoehjkicaaei.supabase.co",SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmemR3dXp5dG9laGpraWNhYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDE3MjEsImV4cCI6MjA5NjU3NzcyMX0.NatCjPqlCyaKzX7TZK2VsE0jErRfexaNC193px_jxsE";
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 
-let currentUser=null,currentPlan='trial';
+let currentUser=null,currentPlan='trial',appInitialized=false;
 
-sb.auth.getSession().then(({data:{session}})=>{
-  if(!session){window.location.href="/login";return;}
+// Robust: warten bis Supabase die gespeicherte Session wiederhergestellt
+// (und ggf. das Token refresht) hat, statt beim Kaltstart sofort auszuloggen.
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'){window.location.href="/login";return;}
+  if(!session){
+    if(event==='INITIAL_SESSION'){window.location.href="/login";}
+    return;
+  }
+  if(appInitialized)return;
+  appInitialized=true;
   currentUser=session.user;
   const name=currentUser.user_metadata?.full_name||currentUser.email.split("@")[0];
   document.getElementById("userName").textContent=name;
@@ -638,6 +654,112 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== KI-Kundenimport =====
+let importRawText='';
+
+function handleImportFile(input){
+  const f=input.files[0];
+  if(!f)return;
+  const reader=new FileReader();
+  reader.onload=e=>{importRawText=e.target.result;document.getElementById('importPaste').value='';showToast('Datei geladen: '+f.name,'success');};
+  reader.readAsText(f,'UTF-8');
+}
+
+function parseTable(text){
+  // erkennt Trennzeichen automatisch: Tab (Excel-Paste), Semikolon (dt. CSV), Komma
+  const lines=text.replace(/\r/g,'').split('\n').filter(l=>l.trim());
+  if(lines.length<2)return null;
+  const first=lines[0];
+  const delim=first.includes('\t')?'\t':(first.split(';').length>first.split(',').length?';':',');
+  const parseLine=l=>{
+    const out=[];let cur='',inQ=false;
+    for(const ch of l){
+      if(ch==='"'){inQ=!inQ;continue;}
+      if(ch===delim&&!inQ){out.push(cur.trim());cur='';continue;}
+      cur+=ch;
+    }
+    out.push(cur.trim());
+    return out;
+  };
+  return{headers:parseLine(lines[0]),rows:lines.slice(1).map(parseLine)};
+}
+
+function parseImportDate(val,fmt){
+  if(!val)return null;
+  val=val.trim();
+  let m;
+  if((m=val.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})/)))return`${m[3].length===2?'20'+m[3]:m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  if((m=val.match(/^(\d{4})-(\d{2})-(\d{2})/)))return`${m[1]}-${m[2]}-${m[3]}`;
+  if((m=val.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/))){
+    // bei Unsicherheit: US-Format MM/DD nur wenn fmt das sagt
+    const us=(fmt||'').toUpperCase().startsWith('MM');
+    const d=us?m[2]:m[1],mo=us?m[1]:m[2];
+    return`${m[3].length===2?'20'+m[3]:m[3]}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+  return null;
+}
+
+async function runImport(){
+  const text=document.getElementById('importPaste').value.trim()||importRawText;
+  if(!text){showToast('Bitte Datei wählen oder Daten einfügen','error');return;}
+  const parsed=parseTable(text);
+  if(!parsed||!parsed.rows.length){showToast('Keine Tabelle erkannt — mindestens Kopfzeile + 1 Zeile nötig','error');return;}
+  const btn=document.getElementById('importBtn');
+  btn.disabled=true;btn.textContent='KI erkennt Spalten...';
+  const prev=document.getElementById('importPreview');
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const res=await fetch('/api/import',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({headers:parsed.headers,sampleRows:parsed.rows.slice(0,3)})
+    });
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    const m=json.mapping;
+    if(m.name===null&&m.vorname===null)throw new Error('Keine Namensspalte erkannt — bitte prüfe die Kopfzeile');
+    btn.textContent='Importiere...';
+    // vorhandene Kunden zum Dedupe laden
+    const existing=new Set(clientsData.map(c=>c.name.toLowerCase()));
+    let ok=0,skipped=0,withVisit=0;
+    for(const row of parsed.rows){
+      const name=(m.name!==null?row[m.name]:((row[m.vorname]||'')+' '+(row[m.nachname]||'')).trim());
+      if(!name||name.length<2){skipped++;continue;}
+      if(existing.has(name.toLowerCase())){skipped++;continue;}
+      existing.add(name.toLowerCase());
+      const{data:cust,error}=await sb.from('customers').insert({
+        salon_id:currentUser.id,name,
+        phone:m.phone!==null?(row[m.phone]||null):null,
+        email:m.email!==null?(row[m.email]||null):null,
+        birthday:m.birthday!==null?parseImportDate(row[m.birthday],m.date_format):null
+      }).select().single();
+      if(error){skipped++;continue;}
+      ok++;
+      const visit=m.last_visit!==null?parseImportDate(row[m.last_visit],m.date_format):null;
+      if(visit){
+        let trId=null;
+        const trName=m.treatment!==null?(row[m.treatment]||'').trim():'';
+        if(trName){
+          const{data:tr}=await sb.from('treatments').select('id').eq('name',trName).limit(1);
+          trId=tr&&tr[0]?.id;
+          if(!trId){const ins=await sb.from('treatments').insert({salon_id:currentUser.id,name:trName}).select().single();trId=ins.data?.id;}
+        }
+        await sb.from('appointments').insert({salon_id:currentUser.id,customer_id:cust.id,treatment_id:trId,starts_at:visit+'T12:00:00Z',status:'completed'});
+        withVisit++;
+      }
+    }
+    prev.innerHTML=`<strong>✓ Import fertig:</strong> ${ok} Kunden importiert (${withVisit} mit letztem Besuch), ${skipped} übersprungen (leer oder schon vorhanden).`;
+    prev.style.display='block';
+    showToast(ok+' Kunden importiert ✓','success');
+    loadDashboardData();
+  }catch(e){
+    prev.innerHTML='<strong style="color:var(--danger,#f87171);">Fehler:</strong> '+e.message;
+    prev.style.display='block';
+  }finally{
+    btn.disabled=false;btn.textContent='✨ Spalten erkennen & importieren';
+  }
+}
 
 // ===== Kundenprofil =====
 function setBottomNav(btn){document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
