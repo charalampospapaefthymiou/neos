@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>neos â Dashboard</title>
+<title>neos — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -155,7 +155,7 @@ td.name{font-weight:600;color:var(--text);}
 .usage-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:100px;width:200px;overflow:hidden;}
 .usage-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal2));border-radius:100px;transition:width 0.5s;}
 .usage-label{font-size:11px;color:var(--text3);margin-top:4px;}
-/* ââ Pricing / Upgrade page ââ */
+/* ── Pricing / Upgrade page ── */
 .upgrade-header{text-align:center;padding:40px 20px 32px;max-width:600px;margin:0 auto;}
 .upgrade-eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-bottom:12px;}
 .upgrade-title{font-size:32px;font-weight:800;letter-spacing:-0.5px;margin-bottom:12px;}
@@ -193,158 +193,158 @@ td.name{font-weight:600;color:var(--text);}
 <aside class="sidebar">
 <div class="sidebar-logo">ne<span>os</span></div>
 <nav class="sidebar-nav">
-<div class="nav-label">Ãbersicht</div>
-<button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">ð</span> Dashboard</button>
-<button class="nav-item" onclick="showPage('clients',this)"><span class="icon">ð¥</span> Kunden<span class="nav-badge">3</span></button>
+<div class="nav-label">Übersicht</div>
+<button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span> Dashboard</button>
+<button class="nav-item" onclick="showPage('clients',this)"><span class="icon">👥</span> Kunden<span class="nav-badge">3</span></button>
 <div class="nav-label">KI-Tools</div>
-<button class="nav-item" onclick="showPage('campaigns',this)"><span class="icon">ð</span> Kampagnen</button>
-<button class="nav-item" onclick="showPage('suggestions',this)"><span class="icon">â¨</span> KI-Empfehlungen</button>
-<button class="nav-item" onclick="showPage('photos',this)"><span class="icon">ð¸</span> Fotos</button>
+<button class="nav-item" onclick="showPage('campaigns',this)"><span class="icon">🚀</span> Kampagnen</button>
+<button class="nav-item" onclick="showPage('suggestions',this)"><span class="icon">✨</span> KI-Empfehlungen</button>
+<button class="nav-item" onclick="showPage('photos',this)"><span class="icon">📸</span> Fotos</button>
 <div class="nav-label">Konto</div>
-<button class="nav-item" onclick="showPage('settings',this)"><span class="icon">âï¸</span> Einstellungen</button>
-<button class="nav-item" onclick="showPage('upgrade',this)"><span class="icon">â¡</span> Plan upgraden</button>
+<button class="nav-item" onclick="showPage('settings',this)"><span class="icon">⚙️</span> Einstellungen</button>
+<button class="nav-item" onclick="showPage('upgrade',this)"><span class="icon">⚡</span> Plan upgraden</button>
 </nav>
 <div class="sidebar-user">
 <div class="user-avatar" id="userAvatar">?</div>
 <div class="user-info"><div class="user-name" id="userName">Laden...</div><div class="user-plan" id="userPlanLabel">Trial</div></div>
-<button class="btn-logout" onclick="logout()" title="Abmelden">â©</button>
+<button class="btn-logout" onclick="logout()" title="Abmelden">↩</button>
 </div>
 </aside>
 <main class="main">
 <div class="topbar">
 <div class="topbar-title" id="pageTitle">Dashboard</div>
 <div class="topbar-right">
-<button class="btn-sm btn-ghost-sm" onclick="openModal('addClient')">+ Kunde hinzufÃ¼gen</button>
-<button class="btn-sm btn-primary-sm" onclick="openModal('sendCampaign')">ð Kampagne senden</button>
+<button class="btn-sm btn-ghost-sm" onclick="openModal('addClient')">+ Kunde hinzufügen</button>
+<button class="btn-sm btn-primary-sm" onclick="openModal('sendCampaign')">🚀 Kampagne senden</button>
 </div>
 </div>
 <div class="content">
 <div class="page active" id="page-dashboard">
-<div class="plan-banner"><div class="plan-info">Aktiver Plan: <span class="plan-name-display" id="dashboardPlanName">Trial</span><div class="usage-bar-wrap"><div class="usage-bar"><div class="usage-bar-fill" style="width:42%"></div></div><div class="usage-label">84 / 200 Kunden aktiv</div></div></div><button class="btn-sm btn-primary-sm" onclick="showPage('upgrade',null)">â¡ Upgraden</button></div>
+<div class="plan-banner"><div class="plan-info">Aktiver Plan: <span class="plan-name-display" id="dashboardPlanName">Trial</span><div class="usage-bar-wrap"><div class="usage-bar"><div class="usage-bar-fill" style="width:42%"></div></div><div class="usage-label">84 / 200 Kunden aktiv</div></div></div><button class="btn-sm btn-primary-sm" onclick="showPage('upgrade',null)">⚡ Upgraden</button></div>
 <div class="stats-grid">
 <div class="stat-card"><div class="stat-card-label">Aktive Kunden</div><div class="stat-card-value">84</div><div class="stat-card-change">+12 diesen Monat</div></div>
 <div class="stat-card"><div class="stat-card-label">Reaktivierungen</div><div class="stat-card-value">23</div><div class="stat-card-change">+8 vs. Vormonat</div></div>
-<div class="stat-card"><div class="stat-card-label">GefÃ¤hrdete Kunden</div><div class="stat-card-value" style="color:var(--warning)">7</div><div class="stat-card-change down">Handlung empfohlen</div></div>
-<div class="stat-card"><div class="stat-card-label">Ã Mehrumsatz</div><div class="stat-card-value" style="color:var(--success)">â¬1.240</div><div class="stat-card-change">diesen Monat</div></div>
+<div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)">7</div><div class="stat-card-change down">Handlung empfohlen</div></div>
+<div class="stat-card"><div class="stat-card-label">Ø Mehrumsatz</div><div class="stat-card-value" style="color:var(--success)">€1.240</div><div class="stat-card-change">diesen Monat</div></div>
 </div>
 <div class="three-col">
-<div class="card"><div class="card-header"><span class="card-title">ð¯ Churn-Radar â Heute kontaktieren</span><button class="btn-sm btn-ghost-sm" onclick="showPage('clients',null)">Alle ansehen</button></div>
+<div class="card"><div class="card-header"><span class="card-title">🎯 Churn-Radar — Heute kontaktieren</span><button class="btn-sm btn-ghost-sm" onclick="showPage('clients',null)">Alle ansehen</button></div>
 <div class="card-body"><div class="churn-list">
-<div class="churn-item"><div class="churn-avatar">AM</div><div class="churn-info"><div class="churn-name">Anna MÃ¼ller</div><div class="churn-detail">Letzter Besuch: vor 94 Tagen Â· Botox Stirn</div></div><span class="churn-badge badge-red">Kritisch</span><button class="btn-send" onclick="showToast('Nachricht an Anna MÃ¼ller gesendet â','success')">Senden</button></div>
-<div class="churn-item"><div class="churn-avatar">LP</div><div class="churn-info"><div class="churn-name">Lisa Paulsen</div><div class="churn-detail">Letzter Besuch: vor 71 Tagen Â· Gesichtsbehandlung</div></div><span class="churn-badge badge-orange">Warnung</span><button class="btn-send" onclick="showToast('Nachricht an Lisa Paulsen gesendet â','success')">Senden</button></div>
-<div class="churn-item"><div class="churn-avatar">TK</div><div class="churn-info"><div class="churn-name">Thomas Klein</div><div class="churn-detail">Letzter Besuch: vor 63 Tagen Â· Massage</div></div><span class="churn-badge badge-orange">Warnung</span><button class="btn-send" onclick="showToast('Nachricht an Thomas Klein gesendet â','success')">Senden</button></div>
+<div class="churn-item"><div class="churn-avatar">AM</div><div class="churn-info"><div class="churn-name">Anna Müller</div><div class="churn-detail">Letzter Besuch: vor 94 Tagen · Botox Stirn</div></div><span class="churn-badge badge-red">Kritisch</span><button class="btn-send" onclick="showToast('Nachricht an Anna Müller gesendet ✓','success')">Senden</button></div>
+<div class="churn-item"><div class="churn-avatar">LP</div><div class="churn-info"><div class="churn-name">Lisa Paulsen</div><div class="churn-detail">Letzter Besuch: vor 71 Tagen · Gesichtsbehandlung</div></div><span class="churn-badge badge-orange">Warnung</span><button class="btn-send" onclick="showToast('Nachricht an Lisa Paulsen gesendet ✓','success')">Senden</button></div>
+<div class="churn-item"><div class="churn-avatar">TK</div><div class="churn-info"><div class="churn-name">Thomas Klein</div><div class="churn-detail">Letzter Besuch: vor 63 Tagen · Massage</div></div><span class="churn-badge badge-orange">Warnung</span><button class="btn-send" onclick="showToast('Nachricht an Thomas Klein gesendet ✓','success')">Senden</button></div>
 </div></div></div>
-<div class="card"><div class="card-header"><span class="card-title">â¡ Schnellaktionen</span></div>
+<div class="card"><div class="card-header"><span class="card-title">⚡ Schnellaktionen</span></div>
 <div class="card-body"><div class="actions-grid">
-<div class="action-btn" onclick="openModal('sendCampaign')"><div class="action-icon">ð£</div><div class="action-title">Kampagne starten</div><div class="action-desc">Alle gefÃ¤hrdeten Kunden kontaktieren</div></div>
-<div class="action-btn" onclick="showPage('photos',null)"><div class="action-icon">ð¸</div><div class="action-title">Foto hochladen</div><div class="action-desc">Vorher/Nachher dokumentieren</div></div>
-<div class="action-btn" onclick="showPage('suggestions',null)"><div class="action-icon">â¨</div><div class="action-title">KI-Empfehlungen</div><div class="action-desc">Upsell-VorschlÃ¤ge ansehen</div></div>
-<div class="action-btn" onclick="openModal('addClient')"><div class="action-icon">â</div><div class="action-title">Kunde hinzufÃ¼gen</div><div class="action-desc">Neuen Kunden anlegen</div></div>
+<div class="action-btn" onclick="openModal('sendCampaign')"><div class="action-icon">📣</div><div class="action-title">Kampagne starten</div><div class="action-desc">Alle gefährdeten Kunden kontaktieren</div></div>
+<div class="action-btn" onclick="showPage('photos',null)"><div class="action-icon">📸</div><div class="action-title">Foto hochladen</div><div class="action-desc">Vorher/Nachher dokumentieren</div></div>
+<div class="action-btn" onclick="showPage('suggestions',null)"><div class="action-icon">✨</div><div class="action-title">KI-Empfehlungen</div><div class="action-desc">Upsell-Vorschläge ansehen</div></div>
+<div class="action-btn" onclick="openModal('addClient')"><div class="action-icon">➕</div><div class="action-title">Kunde hinzufügen</div><div class="action-desc">Neuen Kunden anlegen</div></div>
 </div></div></div>
 </div>
 </div>
 <div class="page" id="page-clients">
-<div class="card"><div class="table-controls"><input class="search-input" placeholder="ð Kunden suchen..." oninput="filterClients(this.value)" /><button class="filter-btn active" onclick="setFilter('all',this)">Alle</button><button class="filter-btn" onclick="setFilter('critical',this)">Kritisch</button><button class="filter-btn" onclick="setFilter('warning',this)">Warnung</button><button class="filter-btn" onclick="setFilter('ok',this)">OK</button></div>
+<div class="card"><div class="table-controls"><input class="search-input" placeholder="🔍 Kunden suchen..." oninput="filterClients(this.value)" /><button class="filter-btn active" onclick="setFilter('all',this)">Alle</button><button class="filter-btn" onclick="setFilter('critical',this)">Kritisch</button><button class="filter-btn" onclick="setFilter('warning',this)">Warnung</button><button class="filter-btn" onclick="setFilter('ok',this)">OK</button></div>
 <div class="table-wrap"><table><thead><tr><th>Name</th><th>Letzte Behandlung</th><th>Tage seit Besuch</th><th>Behandlung</th><th>Risiko</th><th>Aktion</th></tr></thead><tbody id="clientsBody"></tbody></table></div></div>
 </div>
 <div class="page" id="page-campaigns">
 <div class="campaign-list">
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(108,99,255,0.15)">ð</div><div class="campaign-info"><div class="campaign-name">Reaktivierung â 60 Tage</div><div class="campaign-desc">Automatische Nachricht an Kunden die 60+ Tage nicht da waren</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">18</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">7</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(20,184,166,0.15)">â°</div><div class="campaign-info"><div class="campaign-name">Reaktivierung â 90 Tage</div><div class="campaign-desc">Follow-up fÃ¼r Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(249,115,22,0.12)">ð</div><div class="campaign-info"><div class="campaign-name">Geburtstags-Nachricht</div><div class="campaign-desc">PersÃ¶nliche GlÃ¼ckwunschnachricht am Geburtstag + Sonderangebot</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">5</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">3</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(236,72,153,0.12)">ð¥</div><div class="campaign-info"><div class="campaign-name">Video-Nachsorge</div><div class="campaign-desc">Automatisches Pflegevideo nach jeder Behandlung per WhatsApp</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">31</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--teal2)">94%</div><div class="campaign-stat-label">GeÃ¶ffnet</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(108,99,255,0.15)">🔁</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 60 Tage</div><div class="campaign-desc">Automatische Nachricht an Kunden die 60+ Tage nicht da waren</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">18</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">7</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(20,184,166,0.15)">⏰</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 90 Tage</div><div class="campaign-desc">Follow-up für Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(249,115,22,0.12)">🎂</div><div class="campaign-info"><div class="campaign-name">Geburtstags-Nachricht</div><div class="campaign-desc">Persönliche Glückwunschnachricht am Geburtstag + Sonderangebot</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">5</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">3</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(236,72,153,0.12)">🎥</div><div class="campaign-info"><div class="campaign-name">Video-Nachsorge</div><div class="campaign-desc">Automatisches Pflegevideo nach jeder Behandlung per WhatsApp</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">31</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--teal2)">94%</div><div class="campaign-stat-label">Geöffnet</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 </div>
 </div>
 <div class="page" id="page-suggestions">
-<div class="ai-card"><div class="ai-icon">â¨</div><div class="ai-text"><div class="ai-client">Anna MÃ¼ller</div><div class="ai-suggestion">Basierend auf ihrer letzten Botox-Behandlung (Stirn, MÃ¤rz) und einem Abstand von 94 Tagen empfehle ich eine Auffrischung. Zusatzpotenzial: Lippen-Filler.</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Empfehlung an Anna gesendet â','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
-<div class="ai-card"><div class="ai-icon">â¨</div><div class="ai-text"><div class="ai-client">Lisa Paulsen</div><div class="ai-suggestion">Nach 3 Gesichtsbehandlungen zeigt ihr Profil eine PrÃ¤ferenz fÃ¼r Tiefenreinigung. Empfehle ein monatliches Abo-Paket (4x/Monat).</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Paketangebot an Lisa gesendet â','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
-<div class="ai-card"><div class="ai-icon">â¨</div><div class="ai-text"><div class="ai-client">Thomas Klein</div><div class="ai-suggestion">Massage-Kunden mit 60+ Tagen reagieren am besten auf Kombiangebote. Empfehle: "Massage + RÃ¼ckenbehandlung" Paket.</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Angebot an Thomas gesendet â','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
+<div class="ai-card"><div class="ai-icon">✨</div><div class="ai-text"><div class="ai-client">Anna Müller</div><div class="ai-suggestion">Basierend auf ihrer letzten Botox-Behandlung (Stirn, März) und einem Abstand von 94 Tagen empfehle ich eine Auffrischung. Zusatzpotenzial: Lippen-Filler.</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Empfehlung an Anna gesendet ✓','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
+<div class="ai-card"><div class="ai-icon">✨</div><div class="ai-text"><div class="ai-client">Lisa Paulsen</div><div class="ai-suggestion">Nach 3 Gesichtsbehandlungen zeigt ihr Profil eine Präferenz für Tiefenreinigung. Empfehle ein monatliches Abo-Paket (4x/Monat).</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Paketangebot an Lisa gesendet ✓','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
+<div class="ai-card"><div class="ai-icon">✨</div><div class="ai-text"><div class="ai-client">Thomas Klein</div><div class="ai-suggestion">Massage-Kunden mit 60+ Tagen reagieren am besten auf Kombiangebote. Empfehle: "Massage + Rückenbehandlung" Paket.</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Angebot an Thomas gesendet ✓','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
 </div>
 <div class="page" id="page-photos">
-<div class="upload-zone" onclick="showToast('Foto-Upload kommt bald','success')"><div class="upload-icon">ð¸</div><div class="upload-text">Vorher/Nachher Fotos hochladen</div><div class="upload-sub">Klicken oder Fotos hier reinziehen Â· JPG, PNG bis 10MB</div></div>
+<div class="upload-zone" onclick="showToast('Foto-Upload kommt bald','success')"><div class="upload-icon">📸</div><div class="upload-text">Vorher/Nachher Fotos hochladen</div><div class="upload-sub">Klicken oder Fotos hier reinziehen · JPG, PNG bis 10MB</div></div>
 <div class="photos-grid">
-<div class="photo-card"><div class="photo-placeholder">â¨<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Anna MÃ¼ller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. MÃ¤rz 2026</div></div></div>
-<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#1a1f2e,#0d1117)">ð¿<span class="photo-label">Vorher</span></div><div class="photo-info"><div class="photo-client">Anna MÃ¼ller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. MÃ¤rz 2026</div></div></div>
-<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#0f1a1a,#0d1117)">ð<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Lisa Paulsen</div><div class="photo-treatment">Gesichtsbehandlung</div><div class="photo-date">2. April 2026</div></div></div>
+<div class="photo-card"><div class="photo-placeholder">✨<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
+<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#1a1f2e,#0d1117)">🌿<span class="photo-label">Vorher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
+<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#0f1a1a,#0d1117)">💆<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Lisa Paulsen</div><div class="photo-treatment">Gesichtsbehandlung</div><div class="photo-date">2. April 2026</div></div></div>
 </div>
 </div>
 <div class="page" id="page-settings">
 <div class="card" style="max-width:700px"><div class="card-body">
 <div class="settings-section"><div class="settings-title">Studio-Informationen</div>
 <div class="setting-row"><div class="setting-info"><h4>Studio-Name</h4><p>Wird in Nachrichten verwendet</p></div><input class="setting-input" type="text" placeholder="Mein Studio" /></div>
-<div class="setting-row"><div class="setting-info"><h4>WhatsApp Nummer</h4><p>FÃ¼r automatische Nachrichten</p></div><input class="setting-input" type="text" placeholder="+49 123 456789" /></div>
+<div class="setting-row"><div class="setting-info"><h4>WhatsApp Nummer</h4><p>Für automatische Nachrichten</p></div><input class="setting-input" type="text" placeholder="+49 123 456789" /></div>
 </div>
 <div class="settings-section"><div class="settings-title">Automatisierung</div>
-<div class="setting-row"><div class="setting-info"><h4>Churn-Schwelle (Tage)</h4><p>Ab wann ein Kunde als gefÃ¤hrdet gilt</p></div><input class="setting-input" type="number" value="60" style="min-width:120px" /></div>
-<div class="setting-row"><div class="setting-info"><h4>Reaktivierung automatisch</h4><p>Nachrichten ohne BestÃ¤tigung senden</p></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="setting-row"><div class="setting-info"><h4>Churn-Schwelle (Tage)</h4><p>Ab wann ein Kunde als gefährdet gilt</p></div><input class="setting-input" type="number" value="60" style="min-width:120px" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Reaktivierung automatisch</h4><p>Nachrichten ohne Bestätigung senden</p></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 </div>
-<button class="btn-sm btn-primary-sm" onclick="showToast('Einstellungen gespeichert â','success')">Speichern</button>
+<button class="btn-sm btn-primary-sm" onclick="showToast('Einstellungen gespeichert ✓','success')">Speichern</button>
 </div></div>
 </div>
 
-<!-- ââ UPGRADE / PRICING PAGE ââ -->
+<!-- ── UPGRADE / PRICING PAGE ── -->
 <div class="page" id="page-upgrade">
   <div id="upgradedBanner" style="display:none" class="upgrade-success-banner">
-    <div class="icon">ð</div>
+    <div class="icon">🎉</div>
     <div><div class="upgrade-success-text">Upgrade erfolgreich! Willkommen auf dem neuen Plan.</div><div class="upgrade-success-sub">Dein Account wurde aktualisiert. Alle Features sind jetzt freigeschaltet.</div></div>
   </div>
   <div class="upgrade-header">
-    <div class="upgrade-eyebrow">PlÃ¤ne &amp; Preise</div>
-    <div class="upgrade-title">ZÃ¤hle deinen Plan</div>
-    <div class="upgrade-sub">Kein Setup-Aufwand. Keine versteckten Kosten. Jederzeit kÃ¼ndbar.</div>
+    <div class="upgrade-eyebrow">Pläne &amp; Preise</div>
+    <div class="upgrade-title">Zähle deinen Plan</div>
+    <div class="upgrade-sub">Kein Setup-Aufwand. Keine versteckten Kosten. Jederzeit kündbar.</div>
   </div>
   <div class="pricing-grid">
     <!-- Starter -->
     <div class="pricing-card" id="card-starter">
       <div class="pricing-plan">Starter</div>
       <div id="tag-starter"></div>
-      <div class="pricing-price">â¬49<span>/Mo</span></div>
-      <div class="pricing-period">zzgl. MwSt. Â· monatlich kÃ¼ndbar</div>
-      <div class="pricing-desc">Perfekt fÃ¼r Studios mit bis zu 100 Kunden die gerade mit KI-Reaktivierung starten.</div>
+      <div class="pricing-price">€49<span>/Mo</span></div>
+      <div class="pricing-period">zzgl. MwSt. · monatlich kündbar</div>
+      <div class="pricing-desc">Perfekt für Studios mit bis zu 100 Kunden die gerade mit KI-Reaktivierung starten.</div>
       <div class="pricing-features">
-        <div class="pricing-feature"><span class="check">â</span>Bis zu 100 Kunden</div>
-        <div class="pricing-feature"><span class="check">â</span>Automatische Reaktivierungen</div>
-        <div class="pricing-feature"><span class="check">â</span>WhatsApp &amp; SMS Versand</div>
-        <div class="pricing-feature"><span class="check">â</span>Basis KI-Empfehlungen</div>
-        <div class="pricing-feature muted"><span class="check">â</span>Churn-Radar Premium</div>
-        <div class="pricing-feature muted"><span class="check">â</span>Foto-Dokumentation</div>
+        <div class="pricing-feature"><span class="check">✓</span>Bis zu 100 Kunden</div>
+        <div class="pricing-feature"><span class="check">✓</span>Automatische Reaktivierungen</div>
+        <div class="pricing-feature"><span class="check">✓</span>WhatsApp &amp; SMS Versand</div>
+        <div class="pricing-feature"><span class="check">✓</span>Basis KI-Empfehlungen</div>
+        <div class="pricing-feature muted"><span class="check">—</span>Churn-Radar Premium</div>
+        <div class="pricing-feature muted"><span class="check">—</span>Foto-Dokumentation</div>
       </div>
-      <button class="pricing-btn pricing-btn-ghost" id="btn-starter" onclick="startCheckout('starter')">Starter wÃ¤hlen</button>
+      <button class="pricing-btn pricing-btn-ghost" id="btn-starter" onclick="startCheckout('starter')">Starter wählen</button>
     </div>
     <!-- Growth (featured) -->
     <div class="pricing-card featured" id="card-growth">
-      <div class="pricing-badge">â¡ Beliebteste Wahl</div>
+      <div class="pricing-badge">⚡ Beliebteste Wahl</div>
       <div class="pricing-plan">Growth</div>
       <div id="tag-growth"></div>
-      <div class="pricing-price">â¬99<span>/Mo</span></div>
-      <div class="pricing-period">zzgl. MwSt. Â· monatlich kÃ¼ndbar</div>
-      <div class="pricing-desc">FÃ¼r wachsende Studios mit bis zu 500 Kunden und vollem KI-Funktionsumfang.</div>
+      <div class="pricing-price">€99<span>/Mo</span></div>
+      <div class="pricing-period">zzgl. MwSt. · monatlich kündbar</div>
+      <div class="pricing-desc">Für wachsende Studios mit bis zu 500 Kunden und vollem KI-Funktionsumfang.</div>
       <div class="pricing-features">
-        <div class="pricing-feature"><span class="check">â</span>Bis zu 500 Kunden</div>
-        <div class="pricing-feature"><span class="check">â</span>Automatische Reaktivierungen</div>
-        <div class="pricing-feature"><span class="check">â</span>WhatsApp &amp; SMS Versand</div>
-        <div class="pricing-feature"><span class="check">â</span>Volle KI-Empfehlungen</div>
-        <div class="pricing-feature"><span class="check">â</span>Churn-Radar Premium</div>
-        <div class="pricing-feature"><span class="check">â</span>Foto-Dokumentation</div>
+        <div class="pricing-feature"><span class="check">✓</span>Bis zu 500 Kunden</div>
+        <div class="pricing-feature"><span class="check">✓</span>Automatische Reaktivierungen</div>
+        <div class="pricing-feature"><span class="check">✓</span>WhatsApp &amp; SMS Versand</div>
+        <div class="pricing-feature"><span class="check">✓</span>Volle KI-Empfehlungen</div>
+        <div class="pricing-feature"><span class="check">✓</span>Churn-Radar Premium</div>
+        <div class="pricing-feature"><span class="check">✓</span>Foto-Dokumentation</div>
       </div>
-      <button class="pricing-btn pricing-btn-primary" id="btn-growth" onclick="startCheckout('growth')">Growth wÃ¤hlen</button>
+      <button class="pricing-btn pricing-btn-primary" id="btn-growth" onclick="startCheckout('growth')">Growth wählen</button>
     </div>
     <!-- Pro -->
     <div class="pricing-card" id="card-pro">
       <div class="pricing-plan">Pro</div>
       <div id="tag-pro"></div>
-      <div class="pricing-price">â¬199<span>/Mo</span></div>
-      <div class="pricing-period">zzgl. MwSt. Â· monatlich kÃ¼ndbar</div>
-      <div class="pricing-desc">FÃ¼r Ketten und Premium-Studios. Unbegrenzte Kunden, Priority Support, API-Zugang.</div>
+      <div class="pricing-price">€199<span>/Mo</span></div>
+      <div class="pricing-period">zzgl. MwSt. · monatlich kündbar</div>
+      <div class="pricing-desc">Für Ketten und Premium-Studios. Unbegrenzte Kunden, Priority Support, API-Zugang.</div>
       <div class="pricing-features">
-        <div class="pricing-feature"><span class="check">â</span>Unbegrenzte Kunden</div>
-        <div class="pricing-feature"><span class="check">â</span>Automatische Reaktivierungen</div>
-        <div class="pricing-feature"><span class="check">â</span>WhatsApp &amp; SMS Versand</div>
-        <div class="pricing-feature"><span class="check">â</span>Volle KI-Empfehlungen</div>
-        <div class="pricing-feature"><span class="check">â</span>Churn-Radar Premium</div>
-        <div class="pricing-feature"><span class="check">â</span>Foto-Dokumentation + API</div>
+        <div class="pricing-feature"><span class="check">✓</span>Unbegrenzte Kunden</div>
+        <div class="pricing-feature"><span class="check">✓</span>Automatische Reaktivierungen</div>
+        <div class="pricing-feature"><span class="check">✓</span>WhatsApp &amp; SMS Versand</div>
+        <div class="pricing-feature"><span class="check">✓</span>Volle KI-Empfehlungen</div>
+        <div class="pricing-feature"><span class="check">✓</span>Churn-Radar Premium</div>
+        <div class="pricing-feature"><span class="check">✓</span>Foto-Dokumentation + API</div>
       </div>
-      <button class="pricing-btn pricing-btn-ghost" id="btn-pro" onclick="startCheckout('pro')">Pro wÃ¤hlen</button>
+      <button class="pricing-btn pricing-btn-ghost" id="btn-pro" onclick="startCheckout('pro')">Pro wählen</button>
     </div>
   </div>
 </div>
@@ -352,21 +352,21 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 </main>
 <div class="modal-overlay" id="modal-addClient">
-<div class="modal"><div class="modal-title">Kunden hinzufÃ¼gen</div><div class="modal-form">
+<div class="modal"><div class="modal-title">Kunden hinzufügen</div><div class="modal-form">
 <div class="form-group"><label>Name</label><input type="text" id="newClientName" placeholder="Max Mustermann" /></div>
 <div class="form-group"><label>E-Mail</label><input type="email" id="newClientEmail" placeholder="max@example.com" /></div>
 <div class="form-group"><label>Telefon</label><input type="tel" id="newClientPhone" placeholder="+49 123 456789" /></div>
 <div class="form-group"><label>Letzte Behandlung</label><input type="date" id="newClientDate" /></div>
-<div class="form-group"><label>Behandlung</label><select id="newClientTreatment"><option>Botox</option><option>Filler</option><option>Gesichtsbehandlung</option><option>Massage</option><option>Haarschnitt</option><option>ManikÃ¼re</option><option>Waxing</option><option>Laser</option><option>Sonstiges</option></select></div>
+<div class="form-group"><label>Behandlung</label><select id="newClientTreatment"><option>Botox</option><option>Filler</option><option>Gesichtsbehandlung</option><option>Massage</option><option>Haarschnitt</option><option>Maniküre</option><option>Waxing</option><option>Laser</option><option>Sonstiges</option></select></div>
 <div class="form-group"><label>Notizen</label><textarea id="newClientNotes" placeholder="Besonderheiten, Allergien..."></textarea></div>
 </div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('addClient')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="addClient()">Kunde speichern</button></div></div>
 </div>
 <div class="modal-overlay" id="modal-sendCampaign">
 <div class="modal"><div class="modal-title">Kampagne senden</div><div class="modal-form">
-<div class="form-group"><label>Zielgruppe</label><select><option>Alle gefÃ¤hrdeten Kunden (7)</option><option>Kritische Kunden (3)</option><option>Alle Kunden (84)</option></select></div>
+<div class="form-group"><label>Zielgruppe</label><select><option>Alle gefährdeten Kunden (7)</option><option>Kritische Kunden (3)</option><option>Alle Kunden (84)</option></select></div>
 <div class="form-group"><label>Kanal</label><select><option>WhatsApp</option><option>SMS</option><option>E-Mail</option></select></div>
-<div class="form-group"><label>Nachricht</label><textarea>Hey {{Name}}, wir vermissen dich! Es ist schon eine Weile her â darf ich dir einen Termin vorschlagen? Dein Team von {{Studio}}</textarea></div>
-</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('sendCampaign')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="sendCampaign()">Jetzt senden ð</button></div></div>
+<div class="form-group"><label>Nachricht</label><textarea>Hey {{Name}}, wir vermissen dich! Es ist schon eine Weile her — darf ich dir einen Termin vorschlagen? Dein Team von {{Studio}}</textarea></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('sendCampaign')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="sendCampaign()">Jetzt senden 🚀</button></div></div>
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -404,9 +404,9 @@ function updatePricingUI(){
     const tag=document.getElementById('tag-'+plan);
     if(!btn||!tag)return;
     if(currentPlan===plan){
-      btn.textContent='Aktueller Plan â';
+      btn.textContent='Aktueller Plan ✓';
       btn.disabled=true;
-      tag.innerHTML='<div class="current-plan-tag">â Aktuell aktiv</div>';
+      tag.innerHTML='<div class="current-plan-tag">✓ Aktuell aktiv</div>';
     }else{
       tag.innerHTML='';
       btn.disabled=false;
@@ -470,10 +470,10 @@ function showPage(name,btn){
   if(name==="clients")renderClientsTable(clientsData);
 }
 const clientsData=[
-  {name:"Anna MÃ¼ller",date:"2026-03-15",days:94,treatment:"Botox Stirn",risk:"critical"},
+  {name:"Anna Müller",date:"2026-03-15",days:94,treatment:"Botox Stirn",risk:"critical"},
   {name:"Lisa Paulsen",date:"2026-04-02",days:71,treatment:"Gesichtsbehandlung",risk:"warning"},
   {name:"Thomas Klein",date:"2026-04-10",days:63,treatment:"Massage",risk:"warning"},
-  {name:"Maria Schmidt",date:"2026-05-01",days:42,treatment:"ManikÃ¼re",risk:"ok"},
+  {name:"Maria Schmidt",date:"2026-05-01",days:42,treatment:"Maniküre",risk:"ok"},
   {name:"Sandra Brandt",date:"2026-05-15",days:28,treatment:"Gesichtsbehandlung",risk:"ok"},
   {name:"Julia Weber",date:"2026-05-20",days:23,treatment:"Haarschnitt",risk:"ok"},
   {name:"Michael Berg",date:"2026-04-28",days:45,treatment:"Massage",risk:"ok"}
@@ -484,13 +484,13 @@ function renderClientsTable(data){
   const riskMap={critical:["Kritisch","badge-red","dot-red"],warning:["Warnung","badge-orange","dot-orange"],ok:["OK","badge-green","dot-green"]};
   document.getElementById("clientsBody").innerHTML=filtered.map(c=>{
     const[label,badge,dot]=riskMap[c.risk];
-    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${c.days} Tage</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="showToast('Nachricht gesendet â','success')">Senden</button></td></tr>`;
+    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${c.days} Tage</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="showToast('Nachricht gesendet ✓','success')">Senden</button></td></tr>`;
   }).join("");
 }
 function setFilter(f,btn){currentFilter=f;document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderClientsTable(clientsData);}
 function filterClients(q){const filtered=clientsData.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.treatment.toLowerCase().includes(q.toLowerCase()));renderClientsTable(filtered);}
-function addClient(){const name=document.getElementById("newClientName").value.trim();if(!name){showToast("Bitte Name eingeben","error");return;}clientsData.unshift({name,date:document.getElementById("newClientDate").value||"2026-06-09",days:0,treatment:document.getElementById("newClientTreatment").value,risk:"ok"});closeModal("addClient");showToast(name+" wurde hinzugefÃ¸gt â","success");}
-function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... â","success");}
+function addClient(){const name=document.getElementById("newClientName").value.trim();if(!name){showToast("Bitte Name eingeben","error");return;}clientsData.unshift({name,date:document.getElementById("newClientDate").value||"2026-06-09",days:0,treatment:document.getElementById("newClientTreatment").value,risk:"ok"});closeModal("addClient");showToast(name+" wurde hinzugeføgt ✓","success");}
+function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
 function openModal(n){document.getElementById("modal-"+n).classList.add("open");}
 function closeModal(n){document.getElementById("modal-"+n).classList.remove("open");}
 document.querySelectorAll(".modal-overlay").forEach(o=>{o.addEventListener("click",e=>{if(e.target===o)o.classList.remove("open");});});
