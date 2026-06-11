@@ -1,6 +1,6 @@
 export const config = { runtime: 'edge' };
 
-// Erstellt einen Stripe-Zahlungslink für eine Termin-Anzahlung.
+// v1.0.1 — Erstellt einen Stripe-Zahlungslink für eine Termin-Anzahlung.
 // Auth: Supabase-Token des Salons. Termin muss dem Salon gehören.
 export default async function handler(req) {
   const cors = {
