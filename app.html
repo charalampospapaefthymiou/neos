@@ -254,6 +254,8 @@ td.name{font-weight:600;color:var(--text);}
 <div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)" id="statRisk">–</div><div class="stat-card-change down" id="statRiskSub">&nbsp;</div></div>
 <div class="stat-card"><div class="stat-card-label">Umsatz</div><div class="stat-card-value" style="color:var(--success)" id="statRevenue">€0</div><div class="stat-card-change">diesen Monat</div></div>
 </div>
+<div class="card" id="requestsCard" style="display:none;margin-bottom:20px;border-color:rgba(108,99,255,0.4);"><div class="card-header"><span class="card-title">💌 Offene Terminanfragen</span></div>
+<div class="card-body"><div id="requestsList"></div></div></div>
 <div class="three-col">
 <div class="card"><div class="card-header"><span class="card-title">🎯 Churn-Radar — Heute kontaktieren</span><button class="btn-sm btn-ghost-sm" onclick="showPage('clients',null)">Alle ansehen</button></div>
 <div class="card-body"><div class="churn-list" id="churnList">
@@ -298,6 +300,24 @@ td.name{font-weight:600;color:var(--text);}
 <div class="settings-section"><div class="settings-title">Studio-Informationen</div>
 <div class="setting-row"><div class="setting-info"><h4>Studio-Name</h4><p>Wird in Nachrichten verwendet</p></div><input class="setting-input" type="text" placeholder="Mein Studio" /></div>
 <div class="setting-row"><div class="setting-info"><h4>WhatsApp Nummer</h4><p>Für automatische Nachrichten</p></div><input class="setting-input" type="text" placeholder="+49 123 456789" /></div>
+</div>
+<div class="settings-section"><div class="settings-title">📅 Online-Buchungen (optional)</div>
+<div class="setting-row"><div class="setting-info"><h4>Modus</h4><p>Du behältst die volle Kontrolle</p></div>
+<select class="setting-input" id="bkMode">
+<option value="off">Aus — keine Online-Buchung</option>
+<option value="request">Anfrage — du bestätigst jeden Termin</option>
+<option value="direct">Direkt — Termine werden fest gebucht</option>
+</select></div>
+<div class="setting-row"><div class="setting-info"><h4>Dein Buchungslink</h4><p>Für Instagram-Bio, WhatsApp &amp; Website</p></div><input class="setting-input" type="text" id="bkSlug" placeholder="mein-studio" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Öffnungszeiten</h4><p>Leer = geschlossen</p></div>
+<div style="display:flex;flex-direction:column;gap:6px;" id="bkHours"></div></div>
+<div class="setting-row"><div class="setting-info"><h4>Slot-Raster</h4><p>Abstand der Termine</p></div>
+<select class="setting-input" id="bkSlotMin"><option value="15">15 Min.</option><option value="30" selected>30 Min.</option><option value="60">60 Min.</option></select></div>
+<div id="bkLinkBox" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;">
+🔗 <a id="bkLinkA" target="_blank" style="color:var(--accent2);"></a>
+<button class="btn-sm btn-ghost-sm" style="margin-left:8px;" onclick="copyBookingLink()">Kopieren</button>
+</div>
+<button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveBookingSettings()">Buchungseinstellungen speichern</button>
 </div>
 <div class="settings-section"><div class="settings-title">Automatisierung</div>
 <div class="setting-row"><div class="setting-info"><h4>Churn-Schwelle (Tage)</h4><p>Ab wann ein Kunde als gefährdet gilt</p></div><input class="setting-input" type="number" value="60" style="min-width:120px" /></div>
@@ -464,6 +484,10 @@ sb.auth.onAuthStateChange((event,session)=>{
   document.getElementById("userAvatar").textContent=name.charAt(0).toUpperCase();
   loadUserPlan();
   loadDashboardData();
+  loadBookingSettings();
+  loadRequests();
+  document.getElementById('bkMode').addEventListener('change',updateBookingLinkBox);
+  document.getElementById('bkSlug').addEventListener('input',updateBookingLinkBox);
 });
 
 async function loadUserPlan(){
@@ -654,6 +678,81 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Online-Buchungen: Einstellungen + Anfragen =====
+const dayNames={1:'Mo',2:'Di',3:'Mi',4:'Do',5:'Fr',6:'Sa',0:'So'};
+const dayOrder=[1,2,3,4,5,6,0];
+
+function renderHoursInputs(hours){
+  document.getElementById('bkHours').innerHTML=dayOrder.map(d=>{
+    const h=(hours||{})[String(d)]||['',''];
+    return `<div style="display:flex;align-items:center;gap:6px;font-size:13px;"><span style="width:26px;color:var(--text2);">${dayNames[d]}</span><input type="time" class="setting-input" style="min-width:0;padding:6px 8px;" id="bkH${d}a" value="${h[0]||''}"/><span style="color:var(--text2);">–</span><input type="time" class="setting-input" style="min-width:0;padding:6px 8px;" id="bkH${d}b" value="${h[1]||''}"/></div>`;
+  }).join('');
+}
+
+async function loadBookingSettings(){
+  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name').eq('id',currentUser.id).single();
+  const b=data?.booking||{};
+  document.getElementById('bkMode').value=b.mode||'off';
+  document.getElementById('bkSlug').value=data?.booking_slug||'';
+  document.getElementById('bkSlotMin').value=String(b.slot_min||30);
+  renderHoursInputs(b.hours);
+  updateBookingLinkBox();
+}
+
+function updateBookingLinkBox(){
+  const slug=document.getElementById('bkSlug').value.trim();
+  const mode=document.getElementById('bkMode').value;
+  const box=document.getElementById('bkLinkBox');
+  if(slug&&mode!=='off'){
+    const url=location.origin+'/book/'+slug;
+    const a=document.getElementById('bkLinkA');a.textContent=url;a.href=url;
+    box.style.display='block';
+  }else box.style.display='none';
+}
+
+function copyBookingLink(){
+  navigator.clipboard.writeText(document.getElementById('bkLinkA').textContent);
+  showToast('Link kopiert ✓','success');
+}
+
+async function saveBookingSettings(){
+  const mode=document.getElementById('bkMode').value;
+  let slug=document.getElementById('bkSlug').value.trim().toLowerCase().replace(/[^a-z0-9äöüß-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  document.getElementById('bkSlug').value=slug;
+  if(mode!=='off'&&!slug){showToast('Bitte einen Buchungslink-Namen wählen','error');return;}
+  const hours={};
+  dayOrder.forEach(d=>{
+    const a=document.getElementById('bkH'+d+'a').value,b=document.getElementById('bkH'+d+'b').value;
+    hours[String(d)]=(a&&b&&a<b)?[a,b]:null;
+  });
+  const{error}=await sb.from('profiles').update({
+    booking_slug:slug||null,
+    booking:{mode,slot_min:Number(document.getElementById('bkSlotMin').value),hours}
+  }).eq('id',currentUser.id);
+  if(error){showToast(error.message.includes('duplicate')?'Dieser Link-Name ist schon vergeben':error.message,'error');return;}
+  updateBookingLinkBox();
+  showToast('Buchungseinstellungen gespeichert ✓','success');
+}
+
+async function loadRequests(){
+  const{data}=await sb.from('appointments').select('id,starts_at,customers(name,phone),treatments(name)').eq('status','requested').order('starts_at');
+  const card=document.getElementById('requestsCard');
+  if(!data||!data.length){card.style.display='none';return;}
+  card.style.display='block';
+  document.getElementById('requestsList').innerHTML=data.map(r=>{
+    const d=r.starts_at.slice(0,10).split('-').reverse().join('.');
+    const t=r.starts_at.slice(11,16);
+    return `<div class="churn-item"><div class="churn-avatar">${(r.customers?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${r.customers?.name||'–'}</div><div class="churn-detail">${d} um ${t} Uhr · ${r.treatments?.name||'–'}${r.customers?.phone?' · '+r.customers.phone:''}</div></div><button class="btn-send" style="background:rgba(52,211,153,0.15);" onclick="answerRequest('${r.id}','booked')">✓ Bestätigen</button> <button class="btn-send" onclick="answerRequest('${r.id}','cancelled')">✗ Ablehnen</button></div>`;
+  }).join('');
+}
+
+async function answerRequest(id,status){
+  const{error}=await sb.from('appointments').update({status}).eq('id',id);
+  if(error){showToast(error.message,'error');return;}
+  showToast(status==='booked'?'Termin bestätigt ✓ (WhatsApp-Bestätigung an Kundin kommt bald)':'Anfrage abgelehnt','success');
+  loadRequests();loadDashboardData();
+}
 
 // ===== KI-Kundenimport =====
 let importRawText='';
