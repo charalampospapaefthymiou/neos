@@ -273,6 +273,8 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 <div class="card" id="requestsCard" style="display:none;margin-bottom:20px;border-color:rgba(108,99,255,0.4);"><div class="card-header"><span class="card-title">💌 Offene Terminanfragen</span></div>
 <div class="card-body"><div id="requestsList"></div></div></div>
+<div class="card" id="noShowCard" style="display:none;margin-bottom:20px;border-color:rgba(251,146,60,0.4);"><div class="card-header"><span class="card-title">⚠️ No-Show-Radar — riskante Termine (7 Tage)</span></div>
+<div class="card-body"><div id="noShowList"></div></div></div>
 <div class="three-col">
 <div class="card"><div class="card-header"><span class="card-title">🎯 Churn-Radar — Heute kontaktieren</span><button class="btn-sm btn-ghost-sm" onclick="showPage('clients',null)">Alle ansehen</button></div>
 <div class="card-body"><div class="churn-list" id="churnList">
@@ -521,6 +523,7 @@ sb.auth.onAuthStateChange((event,session)=>{
   loadDashboardData();
   loadBookingSettings();
   loadRequests();
+  loadNoShowRadar();
   document.getElementById('bkMode').addEventListener('change',updateBookingLinkBox);
   document.getElementById('bkSlug').addEventListener('input',updateBookingLinkBox);
 });
@@ -714,6 +717,55 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== No-Show-Radar =====
+async function loadNoShowRadar(){
+  const now=new Date();
+  const from=now.toISOString().slice(0,19)+'Z';
+  const to=new Date(now.getTime()+7*86400000).toISOString().slice(0,10)+'T23:59:59Z';
+  const{data:appts}=await sb.from('appointments')
+    .select('id,starts_at,created_at,status,customer_id,customers(name,phone),treatments(name,price)')
+    .in('status',['booked','requested']).gte('starts_at',from).lte('starts_at',to).order('starts_at');
+  const card=document.getElementById('noShowCard');
+  if(!appts||!appts.length){card.style.display='none';return;}
+  // Historie der betroffenen Kundinnen laden
+  const ids=[...new Set(appts.map(a=>a.customer_id))];
+  const{data:hist}=await sb.from('appointments').select('customer_id,status,starts_at').in('customer_id',ids).lt('starts_at',from);
+  const byCust={};(hist||[]).forEach(h=>{(byCust[h.customer_id]=byCust[h.customer_id]||[]).push(h);});
+  const risky=appts.map(a=>{
+    const h=byCust[a.customer_id]||[];
+    const reasons=[];let score=0;
+    if(!h.some(x=>x.status==='completed')){score+=40;reasons.push('Erstkundin');}
+    const noShows=h.filter(x=>x.status==='no_show').length;
+    if(noShows>0){score+=45;reasons.push(noShows+'× nicht erschienen');}
+    const leadH=(new Date(a.starts_at)-new Date(a.created_at))/3600000;
+    if(leadH<24){score+=20;reasons.push('kurzfristig gebucht');}
+    return{...a,score,reasons};
+  }).filter(a=>a.score>=40).sort((a,b)=>b.score-a.score);
+  if(!risky.length){card.style.display='none';return;}
+  card.style.display='block';
+  document.getElementById('noShowList').innerHTML=risky.map(a=>{
+    const d=a.starts_at.slice(0,10).split('-').reverse().slice(0,2).join('.')+'. '+a.starts_at.slice(11,16);
+    const price=a.treatments?.price?Number(a.treatments.price):null;
+    const dep=price?Math.max(10,Math.round(price*0.3)):20;
+    return `<div class="churn-item"><div class="churn-avatar">${(a.customers?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${a.customers?.name||'–'} · ${d}</div><div class="churn-detail">${a.treatments?.name||''} · Risiko: ${a.reasons.join(', ')}</div></div><span class="churn-badge ${a.score>=60?'badge-red':'badge-orange'}">${a.score>=60?'Hoch':'Erhöht'}</span><button class="btn-send" onclick="requestDeposit('${a.id}',${dep},'${(a.customers?.phone||'').replace(/[^0-9+]/g,'')}','${(a.customers?.name||'').replace(/'/g,"\\'")}')">💶 ${dep}€ Anzahlung</button></div>`;
+  }).join('');
+}
+
+async function requestDeposit(apptId,amount,phone,name){
+  if(!phone){showToast('Keine Handynummer hinterlegt','error');return;}
+  showToast('Erstelle Zahlungslink...','success');
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const res=await fetch('/api/deposit',{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({appointment_id:apptId,amount_eur:amount})});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    const msg=`Hallo ${name.split(' ')[0]}! Zur Bestätigung deines Termins bitten wir um eine Anzahlung von ${amount}€ (wird verrechnet): ${json.url}`;
+    window.open('https://wa.me/'+phone.replace(/^\+/,'').replace(/^00/,'')+'?text='+encodeURIComponent(msg),'_blank');
+  }catch(e){showToast(e.message,'error');}
+}
 
 // ===== Kalender =====
 let calMonday=null;
