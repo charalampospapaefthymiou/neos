@@ -349,6 +349,17 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-voiceNote">
+<div class="modal"><div class="modal-title">🎤 Sprachnotiz — <span id="vnCustomerName"></span></div><div class="modal-form">
+<div class="form-group">
+  <button class="btn-sm btn-primary-sm" id="vnRecordBtn" onclick="toggleRecording()">🎤 Aufnahme starten</button>
+  <span id="vnStatus" style="font-size:12px;color:var(--text2);margin-left:10px;"></span>
+</div>
+<div class="form-group"><label>Transkript (editierbar — du kannst auch direkt tippen)</label><textarea id="vnTranscript" rows="4" placeholder="z.B.: Balayage mit 7.1 und 6% Oxyd, Kopfhaut leicht empfindlich, heiratet im August, nächstes Mal Olaplex mitverkaufen..."></textarea></div>
+<div id="vnResult" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
+<div id="vnHistory" style="font-size:12px;color:var(--text2);"></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeVoiceNote()">Schließen</button><button class="btn-sm btn-primary-sm" id="vnSaveBtn" onclick="saveVoiceNote()">✨ Strukturieren &amp; speichern</button></div></div>
+</div>
 <div class="modal-overlay" id="modal-addClient">
 <div class="modal"><div class="modal-title">Kunden hinzufügen</div><div class="modal-form">
 <div class="form-group"><label>Name</label><input type="text" id="newClientName" placeholder="Max Mustermann" /></div>
@@ -539,7 +550,7 @@ function renderClientsTable(data){
   body.innerHTML=filtered.map(c=>{
     const[label,badge,dot]=riskMap[c.risk];
     const daysTxt=c.days===null?"–":c.days+" Tage";
-    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></td></tr>`;
+    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="openVoiceNote('${c.id}','${c.name.replace(/'/g,"\\'")}')">🎤 Notiz</button> <button class="btn-send" onclick="showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></td></tr>`;
   }).join("");
 }
 function setFilter(f,btn){currentFilter=f;document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderClientsTable(clientsData);}
@@ -570,6 +581,106 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Sprach-Kundenkartei =====
+let vnCustomerId=null,vnRecognition=null,vnRecording=false;
+
+function openVoiceNote(customerId,customerName){
+  vnCustomerId=customerId;
+  document.getElementById('vnCustomerName').textContent=customerName;
+  document.getElementById('vnTranscript').value='';
+  document.getElementById('vnResult').style.display='none';
+  document.getElementById('vnStatus').textContent='';
+  openModal('voiceNote');
+  loadNoteHistory(customerId);
+}
+function closeVoiceNote(){stopRecording();closeModal('voiceNote');}
+
+function toggleRecording(){vnRecording?stopRecording():startRecording();}
+
+function startRecording(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Spracherkennung wird von diesem Browser nicht unterstützt — bitte Chrome nutzen oder Text tippen','error');return;}
+  vnRecognition=new SR();
+  vnRecognition.lang='de-DE';
+  vnRecognition.continuous=true;
+  vnRecognition.interimResults=true;
+  let finalText=document.getElementById('vnTranscript').value;
+  vnRecognition.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+' ';
+      else interim+=e.results[i][0].transcript;
+    }
+    document.getElementById('vnTranscript').value=finalText+interim;
+  };
+  vnRecognition.onerror=e=>{
+    document.getElementById('vnStatus').textContent='Fehler: '+e.error;
+    stopRecording();
+  };
+  vnRecognition.start();
+  vnRecording=true;
+  document.getElementById('vnRecordBtn').textContent='⏹ Aufnahme stoppen';
+  document.getElementById('vnStatus').textContent='● Aufnahme läuft — sprich einfach...';
+}
+function stopRecording(){
+  if(vnRecognition){try{vnRecognition.stop();}catch(e){}vnRecognition=null;}
+  vnRecording=false;
+  const btn=document.getElementById('vnRecordBtn');
+  if(btn){btn.textContent='🎤 Aufnahme starten';}
+  const st=document.getElementById('vnStatus');
+  if(st&&st.textContent.startsWith('●'))st.textContent='';
+}
+
+function renderStructured(s){
+  const rows=[];
+  if(s.behandlung)rows.push(['💆 Behandlung',s.behandlung]);
+  if(s.farbformel)rows.push(['🎨 Farbformel',s.farbformel]);
+  if(s.produkte&&s.produkte.length)rows.push(['🧴 Produkte',s.produkte.join(', ')]);
+  if(s.hinweise)rows.push(['⚠️ Hinweise',s.hinweise]);
+  if(s.persoenliches)rows.push(['💬 Persönliches',s.persoenliches]);
+  if(s.naechster_besuch_empfehlung)rows.push(['📅 Nächster Besuch',s.naechster_besuch_empfehlung]);
+  return rows.map(([k,v])=>`<div><strong>${k}:</strong> ${v}</div>`).join('')||'<div>'+(s.zusammenfassung||'Keine Details erkannt')+'</div>';
+}
+
+async function saveVoiceNote(){
+  stopRecording();
+  const transcript=document.getElementById('vnTranscript').value.trim();
+  if(transcript.length<5){showToast('Bitte erst eine Notiz aufnehmen oder tippen','error');return;}
+  const btn=document.getElementById('vnSaveBtn');
+  btn.disabled=true;btn.textContent='KI strukturiert...';
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const customerName=document.getElementById('vnCustomerName').textContent;
+    const res=await fetch('/api/note',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({transcript,customerName})
+    });
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    const{error}=await sb.from('notes').insert({salon_id:currentUser.id,customer_id:vnCustomerId,raw_text:transcript,structured:json.structured});
+    if(error)throw new Error(error.message);
+    const box=document.getElementById('vnResult');
+    box.innerHTML='<div style="font-weight:700;margin-bottom:6px;">✓ In Kartei gespeichert</div>'+renderStructured(json.structured);
+    box.style.display='block';
+    showToast('Notiz strukturiert & gespeichert ✓','success');
+    loadNoteHistory(vnCustomerId);
+  }catch(e){
+    showToast(e.message,'error');
+  }finally{
+    btn.disabled=false;btn.textContent='✨ Strukturieren & speichern';
+  }
+}
+
+async function loadNoteHistory(customerId){
+  const el=document.getElementById('vnHistory');
+  el.innerHTML='';
+  const{data}=await sb.from('notes').select('created_at,structured').eq('customer_id',customerId).order('created_at',{ascending:false}).limit(3);
+  if(data&&data.length){
+    el.innerHTML='<div style="margin-top:10px;font-weight:700;">Letzte Einträge:</div>'+data.map(n=>`<div style="margin-top:6px;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;">${n.created_at.slice(0,10)} — ${n.structured?.zusammenfassung||'–'}</div>`).join('');
+  }
+}
 function openModal(n){document.getElementById("modal-"+n).classList.add("open");}
 function closeModal(n){document.getElementById("modal-"+n).classList.remove("open");}
 document.querySelectorAll(".modal-overlay").forEach(o=>{o.addEventListener("click",e=>{if(e.target===o)o.classList.remove("open");});});
