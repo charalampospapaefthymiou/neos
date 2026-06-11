@@ -19,7 +19,8 @@ async function rest(path, opts = {}) {
   const { url, headers } = SB();
   const res = await fetch(`${url}/rest/v1/${path}`, { ...opts, headers: { ...headers, ...(opts.headers || {}) } });
   if (!res.ok) throw new Error(`DB ${res.status}: ${await res.text()}`);
-  return res.status === 204 ? null : res.json();
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
 async function getSalon(slug) {
