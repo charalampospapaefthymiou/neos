@@ -2,7 +2,13 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#080a0f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="neos" />
+<link rel="apple-touch-icon" href="/icon-192.png" />
 <title>neos — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -135,7 +141,28 @@ td.name{font-weight:600;color:var(--text);}
 .setting-input:focus{border-color:rgba(108,99,255,0.4);}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:32px;width:100%;max-width:520px;box-shadow:0 40px 120px rgba(0,0,0,0.6);}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:32px;width:100%;max-width:520px;box-shadow:0 40px 120px rgba(0,0,0,0.6);max-height:90vh;overflow-y:auto;}
+/* ===== Mobile ===== */
+.bottom-nav{display:none;}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .content{padding:16px;padding-bottom:90px;}
+  .topbar{padding:12px 16px;}
+  .topbar .btn-sm{padding:8px 10px;font-size:12px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .three-col{grid-template-columns:1fr;gap:14px;}
+  .plan-banner{flex-direction:column;align-items:flex-start;gap:12px;}
+  .table-controls{flex-wrap:wrap;gap:8px;}
+  .search-input{width:100%;}
+  .modal{padding:20px;border-radius:16px;max-height:85vh;}
+  .modal-overlay{padding:12px;align-items:flex-end;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:rgba(13,16,24,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);z-index:20;padding:6px 0 calc(6px + env(safe-area-inset-bottom));}
+  .bottom-nav button{flex:1;background:none;border:none;color:var(--text2);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;cursor:pointer;font-family:inherit;}
+  .bottom-nav button .bn-icon{font-size:20px;line-height:1;}
+  .bottom-nav button.active{color:var(--accent2);}
+}
 .modal-title{font-size:18px;font-weight:800;margin-bottom:20px;}
 .modal-form .form-group{margin-bottom:14px;}
 .modal-form label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;}
@@ -349,6 +376,28 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-profile">
+<div class="modal">
+<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+  <div class="churn-avatar" id="pfAvatar" style="width:52px;height:52px;font-size:18px;"></div>
+  <div style="flex:1;"><div style="font-size:20px;font-weight:800;" id="pfName"></div><div style="font-size:12px;color:var(--text2);" id="pfSince"></div></div>
+  <span class="churn-badge" id="pfBadge"></span>
+</div>
+<div id="pfContact" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;">
+  <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:12px;"><div style="font-size:11px;color:var(--text2);">Letzter Besuch</div><div style="font-weight:700;" id="pfLastVisit">–</div></div>
+  <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:12px;"><div style="font-size:11px;color:var(--text2);">Termine gesamt</div><div style="font-weight:700;" id="pfApptCount">–</div></div>
+</div>
+<div style="font-weight:700;margin-bottom:8px;">📋 Terminhistorie</div>
+<div id="pfAppointments" style="font-size:13px;margin-bottom:18px;"></div>
+<div style="font-weight:700;margin-bottom:8px;">🧠 KI-Kartei</div>
+<div id="pfNotes" style="font-size:13px;"></div>
+<div class="modal-actions" style="margin-top:20px;">
+  <button class="btn-sm btn-ghost-sm" onclick="closeModal('profile')">Schließen</button>
+  <button class="btn-sm btn-primary-sm" id="pfNoteBtn">🎤 Notiz aufnehmen</button>
+</div>
+</div>
+</div>
 <div class="modal-overlay" id="modal-voiceNote">
 <div class="modal"><div class="modal-title">🎤 Sprachnotiz — <span id="vnCustomerName"></span></div><div class="modal-form">
 <div class="form-group">
@@ -377,6 +426,13 @@ td.name{font-weight:600;color:var(--text);}
 <div class="form-group"><label>Nachricht</label><textarea>Hey {{Name}}, wir vermissen dich! Es ist schon eine Weile her — darf ich dir einen Termin vorschlagen? Dein Team von {{Studio}}</textarea></div>
 </div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('sendCampaign')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="sendCampaign()">Jetzt senden 🚀</button></div></div>
 </div>
+<nav class="bottom-nav">
+<button onclick="showPage('dashboard',null);setBottomNav(this)" class="active"><span class="bn-icon">📊</span>Dashboard</button>
+<button onclick="showPage('clients',null);setBottomNav(this)"><span class="bn-icon">👥</span>Kunden</button>
+<button onclick="openModal('addClient')"><span class="bn-icon">➕</span>Neu</button>
+<button onclick="showPage('campaigns',null);setBottomNav(this)"><span class="bn-icon">🚀</span>Kampagnen</button>
+<button onclick="showPage('settings',null);setBottomNav(this)"><span class="bn-icon">⚙️</span>Mehr</button>
+</nav>
 <div class="toast" id="toast"></div>
 <script>
 const SUPABASE_URL="https://tfzdwuzytoehjkicaaei.supabase.co",SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmemR3dXp5dG9laGpraWNhYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDE3MjEsImV4cCI6MjA5NjU3NzcyMX0.NatCjPqlCyaKzX7TZK2VsE0jErRfexaNC193px_jxsE";
@@ -538,7 +594,7 @@ function renderDashboard(revenue){
   list.innerHTML=atRisk.sort((a,b)=>(b.days||0)-(a.days||0)).slice(0,5).map(c=>{
     const initials=c.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
     const crit=c.risk==='critical';
-    return `<div class="churn-item"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}</div><div class="churn-detail">Letzter Besuch: vor ${c.days} Tagen · ${c.treatment}</div></div><span class="churn-badge ${crit?'badge-red':'badge-orange'}">${crit?'Kritisch':'Warnung'}</span><button class="btn-send" onclick="showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></div>`;
+    return `<div class="churn-item" style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}</div><div class="churn-detail">Letzter Besuch: vor ${c.days} Tagen · ${c.treatment}</div></div><span class="churn-badge ${crit?'badge-red':'badge-orange'}">${crit?'Kritisch':'Warnung'}</span><button class="btn-send" onclick="event.stopPropagation();showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></div>`;
   }).join("");
 }
 
@@ -550,7 +606,8 @@ function renderClientsTable(data){
   body.innerHTML=filtered.map(c=>{
     const[label,badge,dot]=riskMap[c.risk];
     const daysTxt=c.days===null?"–":c.days+" Tage";
-    return `<tr><td class="name">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="openVoiceNote('${c.id}','${c.name.replace(/'/g,"\\'")}')">🎤 Notiz</button> <button class="btn-send" onclick="showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></td></tr>`;
+    const safeName=c.name.replace(/'/g,"\\'");
+    return `<tr style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><td class="name" style="color:var(--accent2);">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="event.stopPropagation();openVoiceNote('${c.id}','${safeName}')">🎤 Notiz</button> <button class="btn-send" onclick="event.stopPropagation();showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></td></tr>`;
   }).join("");
 }
 function setFilter(f,btn){currentFilter=f;document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderClientsTable(clientsData);}
@@ -581,6 +638,45 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Kundenprofil =====
+function setBottomNav(btn){document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
+
+async function openCustomerProfile(customerId){
+  const c=clientsData.find(x=>x.id===customerId);
+  if(!c)return;
+  document.getElementById('pfName').textContent=c.name;
+  document.getElementById('pfAvatar').textContent=c.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  const riskMap={critical:["Kritisch","badge-red"],warning:["Warnung","badge-orange"],ok:["OK","badge-green"],new:["Neu","badge-green"]};
+  const[label,badge]=riskMap[c.risk];
+  const badgeEl=document.getElementById('pfBadge');
+  badgeEl.textContent=label;badgeEl.className='churn-badge '+badge;
+  document.getElementById('pfLastVisit').textContent=c.days===null?"noch nie":`vor ${c.days} Tagen`;
+  const contact=document.getElementById('pfContact');
+  contact.innerHTML=[
+    c.phone?`<a href="tel:${c.phone}" class="btn-sm btn-ghost-sm" style="text-decoration:none;">📞 ${c.phone}</a>`:'',
+    c.phone?`<a href="https://wa.me/${c.phone.replace(/[^0-9]/g,'')}" target="_blank" class="btn-sm btn-ghost-sm" style="text-decoration:none;">💬 WhatsApp</a>`:'',
+  ].filter(Boolean).join('')||'<span style="font-size:12px;color:var(--text2);">Keine Kontaktdaten hinterlegt</span>';
+  document.getElementById('pfNoteBtn').onclick=()=>{closeModal('profile');openVoiceNote(c.id,c.name);};
+  document.getElementById('pfAppointments').innerHTML='<span style="color:var(--text2);">Lade…</span>';
+  document.getElementById('pfNotes').innerHTML='<span style="color:var(--text2);">Lade…</span>';
+  openModal('profile');
+  // Daten parallel laden
+  const[appts,notes,cust]=await Promise.all([
+    sb.from('appointments').select('starts_at,status,price,treatments(name)').eq('customer_id',customerId).order('starts_at',{ascending:false}).limit(10),
+    sb.from('notes').select('created_at,structured,raw_text').eq('customer_id',customerId).order('created_at',{ascending:false}).limit(5),
+    sb.from('customers').select('created_at').eq('id',customerId).single()
+  ]);
+  if(cust.data)document.getElementById('pfSince').textContent='Kundin seit '+cust.data.created_at.slice(0,10);
+  document.getElementById('pfApptCount').textContent=appts.data?appts.data.length+(appts.data.length===10?'+':''):'0';
+  const statusLabel={booked:'Gebucht',completed:'✓',cancelled:'Abgesagt',no_show:'Nicht erschienen'};
+  document.getElementById('pfAppointments').innerHTML=(appts.data&&appts.data.length)?appts.data.map(a=>
+    `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);"><span>${a.starts_at.slice(0,10)} · ${a.treatments?.name||'–'}</span><span style="color:var(--text2);">${statusLabel[a.status]||a.status}${a.price?' · €'+a.price:''}</span></div>`
+  ).join(''):'<span style="color:var(--text2);">Noch keine Termine erfasst.</span>';
+  document.getElementById('pfNotes').innerHTML=(notes.data&&notes.data.length)?notes.data.map(n=>
+    `<div style="background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.15);border-radius:10px;padding:10px;margin-bottom:8px;"><div style="font-size:11px;color:var(--text2);margin-bottom:4px;">${n.created_at.slice(0,10)}</div>${renderStructured(n.structured||{})}</div>`
+  ).join(''):'<span style="color:var(--text2);">Noch keine Notizen — nimm die erste mit 🎤 auf.</span>';
+}
 
 // ===== Sprach-Kundenkartei =====
 let vnCustomerId=null,vnRecognition=null,vnRecording=false;
