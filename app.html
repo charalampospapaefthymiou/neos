@@ -719,6 +719,7 @@ async function addClient(){
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
 
 // ===== No-Show-Radar =====
+const SHOW_DEPOSIT=false; // Anzahlungs-Button vorerst ausgeblendet (Feature fertig, api/deposit.js bleibt)
 async function loadNoShowRadar(){
   const now=new Date();
   const from=now.toISOString().slice(0,19)+'Z';
@@ -748,7 +749,7 @@ async function loadNoShowRadar(){
     const d=a.starts_at.slice(0,10).split('-').reverse().slice(0,2).join('.')+'. '+a.starts_at.slice(11,16);
     const price=a.treatments?.price?Number(a.treatments.price):null;
     const dep=price?Math.max(10,Math.round(price*0.3)):20;
-    return `<div class="churn-item"><div class="churn-avatar">${(a.customers?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${a.customers?.name||'–'} · ${d}</div><div class="churn-detail">${a.treatments?.name||''} · Risiko: ${a.reasons.join(', ')}</div></div><span class="churn-badge ${a.score>=60?'badge-red':'badge-orange'}">${a.score>=60?'Hoch':'Erhöht'}</span><button class="btn-send" onclick="requestDeposit('${a.id}',${dep},'${(a.customers?.phone||'').replace(/[^0-9+]/g,'')}','${(a.customers?.name||'').replace(/'/g,"\\'")}')">💶 ${dep}€ Anzahlung</button></div>`;
+    return `<div class="churn-item"><div class="churn-avatar">${(a.customers?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${a.customers?.name||'–'} · ${d}</div><div class="churn-detail">${a.treatments?.name||''} · Risiko: ${a.reasons.join(', ')}</div></div><span class="churn-badge ${a.score>=60?'badge-red':'badge-orange'}">${a.score>=60?'Hoch':'Erhöht'}</span>${SHOW_DEPOSIT?`<button class="btn-send" onclick="requestDeposit('${a.id}',${dep},'${(a.customers?.phone||'').replace(/[^0-9+]/g,'')}','${(a.customers?.name||'').replace(/'/g,"\\'")}')">💶 ${dep}€ Anzahlung</button>`:''}</div>`;
   }).join('');
 }
 
