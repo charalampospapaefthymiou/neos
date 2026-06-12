@@ -330,6 +330,12 @@ td.name{font-weight:600;color:var(--text);}
 <div class="setting-row"><div class="setting-info"><h4>Studio-Name</h4><p>Wird in Nachrichten verwendet</p></div><input class="setting-input" type="text" placeholder="Mein Studio" /></div>
 <div class="setting-row"><div class="setting-info"><h4>WhatsApp Nummer</h4><p>Für automatische Nachrichten</p></div><input class="setting-input" type="text" placeholder="+49 123 456789" /></div>
 </div>
+<div class="settings-section"><div class="settings-title">💆 Behandlungen</div>
+<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Preis &amp; Dauer steuern Buchungswidget und Umsatzanzeige. Rhythmus = nach wie vielen Tagen die Behandlung wieder fällig ist (Basis für Erinnerungen).</div>
+<div style="display:flex;gap:6px;font-size:11px;color:var(--text2);padding:0 2px;margin-bottom:4px;"><span style="flex:2;min-width:140px;">Name</span><span style="width:80px;">Preis €</span><span style="width:80px;">Dauer Min.</span><span style="width:80px;">Rhythmus Tage</span><span style="width:40px;">Aktiv</span><span style="width:40px;"></span></div>
+<div id="trMgmtList" style="display:flex;flex-direction:column;gap:8px;"></div>
+<button class="btn-sm btn-ghost-sm" style="margin-top:10px;" onclick="addTreatmentRow()">+ Behandlung hinzufügen</button>
+</div>
 <div class="settings-section"><div class="settings-title">📅 Online-Buchungen (optional)</div>
 <div class="setting-row"><div class="setting-info"><h4>Modus</h4><p>Du behältst die volle Kontrolle</p></div>
 <select class="setting-input" id="bkMode">
@@ -522,6 +528,7 @@ sb.auth.onAuthStateChange((event,session)=>{
   loadUserPlan();
   loadDashboardData();
   loadBookingSettings();
+  loadTreatmentsSettings();
   loadRequests();
   loadNoShowRadar();
   document.getElementById('bkMode').addEventListener('change',updateBookingLinkBox);
@@ -819,6 +826,62 @@ async function saveAppt(){
   closeModal('addAppt');
   showToast('Termin angelegt ✓','success');
   loadCalendar();loadDashboardData();
+}
+
+// ===== Behandlungs-Verwaltung =====
+let trRows=[];
+
+function trRowHtml(t,i){
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+  <input class="setting-input" style="flex:2;min-width:140px;" id="trN${i}" value="${esc(t.name)}" placeholder="z.B. Balayage"/>
+  <input class="setting-input" style="width:80px;min-width:0;" id="trP${i}" type="number" step="0.5" min="0" value="${t.price??''}" placeholder="–"/>
+  <input class="setting-input" style="width:80px;min-width:0;" id="trD${i}" type="number" step="5" min="5" value="${t.duration_min??''}" placeholder="60"/>
+  <input class="setting-input" style="width:80px;min-width:0;" id="trR${i}" type="number" step="1" min="1" value="${t.repeat_interval_days??''}" placeholder="–"/>
+  <button class="toggle ${t.active!==false?'on':''}" style="width:40px;flex-shrink:0;" id="trA${i}" onclick="this.classList.toggle('on')"></button>
+  <button class="btn-sm btn-primary-sm" style="width:40px;" title="Speichern" onclick="saveTreatmentRow(${i})">✓</button>
+  </div>`;
+}
+
+async function loadTreatmentsSettings(){
+  const{data,error}=await sb.from('treatments').select('id,name,price,duration_min,repeat_interval_days,active').order('name');
+  if(error){console.error(error);return;}
+  trRows=data||[];
+  document.getElementById('trMgmtList').innerHTML=trRows.length
+    ?trRows.map((t,i)=>trRowHtml(t,i)).join('')
+    :'<div style="font-size:13px;color:var(--text2);">Noch keine Behandlungen — lege die erste über „+" an. Beim Kunden-Import entstehen sie auch automatisch.</div>';
+}
+
+function addTreatmentRow(){
+  trRows.push({active:true});
+  const i=trRows.length-1;
+  const wrap=document.createElement('div');
+  wrap.innerHTML=trRowHtml(trRows[i],i);
+  document.getElementById('trMgmtList').appendChild(wrap.firstChild);
+  document.getElementById('trN'+i).focus();
+}
+
+async function saveTreatmentRow(i){
+  const name=document.getElementById('trN'+i).value.trim();
+  if(!name){showToast('Bitte Namen eingeben','error');return;}
+  const val=id=>{const v=document.getElementById(id).value;return v===''?null:Number(v);};
+  const row={
+    name,
+    price:val('trP'+i),
+    duration_min:val('trD'+i),
+    repeat_interval_days:val('trR'+i),
+    active:document.getElementById('trA'+i).classList.contains('on')
+  };
+  let error;
+  if(trRows[i].id){
+    ({error}=await sb.from('treatments').update(row).eq('id',trRows[i].id));
+  }else{
+    const res=await sb.from('treatments').insert({...row,salon_id:currentUser.id}).select().single();
+    error=res.error;
+    if(res.data)trRows[i]=res.data;
+  }
+  if(error){showToast(error.message,'error');return;}
+  showToast(name+' gespeichert ✓','success');
 }
 
 // ===== Online-Buchungen: Einstellungen + Anfragen =====
