@@ -358,6 +358,10 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 <button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveBookingSettings()">Buchungseinstellungen speichern</button>
 </div>
+<div class="settings-section"><div class="settings-title">📆 Kalender-Verknüpfung</div>
+<div class="setting-row"><div class="setting-info"><h4>Google / Apple / Outlook</h4><p>Deine neos-Termine erscheinen automatisch in deinem Kalender. In Google: „Weitere Kalender" → „+" → „Per URL" → Link einfügen.</p></div>
+<button class="btn-sm btn-primary-sm" onclick="copyIcsLink(this)">Kalender-Link kopieren</button></div>
+</div>
 <div class="settings-section"><div class="settings-title">Automatisierung</div>
 <div class="setting-row"><div class="setting-info"><h4>Churn-Schwelle (Tage)</h4><p>Ab wann ein Kunde als gefährdet gilt</p></div><input class="setting-input" type="number" value="60" style="min-width:120px" /></div>
 <div class="setting-row"><div class="setting-info"><h4>Reaktivierung automatisch</h4><p>Nachrichten ohne Bestätigung senden</p></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
@@ -802,6 +806,20 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Kalender-Feed =====
+async function copyIcsLink(btn){
+  btn.textContent='Erzeuge Link…';
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const res=await fetch('/api/ics',{headers:{'Authorization':'Bearer '+session.access_token}});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    await navigator.clipboard.writeText(json.url);
+    showToast('Kalender-Link kopiert ✓ — in Google Kalender unter „Per URL" einfügen','success');
+  }catch(e){showToast(e.message,'error');}
+  btn.textContent='Kalender-Link kopieren';
+}
 
 // ===== Anamnese-Bögen =====
 let pfFormsCache=[];
