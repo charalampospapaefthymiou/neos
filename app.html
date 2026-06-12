@@ -304,7 +304,9 @@ td.name{font-weight:600;color:var(--text);}
 <div class="card-body"><div class="cal-grid" id="calGrid"></div></div></div>
 </div>
 <div class="page" id="page-campaigns">
-<div class="campaign-list">
+<div class="card" style="margin-bottom:16px;"><div class="card-header"><span class="card-title">🔁 Überfällige Kundinnen — Zeit für eine Nachricht</span><span style="font-size:12px;color:var(--text2);">Fälligkeit nach Behandlungs-Rhythmus, sonst 60 Tage</span></div>
+<div class="card-body"><div id="campList" style="display:flex;flex-direction:column;gap:8px;"><div style="color:var(--text2);font-size:13px;">Lade…</div></div></div></div>
+<div class="campaign-list" style="display:none;">
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(201,115,127,0.15)">🔁</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 60 Tage</div><div class="campaign-desc">Automatische Nachricht an Kunden die 60+ Tage nicht da waren</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">18</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">7</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(201,169,106,0.15)">⏰</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 90 Tage</div><div class="campaign-desc">Follow-up für Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(249,115,22,0.12)">🎂</div><div class="campaign-info"><div class="campaign-name">Geburtstags-Nachricht</div><div class="campaign-desc">Persönliche Glückwunschnachricht am Geburtstag + Sonderangebot</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">5</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">3</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
@@ -435,6 +437,16 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-campaign">
+<div class="modal"><div class="modal-title">✨ Nachricht an <span id="cmName"></span></div><div class="modal-form">
+<div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="cmContext"></div>
+<div class="form-group"><label>KI-Vorschlag (editierbar)</label><textarea id="cmText" rows="6"></textarea></div>
+</div><div class="modal-actions">
+<button class="btn-sm btn-ghost-sm" onclick="closeModal('campaign')">Abbrechen</button>
+<button class="btn-sm btn-ghost-sm" onclick="generateCampaignMsg()">🔄 Neu generieren</button>
+<button class="btn-sm btn-primary-sm" onclick="sendCampaignMsg()">📲 Per WhatsApp senden</button>
+</div></div>
+</div>
 <div class="modal-overlay" id="modal-treatContent">
 <div class="modal"><div class="modal-title">📝 WhatsApp-Texte — <span id="tcName"></span></div><div class="modal-form">
 <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Diese Texte verschickt die Automatik: Vorbereitung mit der Terminerinnerung (Vortag), Nachsorge am Tag nach dem Termin — optional mit Pflege-Video.</div>
@@ -643,6 +655,7 @@ function showPage(name,btn){
   if(btn)btn.classList.add("active");
   if(name==="clients")renderClientsTable(clientsData);
   if(name==="calendar")loadCalendar();
+  if(name==="campaigns")loadCampaigns();
 }
 // ===== Echte Daten aus Supabase =====
 let clientsData=[];
@@ -747,6 +760,82 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Retention-Kampagnen =====
+let cmCustomer=null;
+
+async function loadCampaigns(){
+  const list=document.getElementById('campList');
+  const now=Date.now();
+  const[{data:customers},{data:recent}]=await Promise.all([
+    sb.from('customers').select('id,name,phone,appointments(starts_at,status,treatments(name,repeat_interval_days))'),
+    sb.from('wa_messages').select('customer_id,created_at').eq('kind','campaign').gte('created_at',new Date(now-14*86400000).toISOString())
+  ]);
+  const contacted=new Set((recent||[]).map(r=>r.customer_id));
+  const overdue=(customers||[]).map(c=>{
+    const past=(c.appointments||[]).filter(a=>a.status!=='cancelled'&&new Date(a.starts_at).getTime()<=now)
+      .sort((a,b)=>new Date(b.starts_at)-new Date(a.starts_at));
+    const last=past[0];
+    if(!last)return null;
+    const days=Math.floor((now-new Date(last.starts_at).getTime())/86400000);
+    const rhythm=last.treatments?.repeat_interval_days||60;
+    if(days<=rhythm)return null;
+    return{id:c.id,name:c.name,phone:c.phone,days,rhythm,overdueDays:days-rhythm,
+      treatment:last.treatments?.name||'–',contacted:contacted.has(c.id)};
+  }).filter(Boolean).sort((a,b)=>b.overdueDays-a.overdueDays);
+  if(!overdue.length){
+    list.innerHTML='<div style="color:var(--text2);font-size:13px;">🎉 Niemand überfällig — alle Kundinnen sind im Rhythmus.</div>';
+    return;
+  }
+  list.innerHTML=overdue.map(c=>{
+    const initials=c.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="churn-item"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}${c.contacted?' <span style="font-size:10px;color:var(--text2);">· kürzlich kontaktiert</span>':''}</div><div class="churn-detail">${c.treatment} vor ${c.days} Tagen · ${c.overdueDays} Tage über Rhythmus (${c.rhythm}d)</div></div>${c.phone?`<button class="btn-send" onclick='openCampaignMsg(${JSON.stringify(c).replace(/'/g,"&#39;")})'>✨ KI-Nachricht</button>`:'<span style="font-size:11px;color:var(--text2);">keine Nummer</span>'}</div>`;
+  }).join('');
+}
+
+async function openCampaignMsg(c){
+  cmCustomer=c;
+  document.getElementById('cmName').textContent=c.name;
+  document.getElementById('cmContext').textContent=`${c.treatment} vor ${c.days} Tagen · üblicher Rhythmus ${c.rhythm} Tage`;
+  document.getElementById('cmText').value='';
+  openModal('campaign');
+  generateCampaignMsg();
+}
+
+async function generateCampaignMsg(){
+  const ta=document.getElementById('cmText');
+  ta.value='✨ KI schreibt…';
+  try{
+    const c=cmCustomer;
+    const[{data:notes},{data:profile},{data:{session}}]=await Promise.all([
+      sb.from('notes').select('structured').eq('customer_id',c.id).order('created_at',{ascending:false}).limit(3),
+      sb.from('profiles').select('studio_name,booking_slug,booking').eq('id',currentUser.id).single().then(r=>({data:r.data})),
+      sb.auth.getSession()
+    ]);
+    const bookingUrl=(profile?.booking_slug&&profile?.booking?.mode!=='off')?location.origin+'/book/'+profile.booking_slug:null;
+    const res=await fetch('/api/campaign',{method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({customerName:c.name,treatment:c.treatment,daysSince:c.days,rhythm:c.rhythm,
+        notes:(notes||[]).map(n=>n.structured),studioName:profile?.studio_name,bookingUrl})});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    ta.value=json.message;
+  }catch(e){
+    ta.value='';
+    showToast(e.message,'error');
+  }
+}
+
+async function sendCampaignMsg(){
+  const text=document.getElementById('cmText').value.trim();
+  if(!text||text.startsWith('✨')){showToast('Noch keine Nachricht','error');return;}
+  const c=cmCustomer;
+  await sb.from('wa_messages').insert({salon_id:currentUser.id,customer_id:c.id,direction:'out',body:text,kind:'campaign'});
+  window.open('https://wa.me/'+(c.phone||'').replace(/[^0-9]/g,'').replace(/^00/,'')+'?text='+encodeURIComponent(text),'_blank');
+  closeModal('campaign');
+  showToast('WhatsApp geöffnet — nur noch auf Senden tippen ✓','success');
+  loadCampaigns();
+}
 
 // ===== No-Show-Radar =====
 const SHOW_DEPOSIT=false; // Anzahlungs-Button vorerst ausgeblendet (Feature fertig, api/deposit.js bleibt)
