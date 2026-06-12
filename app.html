@@ -431,6 +431,14 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-treatContent">
+<div class="modal"><div class="modal-title">📝 WhatsApp-Texte — <span id="tcName"></span></div><div class="modal-form">
+<div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Diese Texte verschickt die Automatik: Vorbereitung mit der Terminerinnerung (Vortag), Nachsorge am Tag nach dem Termin — optional mit Pflege-Video.</div>
+<div class="form-group"><label>Vorbereitung (vor dem Termin)</label><textarea id="tcPrep" rows="3" placeholder="z.B.: Bitte komm ungeschminkt und ohne Kontaktlinsen. 24h vorher kein Alkohol."></textarea></div>
+<div class="form-group"><label>Nachsorge (nach dem Termin)</label><textarea id="tcAfter" rows="3" placeholder="z.B.: Die ersten 24h nicht schminken, leichte Rötung ist normal. Bei Schwellung gerne kühlen."></textarea></div>
+<div class="form-group"><label>Pflege-Video-Link (optional)</label><input type="url" id="tcVideo" placeholder="https://... (z.B. YouTube oder eigene mp4)" /></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('treatContent')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="saveTreatContent()">Speichern</button></div></div>
+</div>
 <div class="modal-overlay" id="modal-addAppt">
 <div class="modal"><div class="modal-title">📅 Termin anlegen</div><div class="modal-form">
 <div class="form-group"><label>Kundin / Kunde</label><select id="apCustomer"></select></div>
@@ -839,12 +847,13 @@ function trRowHtml(t,i){
   <input class="setting-input" style="width:80px;min-width:0;" id="trD${i}" type="number" step="5" min="5" value="${t.duration_min??''}" placeholder="60"/>
   <input class="setting-input" style="width:80px;min-width:0;" id="trR${i}" type="number" step="1" min="1" value="${t.repeat_interval_days??''}" placeholder="–"/>
   <button class="toggle ${t.active!==false?'on':''}" style="width:40px;flex-shrink:0;" id="trA${i}" onclick="this.classList.toggle('on')"></button>
+  <button class="btn-sm btn-ghost-sm" style="width:40px;" title="Texte für WhatsApp-Automatik (Vorbereitung, Nachsorge, Video)" onclick="openTreatContent(${i})">📝</button>
   <button class="btn-sm btn-primary-sm" style="width:40px;" title="Speichern" onclick="saveTreatmentRow(${i})">✓</button>
   </div>`;
 }
 
 async function loadTreatmentsSettings(){
-  const{data,error}=await sb.from('treatments').select('id,name,price,duration_min,repeat_interval_days,active').order('name');
+  const{data,error}=await sb.from('treatments').select('id,name,price,duration_min,repeat_interval_days,active,prep_text,aftercare_text,aftercare_video_url').order('name');
   if(error){console.error(error);return;}
   trRows=data||[];
   document.getElementById('trMgmtList').innerHTML=trRows.length
@@ -882,6 +891,31 @@ async function saveTreatmentRow(i){
   }
   if(error){showToast(error.message,'error');return;}
   showToast(name+' gespeichert ✓','success');
+}
+
+// WhatsApp-Texte pro Behandlung
+let tcIndex=null;
+function openTreatContent(i){
+  if(!trRows[i]||!trRows[i].id){showToast('Bitte erst die Behandlung speichern (✓)','error');return;}
+  tcIndex=i;
+  document.getElementById('tcName').textContent=trRows[i].name;
+  document.getElementById('tcPrep').value=trRows[i].prep_text||'';
+  document.getElementById('tcAfter').value=trRows[i].aftercare_text||'';
+  document.getElementById('tcVideo').value=trRows[i].aftercare_video_url||'';
+  openModal('treatContent');
+}
+async function saveTreatContent(){
+  const t=trRows[tcIndex];
+  const row={
+    prep_text:document.getElementById('tcPrep').value.trim()||null,
+    aftercare_text:document.getElementById('tcAfter').value.trim()||null,
+    aftercare_video_url:document.getElementById('tcVideo').value.trim()||null
+  };
+  const{error}=await sb.from('treatments').update(row).eq('id',t.id);
+  if(error){showToast(error.message,'error');return;}
+  Object.assign(trRows[tcIndex],row);
+  closeModal('treatContent');
+  showToast('WhatsApp-Texte gespeichert ✓','success');
 }
 
 // ===== Online-Buchungen: Einstellungen + Anfragen =====
