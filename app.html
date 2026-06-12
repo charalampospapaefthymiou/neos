@@ -439,6 +439,14 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-formView">
+<div class="modal"><div class="modal-title">📋 Anamnese — <span id="fvName"></span></div><div class="modal-form">
+<div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="fvDate"></div>
+<div id="fvAnswers" style="font-size:13px;line-height:1.7;"></div>
+<div style="font-weight:700;margin-top:14px;margin-bottom:6px;">Unterschrift</div>
+<img id="fvSig" style="width:100%;max-width:300px;background:rgba(255,255,255,0.06);border-radius:10px;" alt="Unterschrift" />
+</div><div class="modal-actions"><button class="btn-sm btn-primary-sm" onclick="closeModal('formView')">Schließen</button></div></div>
+</div>
 <div class="modal-overlay" id="modal-apptEdit">
 <div class="modal"><div class="modal-title">📅 Termin — <span id="aeCustomer"></span></div><div class="modal-form">
 <div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="aeTreat"></div>
@@ -515,10 +523,13 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 <div style="font-weight:700;margin-bottom:8px;">📋 Terminhistorie</div>
 <div id="pfAppointments" style="font-size:13px;margin-bottom:18px;"></div>
+<div style="font-weight:700;margin-bottom:8px;">📋 Anamnese &amp; Einverständnis</div>
+<div id="pfForms" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">🧠 KI-Kartei</div>
 <div id="pfNotes" style="font-size:13px;"></div>
 <div class="modal-actions" style="margin-top:20px;">
   <button class="btn-sm btn-ghost-sm" onclick="closeModal('profile')">Schließen</button>
+  <button class="btn-sm btn-ghost-sm" id="pfFormBtn">📋 Anamnese</button>
   <button class="btn-sm btn-ghost-sm" id="pfEditBtn">✏️ Bearbeiten</button>
   <button class="btn-sm btn-primary-sm" id="pfNoteBtn">🎤 Notiz aufnehmen</button>
 </div>
@@ -791,6 +802,57 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Anamnese-Bögen =====
+let pfFormsCache=[];
+
+async function loadCustomerForms(customerId){
+  const{data}=await sb.from('forms').select('id,token,type,signed_at,created_at,data,signature').eq('customer_id',customerId).order('created_at',{ascending:false}).limit(5);
+  pfFormsCache=data||[];
+  const el=document.getElementById('pfForms');
+  if(!pfFormsCache.length){el.innerHTML='<span style="color:var(--text2);">Noch kein Bogen — über „📋 Anamnese" anfordern.</span>';return;}
+  el.innerHTML=pfFormsCache.map((f,i)=>{
+    const d=f.created_at.slice(0,10).split('-').reverse().join('.');
+    return f.signed_at
+      ?`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><span>✅ Ausgefüllt am ${f.signed_at.slice(0,10).split('-').reverse().join('.')}</span><button class="btn-send" onclick="viewForm(${i})">Ansehen</button></div>`
+      :`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text2);">⏳ Angefordert am ${d} — noch offen</span><button class="btn-send" onclick="copyFormLink(${i})">Link kopieren</button></div>`;
+  }).join('');
+}
+
+async function requestForm(customerId,customerName,phone){
+  const{data,error}=await sb.from('forms').insert({salon_id:currentUser.id,customer_id:customerId}).select().single();
+  if(error){showToast(error.message,'error');return;}
+  const url=location.origin+'/f/'+data.token;
+  const msg=`Hallo ${customerName.split(' ')[0]}! Damit wir dich bestmöglich behandeln können, füll bitte vor deinem Termin kurz diesen Bogen aus (dauert 2 Minuten): ${url}`;
+  if(phone){
+    window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'').replace(/^00/,'')+'?text='+encodeURIComponent(msg),'_blank');
+    showToast('WhatsApp geöffnet — Anamnese-Link ist drin ✓','success');
+  }else{
+    await navigator.clipboard.writeText(url);
+    showToast('Keine Nummer hinterlegt — Link kopiert','success');
+  }
+  loadCustomerForms(customerId);
+}
+
+async function copyFormLink(i){
+  await navigator.clipboard.writeText(location.origin+'/f/'+pfFormsCache[i].token);
+  showToast('Link kopiert ✓','success');
+}
+
+function viewForm(i){
+  const f=pfFormsCache[i];
+  document.getElementById('fvName').textContent=document.getElementById('pfName').textContent;
+  document.getElementById('fvDate').textContent='Ausgefüllt am '+f.signed_at.slice(0,10).split('-').reverse().join('.')+' um '+f.signed_at.slice(11,16)+' Uhr';
+  const d=f.data||{};
+  document.getElementById('fvAnswers').innerHTML=Object.values(d).map(v=>
+    typeof v==='string'
+      ?`<div style="padding:5px 0;"><strong>Sonstiges:</strong> ${v}</div>`
+      :`<div style="padding:5px 0;border-bottom:1px solid var(--border);">${v.frage}<br><strong style="color:${v.antwort==='ja'?'#f0a35e':'var(--success)'};">${v.antwort.toUpperCase()}</strong>${v.details?' — '+v.details:''}</div>`
+  ).join('');
+  document.getElementById('fvSig').src=f.signature||'';
+  closeModal('profile');
+  openModal('formView');
+}
 
 // ===== Termin bearbeiten =====
 let calApptsById={},aeId=null;
@@ -1330,6 +1392,8 @@ async function openCustomerProfile(customerId){
   ].filter(Boolean).join('')||'<span style="font-size:12px;color:var(--text2);">Keine Kontaktdaten hinterlegt</span>';
   document.getElementById('pfNoteBtn').onclick=()=>{closeModal('profile');openVoiceNote(c.id,c.name);};
   document.getElementById('pfEditBtn').onclick=()=>openEditCustomer(c.id);
+  document.getElementById('pfFormBtn').onclick=()=>requestForm(c.id,c.name,c.phone);
+  loadCustomerForms(c.id);
   document.getElementById('pfAppointments').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   document.getElementById('pfNotes').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   openModal('profile');

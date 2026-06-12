@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Anamnese & Einverständnis</title>
+<style>
+:root{--bg:#121010;--bg2:#181311;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f5efe9;--text2:#a89a8c;--accent:#c9737f;--success:#34d399;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Inter",-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
+.wrap{width:100%;max-width:520px;}
+.logo{display:flex;justify-content:center;margin:14px 0 8px;}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#c9737f,#c9a96a);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+h1{font-size:20px;text-align:center;margin-bottom:4px;}
+.sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:22px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
+.q{margin-bottom:14px;}
+.q label{display:block;font-size:14px;font-weight:600;margin-bottom:7px;}
+.yn{display:flex;gap:8px;}
+.yn button{flex:1;padding:10px;border:1px solid var(--border2);border-radius:10px;background:transparent;color:var(--text);font-family:inherit;font-size:14px;cursor:pointer;}
+.yn button.sel-ja{border-color:#f0a35e;background:rgba(240,163,94,0.12);}
+.yn button.sel-nein{border-color:var(--success);background:rgba(52,211,153,0.1);}
+textarea,input[type=text]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;font-family:inherit;}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.6;color:var(--text2);}
+.consent input{width:auto;margin-top:3px;}
+canvas{width:100%;height:140px;background:rgba(255,255,255,0.04);border:1px dashed var(--border2);border-radius:10px;touch-action:none;}
+.sig-actions{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px;color:var(--text2);}
+.btn{width:100%;background:linear-gradient(135deg,#c9737f,#a85a68);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;}
+.btn:disabled{opacity:.5;}
+.done{text-align:center;padding:50px 10px;}
+.done .big{font-size:50px;margin-bottom:12px;}
+.hidden{display:none;}
+.err{color:#f87171;font-size:13px;text-align:center;margin-top:10px;}
+.powered{text-align:center;margin-top:24px;font-size:12px;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><div class="mark">n</div></div>
+  <h1 id="title">Anamnese & Einverständnis</h1>
+  <div class="sub" id="sub">Lade…</div>
+
+  <div id="formArea" class="hidden">
+    <div class="card" id="questions"></div>
+    <div class="card">
+      <div class="q"><label>Gibt es sonst etwas, das wir wissen sollten?</label><textarea id="freeText" rows="2"></textarea></div>
+      <div class="consent"><input type="checkbox" id="consent1" /><span>Ich bestätige, dass ich alle Fragen wahrheitsgemäß beantwortet habe, über die Behandlung, mögliche Risiken und Nachsorge aufgeklärt wurde und in die Behandlung einwillige.</span></div>
+      <div class="consent" style="margin-top:10px;"><input type="checkbox" id="consent2" /><span>Ich willige ein, dass meine Angaben zur Behandlungsdokumentation gespeichert werden (Widerruf jederzeit möglich).</span></div>
+    </div>
+    <div class="card">
+      <div class="q"><label>Unterschrift</label><canvas id="sig"></canvas>
+      <div class="sig-actions"><span>Mit dem Finger oder der Maus unterschreiben</span><a href="#" onclick="clearSig();return false;" style="color:var(--accent);">Löschen</a></div></div>
+    </div>
+    <button class="btn" id="submitBtn" onclick="submitForm()">Absenden</button>
+    <div class="err hidden" id="err"></div>
+  </div>
+
+  <div id="done" class="done hidden"><div class="big">💌</div><h1>Danke!</h1><p class="sub" style="margin-top:8px;">Dein Bogen ist sicher beim Studio angekommen.<br/>Bis zu deinem Termin!</p></div>
+  <div id="invalid" class="done hidden"><div class="big">🔍</div><h1>Link ungültig</h1><p class="sub" style="margin-top:8px;">Dieser Formular-Link ist nicht (mehr) gültig. Bitte melde dich beim Studio.</p></div>
+
+  <div class="powered">sicher übermittelt mit neos</div>
+</div>
+
+<script>
+const token=location.pathname.split('/').filter(Boolean).pop();
+const QUESTIONS=[
+ ['allergien','Hast du Allergien (z.B. Pflaster, Latex, Duftstoffe, Inhaltsstoffe)?',true],
+ ['hauterkrankungen','Bestehen Hauterkrankungen (z.B. Neurodermitis, Rosazea, Herpes, Psoriasis)?',true],
+ ['medikamente','Nimmst du regelmäßig Medikamente (z.B. Blutverdünner, Kortison, Antibiotika)?',true],
+ ['schwanger','Bist du schwanger oder stillst du?',false],
+ ['diabetes','Diabetes oder Wundheilungsstörungen?',false],
+ ['keloide','Neigung zu Narbenwucherungen (Keloiden) oder Pigmentflecken?',false],
+ ['behandlungen','Hattest du in den letzten 4 Wochen Behandlungen (Peeling, Laser, Botox, Filler, starke Sonne/Solarium)?',true],
+ ['herz','Herz-Kreislauf-Erkrankungen, Epilepsie oder Schrittmacher?',false]
+];
+const answers={};
+
+function renderQuestions(){
+  document.getElementById('questions').innerHTML=QUESTIONS.map(([k,q,detail])=>`
+   <div class="q"><label>${q}</label>
+   <div class="yn">
+     <button type="button" id="${k}-ja" onclick="setAns('${k}',true,${detail})">Ja</button>
+     <button type="button" id="${k}-nein" onclick="setAns('${k}',false,${detail})">Nein</button>
+   </div>
+   ${detail?`<input type="text" id="${k}-detail" placeholder="Wenn ja: welche?" style="display:none;margin-top:8px;" />`:''}
+   </div>`).join('');
+}
+function setAns(k,val,detail){
+  answers[k]=val;
+  document.getElementById(k+'-ja').className=val?'sel-ja':'';
+  document.getElementById(k+'-nein').className=val?'':'sel-nein';
+  if(detail)document.getElementById(k+'-detail').style.display=val?'block':'none';
+}
+
+let drawing=false,sigUsed=false,ctx=null;
+function initSig(){
+  const c=document.getElementById('sig');
+  c.width=c.offsetWidth*2;c.height=280;
+  ctx=c.getContext('2d');ctx.strokeStyle='#f5efe9';ctx.lineWidth=3;ctx.lineCap='round';
+  const pos=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[(t.clientX-r.left)*2,(t.clientY-r.top)*2];};
+  const start=e=>{drawing=true;sigUsed=true;const[x,y]=pos(e);ctx.beginPath();ctx.moveTo(x,y);e.preventDefault();};
+  const move=e=>{if(!drawing)return;const[x,y]=pos(e);ctx.lineTo(x,y);ctx.stroke();e.preventDefault();};
+  const end=()=>{drawing=false;};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);window.addEventListener('mouseup',end);
+  c.addEventListener('touchstart',start,{passive:false});c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',end);
+}
+function clearSig(){const c=document.getElementById('sig');ctx.clearRect(0,0,c.width,c.height);sigUsed=false;}
+
+async function init(){
+  try{
+    const res=await fetch('/api/form?token='+encodeURIComponent(token));
+    if(!res.ok)throw 0;
+    const json=await res.json();
+    document.getElementById('sub').textContent=`Für ${json.customerName} · ${json.studioName}`;
+    if(json.signed){document.getElementById('done').classList.remove('hidden');return;}
+    document.getElementById('formArea').classList.remove('hidden');
+    renderQuestions();initSig();
+  }catch(e){
+    document.getElementById('sub').textContent='';
+    document.getElementById('invalid').classList.remove('hidden');
+  }
+}
+
+async function submitForm(){
+  const err=document.getElementById('err');err.classList.add('hidden');
+  if(Object.keys(answers).length<QUESTIONS.length){err.textContent='Bitte beantworte alle Fragen.';err.classList.remove('hidden');return;}
+  if(!document.getElementById('consent1').checked||!document.getElementById('consent2').checked){err.textContent='Bitte bestätige beide Einwilligungen.';err.classList.remove('hidden');return;}
+  if(!sigUsed){err.textContent='Bitte unterschreibe im Feld.';err.classList.remove('hidden');return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='Wird übermittelt…';
+  const data={};
+  QUESTIONS.forEach(([k,q,detail])=>{
+    data[k]={frage:q,antwort:answers[k]?'ja':'nein'};
+    if(detail&&answers[k]){const d=document.getElementById(k+'-detail').value.trim();if(d)data[k].details=d;}
+  });
+  const free=document.getElementById('freeText').value.trim();
+  if(free)data.sonstiges=free;
+  try{
+    const res=await fetch('/api/form',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,data,signature:document.getElementById('sig').toDataURL('image/png')})});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    document.getElementById('formArea').classList.add('hidden');
+    document.getElementById('done').classList.remove('hidden');
+  }catch(e){
+    err.textContent=e.message;err.classList.remove('hidden');
+    btn.disabled=false;btn.textContent='Absenden';
+  }
+}
+init();
+</script>
+</body></html>
