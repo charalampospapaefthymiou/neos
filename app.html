@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <link rel="manifest" href="/manifest.json" />
-<meta name="theme-color" content="#080a0f" />
+<meta name="theme-color" content="#121010" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="neos" />
@@ -14,7 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --bg:#080a0f;--bg2:#0d1117;--bg3:#111827;--bg4:#1a2235;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f4ff;--text2:#8b95b0;--text3:#5a6480;--accent:#6c63ff;--accent2:#a78bfa;--accent3:#c4b5fd;--teal:#14b8a6;--teal2:#2dd4bf;--error:#f87171;--success:#34d399;--warning:#fbbf24;--sidebar:240px; }
+:root { --bg:#121010;--bg2:#181311;--bg3:#1d1714;--bg4:#2a211c;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f5efe9;--text2:#a89a8c;--text3:#6e6258;--accent:#c9737f;--accent2:#e0a3ac;--accent3:#edc7cc;--teal:#c9a96a;--teal2:#d9bc82;--error:#f87171;--success:#34d399;--warning:#fbbf24;--sidebar:240px; }
 html,body{height:100%;}
 body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);display:flex;overflow:hidden;}
 .sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:10;}
@@ -24,7 +24,7 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);displ
 .nav-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:8px 8px 4px;margin-top:8px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;}
 .nav-item:hover{background:rgba(255,255,255,0.05);color:var(--text);}
-.nav-item.active{background:rgba(108,99,255,0.12);color:var(--accent3);}
+.nav-item.active{background:rgba(201,115,127,0.12);color:var(--accent3);}
 .nav-item .icon{font-size:16px;width:20px;text-align:center;}
 .nav-badge{margin-left:auto;background:var(--error);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:100px;min-width:18px;text-align:center;}
 .sidebar-user{padding:16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
@@ -39,8 +39,8 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);displ
 .topbar-title{font-size:18px;font-weight:700;}
 .topbar-right{display:flex;align-items:center;gap:12px;}
 .btn-sm{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
-.btn-primary-sm{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;box-shadow:0 0 20px rgba(108,99,255,0.25);}
-.btn-primary-sm:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(108,99,255,0.4);}
+.btn-primary-sm{background:linear-gradient(135deg,var(--accent),#a85a68);color:#fff;box-shadow:0 0 20px rgba(201,115,127,0.25);}
+.btn-primary-sm:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(201,115,127,0.4);}
 .btn-ghost-sm{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--border);}
 .btn-ghost-sm:hover{background:rgba(255,255,255,0.09);color:var(--text);}
 .content{padding:32px;flex:1;}
@@ -68,11 +68,11 @@ body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);displ
 .badge-red{background:rgba(248,113,113,0.15);color:var(--error);}
 .badge-orange{background:rgba(251,191,36,0.15);color:var(--warning);}
 .badge-green{background:rgba(52,211,153,0.15);color:var(--success);}
-.btn-send{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(108,99,255,0.15);color:var(--accent3);border:none;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
-.btn-send:hover{background:rgba(108,99,255,0.3);}
+.btn-send{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(201,115,127,0.15);color:var(--accent3);border:none;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.btn-send:hover{background:rgba(201,115,127,0.3);}
 .actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .action-btn{padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;text-align:left;cursor:pointer;transition:all 0.2s;}
-.action-btn:hover{border-color:rgba(108,99,255,0.3);background:rgba(108,99,255,0.06);}
+.action-btn:hover{border-color:rgba(201,115,127,0.3);background:rgba(201,115,127,0.06);}
 .action-icon{font-size:20px;margin-bottom:8px;}
 .action-title{font-size:12px;font-weight:700;}
 .action-desc{font-size:11px;color:var(--text3);margin-top:2px;}
@@ -88,10 +88,10 @@ td.name{font-weight:600;color:var(--text);}
 .dot-red{background:var(--error);} .dot-orange{background:var(--warning);} .dot-green{background:var(--success);}
 .table-controls{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
 .search-input{flex:1;padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:all 0.2s;}
-.search-input:focus{border-color:rgba(108,99,255,0.4);background:rgba(108,99,255,0.04);}
+.search-input:focus{border-color:rgba(201,115,127,0.4);background:rgba(201,115,127,0.04);}
 .search-input::placeholder{color:var(--text3);}
 .filter-btn{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--text2);cursor:pointer;transition:all 0.2s;}
-.filter-btn:hover,.filter-btn.active{background:rgba(108,99,255,0.1);border-color:rgba(108,99,255,0.3);color:var(--accent3);}
+.filter-btn:hover,.filter-btn.active{background:rgba(201,115,127,0.1);border-color:rgba(201,115,127,0.3);color:var(--accent3);}
 .campaign-list{display:flex;flex-direction:column;gap:14px;}
 .campaign-card{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;transition:all 0.2s;}
 .campaign-card:hover{border-color:var(--border2);}
@@ -116,19 +116,19 @@ td.name{font-weight:600;color:var(--text);}
 .photo-client{font-size:12px;font-weight:700;}
 .photo-treatment,.photo-date{font-size:11px;color:var(--text3);}
 .upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:24px;}
-.upload-zone:hover{border-color:rgba(108,99,255,0.4);background:rgba(108,99,255,0.04);}
+.upload-zone:hover{border-color:rgba(201,115,127,0.4);background:rgba(201,115,127,0.04);}
 .upload-icon{font-size:36px;margin-bottom:12px;}
 .upload-text{font-size:14px;font-weight:600;margin-bottom:4px;}
 .upload-sub{font-size:12px;color:var(--text3);}
-.ai-card{background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(20,184,166,0.05));border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.ai-card{background:linear-gradient(135deg,rgba(201,115,127,0.08),rgba(201,169,106,0.05));border:1px solid rgba(201,115,127,0.2);border-radius:12px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
 .ai-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
 .ai-text{flex:1;}
 .ai-client{font-size:13px;font-weight:700;margin-bottom:3px;}
 .ai-suggestion{font-size:12px;color:var(--text2);line-height:1.5;}
 .ai-actions{display:flex;gap:8px;margin-top:10px;}
 .btn-ai{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
-.btn-ai-primary{background:rgba(108,99,255,0.2);color:var(--accent3);}
-.btn-ai-primary:hover{background:rgba(108,99,255,0.35);}
+.btn-ai-primary{background:rgba(201,115,127,0.2);color:var(--accent3);}
+.btn-ai-primary:hover{background:rgba(201,115,127,0.35);}
 .btn-ai-ghost{background:rgba(255,255,255,0.05);color:var(--text3);}
 .btn-ai-ghost:hover{background:rgba(255,255,255,0.1);color:var(--text2);}
 .settings-section{margin-bottom:28px;}
@@ -138,7 +138,7 @@ td.name{font-weight:600;color:var(--text);}
 .setting-info h4{font-size:13px;font-weight:600;margin-bottom:2px;}
 .setting-info p{font-size:12px;color:var(--text3);}
 .setting-input{padding:8px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;min-width:200px;}
-.setting-input:focus{border-color:rgba(108,99,255,0.4);}
+.setting-input:focus{border-color:rgba(201,115,127,0.4);}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:32px;width:100%;max-width:520px;box-shadow:0 40px 120px rgba(0,0,0,0.6);max-height:90vh;overflow-y:auto;}
@@ -168,14 +168,14 @@ td.name{font-weight:600;color:var(--text);}
 .modal-form label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;}
 .modal-form input,.modal-form select,.modal-form textarea{width:100%;padding:10px 12px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;outline:none;}
 .modal-form textarea{min-height:80px;resize:vertical;}
-.modal-form input:focus,.modal-form select:focus,.modal-form textarea:focus{border-color:rgba(108,99,255,0.4);background:rgba(108,99,255,0.04);}
+.modal-form input:focus,.modal-form select:focus,.modal-form textarea:focus{border-color:rgba(201,115,127,0.4);background:rgba(201,115,127,0.04);}
 .modal-form select option{background:var(--bg3);}
 .modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:600;z-index:200;opacity:0;transform:translateY(10px);transition:all 0.3s;max-width:300px;}
 .toast.show{opacity:1;transform:translateY(0);}
 .toast.success{border-color:rgba(52,211,153,0.3);color:var(--success);}
 .toast.error{border-color:rgba(248,113,113,0.3);color:var(--error);}
-.plan-banner{background:linear-gradient(135deg,rgba(108,99,255,0.1),rgba(20,184,166,0.05));border:1px solid rgba(108,99,255,0.2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.plan-banner{background:linear-gradient(135deg,rgba(201,115,127,0.1),rgba(201,169,106,0.05));border:1px solid rgba(201,115,127,0.2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
 .plan-info{font-size:13px;}
 .plan-name-display{font-weight:700;color:var(--accent3);}
 .usage-bar-wrap{margin-top:6px;}
@@ -190,9 +190,9 @@ td.name{font-weight:600;color:var(--text);}
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto 40px;}
 .pricing-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;transition:all 0.25s;display:flex;flex-direction:column;}
 .pricing-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-.pricing-card.featured{border-color:rgba(108,99,255,0.5);background:linear-gradient(135deg,rgba(108,99,255,0.08),rgba(20,184,166,0.04));box-shadow:0 0 40px rgba(108,99,255,0.15);}
-.pricing-card.featured:hover{box-shadow:0 20px 60px rgba(108,99,255,0.2);}
-.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;white-space:nowrap;letter-spacing:0.5px;}
+.pricing-card.featured{border-color:rgba(201,115,127,0.5);background:linear-gradient(135deg,rgba(201,115,127,0.08),rgba(201,169,106,0.04));box-shadow:0 0 40px rgba(201,115,127,0.15);}
+.pricing-card.featured:hover{box-shadow:0 20px 60px rgba(201,115,127,0.2);}
+.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),#a85a68);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;white-space:nowrap;letter-spacing:0.5px;}
 .pricing-plan{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
 .pricing-price{font-size:42px;font-weight:800;letter-spacing:-2px;line-height:1;margin-bottom:4px;}
 .pricing-price span{font-size:18px;font-weight:500;color:var(--text2);letter-spacing:0;}
@@ -204,13 +204,13 @@ td.name{font-weight:600;color:var(--text);}
 .pricing-feature.muted{color:var(--text3);}
 .pricing-feature.muted .check{background:rgba(255,255,255,0.05);color:var(--text3);}
 .pricing-btn{width:100%;padding:12px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;font-family:inherit;}
-.pricing-btn-primary{background:linear-gradient(135deg,var(--accent),#8b5cf6);color:#fff;box-shadow:0 0 20px rgba(108,99,255,0.3);}
-.pricing-btn-primary:hover{box-shadow:0 0 35px rgba(108,99,255,0.5);transform:translateY(-1px);}
+.pricing-btn-primary{background:linear-gradient(135deg,var(--accent),#a85a68);color:#fff;box-shadow:0 0 20px rgba(201,115,127,0.3);}
+.pricing-btn-primary:hover{box-shadow:0 0 35px rgba(201,115,127,0.5);transform:translateY(-1px);}
 .pricing-btn-ghost{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--border);}
 .pricing-btn-ghost:hover{background:rgba(255,255,255,0.09);color:var(--text);}
 .pricing-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
 .current-plan-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--success);background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.25);padding:3px 10px;border-radius:100px;margin-bottom:8px;}
-.upgrade-success-banner{background:linear-gradient(135deg,rgba(52,211,153,0.1),rgba(20,184,166,0.05));border:1px solid rgba(52,211,153,0.3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;margin-bottom:32px;max-width:900px;margin-left:auto;margin-right:auto;}
+.upgrade-success-banner{background:linear-gradient(135deg,rgba(52,211,153,0.1),rgba(201,169,106,0.05));border:1px solid rgba(52,211,153,0.3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;margin-bottom:32px;max-width:900px;margin-left:auto;margin-right:auto;}
 .upgrade-success-banner .icon{font-size:24px;}
 .upgrade-success-text{font-size:14px;font-weight:600;color:var(--success);}
 .upgrade-success-sub{font-size:12px;color:var(--text2);margin-top:2px;}
@@ -219,12 +219,12 @@ td.name{font-weight:600;color:var(--text);}
 .cal-nav{display:flex;gap:6px;align-items:center;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;}
 .cal-day{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:12px;padding:10px;min-height:120px;}
-.cal-day.today{border-color:rgba(108,99,255,0.5);background:rgba(108,99,255,0.05);}
+.cal-day.today{border-color:rgba(201,115,127,0.5);background:rgba(201,115,127,0.05);}
 .cal-day-head{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;}
 .cal-day.today .cal-day-head{color:var(--accent2);}
 .cal-appt{border-radius:9px;padding:7px 9px;margin-bottom:6px;font-size:12px;cursor:pointer;border:1px solid transparent;line-height:1.4;}
 .cal-appt .t{font-weight:700;}
-.cal-appt.st-booked{background:rgba(108,99,255,0.13);border-color:rgba(108,99,255,0.3);}
+.cal-appt.st-booked{background:rgba(201,115,127,0.13);border-color:rgba(201,115,127,0.3);}
 .cal-appt.st-requested{background:rgba(251,146,60,0.12);border-color:rgba(251,146,60,0.35);}
 .cal-appt.st-completed{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.25);color:var(--text2);}
 .cal-appt.st-no_show{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);}
@@ -271,7 +271,7 @@ td.name{font-weight:600;color:var(--text);}
 <div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)" id="statRisk">–</div><div class="stat-card-change down" id="statRiskSub">&nbsp;</div></div>
 <div class="stat-card"><div class="stat-card-label">Umsatz</div><div class="stat-card-value" style="color:var(--success)" id="statRevenue">€0</div><div class="stat-card-change">diesen Monat</div></div>
 </div>
-<div class="card" id="requestsCard" style="display:none;margin-bottom:20px;border-color:rgba(108,99,255,0.4);"><div class="card-header"><span class="card-title">💌 Offene Terminanfragen</span></div>
+<div class="card" id="requestsCard" style="display:none;margin-bottom:20px;border-color:rgba(201,115,127,0.4);"><div class="card-header"><span class="card-title">💌 Offene Terminanfragen</span></div>
 <div class="card-body"><div id="requestsList"></div></div></div>
 <div class="card" id="noShowCard" style="display:none;margin-bottom:20px;border-color:rgba(251,146,60,0.4);"><div class="card-header"><span class="card-title">⚠️ No-Show-Radar — riskante Termine (7 Tage)</span></div>
 <div class="card-body"><div id="noShowList"></div></div></div>
@@ -305,8 +305,8 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 <div class="page" id="page-campaigns">
 <div class="campaign-list">
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(108,99,255,0.15)">🔁</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 60 Tage</div><div class="campaign-desc">Automatische Nachricht an Kunden die 60+ Tage nicht da waren</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">18</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">7</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(20,184,166,0.15)">⏰</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 90 Tage</div><div class="campaign-desc">Follow-up für Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(201,115,127,0.15)">🔁</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 60 Tage</div><div class="campaign-desc">Automatische Nachricht an Kunden die 60+ Tage nicht da waren</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">18</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">7</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(201,169,106,0.15)">⏰</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 90 Tage</div><div class="campaign-desc">Follow-up für Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(249,115,22,0.12)">🎂</div><div class="campaign-info"><div class="campaign-name">Geburtstags-Nachricht</div><div class="campaign-desc">Persönliche Glückwunschnachricht am Geburtstag + Sonderangebot</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">5</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">3</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(236,72,153,0.12)">🎥</div><div class="campaign-info"><div class="campaign-name">Video-Nachsorge</div><div class="campaign-desc">Automatisches Pflegevideo nach jeder Behandlung per WhatsApp</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">31</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--teal2)">94%</div><div class="campaign-stat-label">Geöffnet</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 </div>
@@ -320,8 +320,8 @@ td.name{font-weight:600;color:var(--text);}
 <div class="upload-zone" onclick="showToast('Foto-Upload kommt bald','success')"><div class="upload-icon">📸</div><div class="upload-text">Vorher/Nachher Fotos hochladen</div><div class="upload-sub">Klicken oder Fotos hier reinziehen · JPG, PNG bis 10MB</div></div>
 <div class="photos-grid">
 <div class="photo-card"><div class="photo-placeholder">✨<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
-<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#1a1f2e,#0d1117)">🌿<span class="photo-label">Vorher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
-<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#0f1a1a,#0d1117)">💆<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Lisa Paulsen</div><div class="photo-treatment">Gesichtsbehandlung</div><div class="photo-date">2. April 2026</div></div></div>
+<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#1a1f2e,#181311)">🌿<span class="photo-label">Vorher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
+<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#0f1a1a,#181311)">💆<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Lisa Paulsen</div><div class="photo-treatment">Gesichtsbehandlung</div><div class="photo-date">2. April 2026</div></div></div>
 </div>
 </div>
 <div class="page" id="page-settings">
@@ -348,7 +348,7 @@ td.name{font-weight:600;color:var(--text);}
 <div style="display:flex;flex-direction:column;gap:6px;" id="bkHours"></div></div>
 <div class="setting-row"><div class="setting-info"><h4>Slot-Raster</h4><p>Abstand der Termine</p></div>
 <select class="setting-input" id="bkSlotMin"><option value="15">15 Min.</option><option value="30" selected>30 Min.</option><option value="60">60 Min.</option></select></div>
-<div id="bkLinkBox" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;">
+<div id="bkLinkBox" style="display:none;background:rgba(201,115,127,0.08);border:1px solid rgba(201,115,127,0.2);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;">
 🔗 <a id="bkLinkA" target="_blank" style="color:var(--accent2);"></a>
 <button class="btn-sm btn-ghost-sm" style="margin-left:8px;" onclick="copyBookingLink()">Kopieren</button>
 </div>
@@ -452,7 +452,7 @@ td.name{font-weight:600;color:var(--text);}
 <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;">Exportiere deine Kundenliste aus deiner bisherigen Software (Treatwell, Fresha, Planity, Excel...) als CSV — oder kopiere die Tabelle einfach direkt aus Excel hierher. Die KI erkennt die Spalten automatisch.</div>
 <div class="form-group"><label>CSV-Datei</label><input type="file" id="importFile" accept=".csv,.txt,.tsv" onchange="handleImportFile(this)" /></div>
 <div class="form-group"><label>… oder hier einfügen (Strg+V aus Excel)</label><textarea id="importPaste" rows="5" placeholder="Name	Telefon	Letzter Besuch&#10;Anna Müller	+49151234	15.03.2026"></textarea></div>
-<div id="importPreview" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
+<div id="importPreview" style="display:none;background:rgba(201,115,127,0.08);border:1px solid rgba(201,115,127,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
 </div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('import')">Abbrechen</button><button class="btn-sm btn-primary-sm" id="importBtn" onclick="runImport()">✨ Spalten erkennen &amp; importieren</button></div></div>
 </div>
 <div class="modal-overlay" id="modal-profile">
@@ -484,7 +484,7 @@ td.name{font-weight:600;color:var(--text);}
   <span id="vnStatus" style="font-size:12px;color:var(--text2);margin-left:10px;"></span>
 </div>
 <div class="form-group"><label>Transkript (editierbar — du kannst auch direkt tippen)</label><textarea id="vnTranscript" rows="4" placeholder="z.B.: Balayage mit 7.1 und 6% Oxyd, Kopfhaut leicht empfindlich, heiratet im August, nächstes Mal Olaplex mitverkaufen..."></textarea></div>
-<div id="vnResult" style="display:none;background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
+<div id="vnResult" style="display:none;background:rgba(201,115,127,0.08);border:1px solid rgba(201,115,127,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
 <div id="vnHistory" style="font-size:12px;color:var(--text2);"></div>
 </div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeVoiceNote()">Schließen</button><button class="btn-sm btn-primary-sm" id="vnSaveBtn" onclick="saveVoiceNote()">✨ Strukturieren &amp; speichern</button></div></div>
 </div>
@@ -1134,7 +1134,7 @@ async function openCustomerProfile(customerId){
     `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);"><span>${a.starts_at.slice(0,10)} · ${a.treatments?.name||'–'}</span><span style="color:var(--text2);">${statusLabel[a.status]||a.status}${a.price?' · €'+a.price:''}</span></div>`
   ).join(''):'<span style="color:var(--text2);">Noch keine Termine erfasst.</span>';
   document.getElementById('pfNotes').innerHTML=(notes.data&&notes.data.length)?notes.data.map(n=>
-    `<div style="background:rgba(108,99,255,0.06);border:1px solid rgba(108,99,255,0.15);border-radius:10px;padding:10px;margin-bottom:8px;"><div style="font-size:11px;color:var(--text2);margin-bottom:4px;">${n.created_at.slice(0,10)}</div>${renderStructured(n.structured||{})}</div>`
+    `<div style="background:rgba(201,115,127,0.06);border:1px solid rgba(201,115,127,0.15);border-radius:10px;padding:10px;margin-bottom:8px;"><div style="font-size:11px;color:var(--text2);margin-bottom:4px;">${n.created_at.slice(0,10)}</div>${renderStructured(n.structured||{})}</div>`
   ).join(''):'<span style="color:var(--text2);">Noch keine Notizen — nimm die erste mit 🎤 auf.</span>';
 }
 

@@ -4,8 +4,8 @@
   "description": "KI-gestützte Kundenbindung für Beauty-Salons",
   "start_url": "/app",
   "display": "standalone",
-  "background_color": "#080a0f",
-  "theme_color": "#080a0f",
+  "background_color": "#121010",
+  "theme_color": "#121010",
   "orientation": "portrait",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },

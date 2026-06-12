@@ -5,31 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Termin buchen</title>
 <style>
-:root{--bg:#080a0f;--bg2:#0d1018;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#eef1f6;--text2:#8b93a7;--accent:#6c63ff;--accent2:#9c95ff;--success:#34d399;}
+:root{--bg:#121010;--bg2:#181311;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f5efe9;--text2:#a89a8c;--accent:#c9737f;--accent2:#e0a3ac;--success:#34d399;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:"Inter",-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
 .wrap{width:100%;max-width:440px;}
 .logo{display:flex;align-items:center;gap:10px;justify-content:center;margin:18px 0 6px;}
-.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#6c63ff,#14b8a6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#c9737f,#c9a96a);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
 .salon-name{text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;}
 .sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:24px;}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
 .step-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
 .opt{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:1px solid var(--border2);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
-.opt:hover,.opt.sel{border-color:var(--accent);background:rgba(108,99,255,0.08);}
+.opt:hover,.opt.sel{border-color:var(--accent);background:rgba(201,115,127,0.08);}
 .opt .nm{font-weight:600;font-size:15px;}
 .opt .meta{font-size:12px;color:var(--text2);}
 .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;}
 .chip{flex:0 0 auto;text-align:center;padding:10px 12px;border:1px solid var(--border2);border-radius:12px;cursor:pointer;min-width:62px;}
-.chip.sel{border-color:var(--accent);background:rgba(108,99,255,0.1);}
+.chip.sel{border-color:var(--accent);background:rgba(201,115,127,0.1);}
 .chip .d1{font-size:11px;color:var(--text2);}
 .chip .d2{font-weight:700;font-size:15px;}
 .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
 .slot{text-align:center;padding:11px 0;border:1px solid var(--border2);border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;}
-.slot.sel{border-color:var(--accent);background:rgba(108,99,255,0.12);}
+.slot.sel{border-color:var(--accent);background:rgba(201,115,127,0.12);}
 input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:11px;padding:13px 14px;color:var(--text);font-size:15px;font-family:inherit;margin-bottom:10px;}
 input:focus{outline:none;border-color:var(--accent);}
-.btn{width:100%;background:linear-gradient(135deg,#6c63ff,#8b5cf6);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn{width:100%;background:linear-gradient(135deg,#c9737f,#a85a68);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
 .btn:disabled{opacity:.5;cursor:default;}
 .note{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;}
 .done{text-align:center;padding:40px 10px;}
@@ -39,7 +39,7 @@ input:focus{outline:none;border-color:var(--accent);}
 .hidden{display:none;}
 .err{color:#f87171;font-size:13px;text-align:center;margin-top:10px;}
 .powered{text-align:center;margin-top:26px;font-size:12px;color:var(--text2);}
-.powered b{background:linear-gradient(135deg,#9c95ff,#2dd4bf);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.powered b{background:linear-gradient(135deg,#e0a3ac,#d9bc82);-webkit-background-clip:text;background-clip:text;color:transparent;}
 .loading{text-align:center;color:var(--text2);padding:30px;}
 </style>
 </head>

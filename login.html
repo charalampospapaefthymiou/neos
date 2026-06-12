@@ -9,11 +9,11 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #080a0f; --bg2: #0d1117; --bg3: #111827;
+      --bg: #121010; --bg2: #181311; --bg3: #1d1714;
       --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
-      --text: #f0f4ff; --text2: #8b95b0; --text3: #5a6480;
-      --accent: #6c63ff; --accent2: #a78bfa; --accent3: #c4b5fd;
-      --teal: #14b8a6; --teal2: #2dd4bf;
+      --text: #f5efe9; --text2: #a89a8c; --text3: #6e6258;
+      --accent: #c9737f; --accent2: #e0a3ac; --accent3: #edc7cc;
+      --teal: #c9a96a; --teal2: #d9bc82;
       --error: #f87171; --success: #34d399;
     }
     body {
@@ -28,8 +28,8 @@
       position: relative;
       overflow: hidden;
     }
-    .orb1 { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(108,99,255,0.1) 0%, transparent 70%); top: -200px; left: -100px; pointer-events: none; }
-    .orb2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(20,184,166,0.08) 0%, transparent 70%); bottom: -100px; right: -100px; pointer-events: none; }
+    .orb1 { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,115,127,0.1) 0%, transparent 70%); top: -200px; left: -100px; pointer-events: none; }
+    .orb2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(201,169,106,0.08) 0%, transparent 70%); bottom: -100px; right: -100px; pointer-events: none; }
 
     .card {
       background: var(--bg2);
@@ -148,13 +148,13 @@
       outline: none;
       transition: all 0.2s;
     }
-    input:focus { border-color: rgba(108,99,255,0.5); background: rgba(108,99,255,0.05); box-shadow: 0 0 0 3px rgba(108,99,255,0.1); }
+    input:focus { border-color: rgba(201,115,127,0.5); background: rgba(201,115,127,0.05); box-shadow: 0 0 0 3px rgba(201,115,127,0.1); }
     input::placeholder { color: var(--text3); }
 
     .btn-submit {
       width: 100%;
       padding: 13px;
-      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      background: linear-gradient(135deg, var(--accent), #a85a68);
       color: #fff;
       font-size: 14px;
       font-weight: 700;
@@ -162,10 +162,10 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 0 30px rgba(108,99,255,0.3);
+      box-shadow: 0 0 30px rgba(201,115,127,0.3);
       margin-top: 8px;
     }
-    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 0 45px rgba(108,99,255,0.5); }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 0 45px rgba(201,115,127,0.5); }
     .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .message {
@@ -205,8 +205,8 @@
         <path d="M7 20V6L19 20V6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         <defs>
           <linearGradient id="neos-login-g" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#6c63ff"/>
-            <stop offset="100%" stop-color="#14b8a6"/>
+            <stop offset="0%" stop-color="#c9737f"/>
+            <stop offset="100%" stop-color="#c9a96a"/>
           </linearGradient>
         </defs>
       </svg>
