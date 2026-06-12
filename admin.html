@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>neos · Founder-Cockpit</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#121010;--bg2:#181311;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f5efe9;--text2:#a89a8c;--accent:#c9737f;--accent2:#e0a3ac;--gold:#d9bc82;--success:#34d399;--warning:#f0a35e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:28px 18px 60px;}
+.wrap{max-width:1000px;margin:0 auto;}
+.head{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+.mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#c9737f,#c9a96a);display:flex;align-items:center;justify-content:center;font-weight:800;}
+.head h1{font-size:19px;}
+.head .sub{font-size:12px;color:var(--text2);margin-left:auto;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.kpi .l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;}
+.kpi .v{font-size:24px;font-weight:800;margin-top:2px;}
+.kpi .s{font-size:11px;color:var(--text2);}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 16px 12px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
+th{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;text-align:left;padding:12px 8px 8px;}
+td{padding:10px 8px;border-top:1px solid var(--border);}
+.pill{display:inline-block;font-size:10px;font-weight:700;border-radius:99px;padding:2px 10px;}
+.p-trial{background:rgba(168,154,140,0.16);color:var(--text2);}
+.p-starter{background:rgba(217,188,130,0.14);color:var(--gold);}
+.p-growth{background:rgba(201,115,127,0.18);color:var(--accent2);}
+.p-pro{background:rgba(52,211,153,0.14);color:var(--success);}
+.warn{color:var(--warning);}
+select{background:var(--bg);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:12px;}
+.center{text-align:center;padding:80px 20px;color:var(--text2);}
+.hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><div class="mark">n</div><h1>Founder-Cockpit</h1><span class="sub" id="stamp"></span></div>
+  <div id="loading" class="center">Lade Cockpit…</div>
+  <div id="denied" class="center hidden">🔒 Kein Zugriff.<br/><span style="font-size:12px;">Diese Seite ist nur für den neos-Admin.</span></div>
+  <div id="content" class="hidden">
+    <div class="kpis">
+      <div class="kpi"><div class="l">Salons</div><div class="v" id="kSalons">–</div><div class="s" id="kSalonsSub"></div></div>
+      <div class="kpi"><div class="l">Aktiv (7 Tage)</div><div class="v" id="kActive">–</div><div class="s" id="kActiveSub"></div></div>
+      <div class="kpi"><div class="l">MRR</div><div class="v" id="kMrr">–</div><div class="s">nach Plan-Preisen</div></div>
+      <div class="kpi"><div class="l">Kundinnen gesamt</div><div class="v" id="kCust">–</div><div class="s">über alle Salons</div></div>
+      <div class="kpi"><div class="l">Kampagnen-Nachrichten</div><div class="v" id="kCamp" style="color:var(--gold);">–</div><div class="s">deine Hero-Metrik</div></div>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Salon</th><th>Plan</th><th>Kundinnen</th><th>Termine</th><th>Nachr. 30d</th><th>Zuletzt aktiv</th><th>Registriert</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+const sb=supabase.createClient('https://tfzdwuzytoehjkicaaei.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmemR3dXp5dG9laGpraWNhYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDE3MjEsImV4cCI6MjA5NjU3NzcyMX0.NatCjPqlCyaKzX7TZK2VsE0jErRfexaNC193px_jxsE',{auth:{persistSession:true,autoRefreshToken:true}});
+const $=id=>document.getElementById(id);
+const fmtD=iso=>iso?iso.slice(0,10).split('-').reverse().join('.'):'–';
+function ago(iso){
+  if(!iso)return'<span class="warn">noch nie ⚠</span>';
+  const d=Math.floor((Date.now()-new Date(iso))/86400000);
+  if(d===0)return'heute';
+  if(d===1)return'gestern';
+  return d>7?`<span class="warn">vor ${d} Tagen ⚠</span>`:`vor ${d} Tagen`;
+}
+
+async function load(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){window.location.href='/login';return;}
+  const res=await fetch('/api/admin',{headers:{'Authorization':'Bearer '+session.access_token}});
+  $('loading').classList.add('hidden');
+  if(res.status===403){$('denied').classList.remove('hidden');return;}
+  const{kpis,salons,error}=await res.json();
+  if(error){$('denied').classList.remove('hidden');$('denied').innerHTML='Fehler: '+error;return;}
+  $('content').classList.remove('hidden');
+  $('stamp').textContent='Stand: '+new Date().toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
+  $('kSalons').textContent=kpis.salons;
+  const week=salons.filter(s=>s.created_at>=new Date(Date.now()-7*86400000).toISOString()).length;
+  $('kSalonsSub').textContent=week?('+'+week+' diese Woche'):'';
+  $('kActive').textContent=kpis.active7d;
+  $('kActiveSub').textContent=(kpis.salons-kpis.active7d)>0?(kpis.salons-kpis.active7d)+' inaktiv ⚠':'alle an Bord';
+  $('kMrr').textContent=kpis.mrr.toLocaleString('de-DE')+' €';
+  $('kCust').textContent=kpis.customers.toLocaleString('de-DE');
+  $('kCamp').textContent=kpis.campaigns;
+  $('rows').innerHTML=salons.map(s=>`<tr>
+    <td><strong>${s.name}</strong></td>
+    <td><select onchange="setPlan('${s.id}',this.value,this)">
+      ${['trial','starter','growth','pro'].map(p=>`<option value="${p}" ${s.plan===p?'selected':''}>${p.charAt(0).toUpperCase()+p.slice(1)}</option>`).join('')}
+    </select></td>
+    <td>${s.customers}</td>
+    <td>${s.appointments}</td>
+    <td>${s.messages30d}</td>
+    <td>${ago(s.last_active)}</td>
+    <td style="color:var(--text2);">${fmtD(s.created_at)}</td>
+  </tr>`).join('');
+}
+
+async function setPlan(id,plan,sel){
+  sel.disabled=true;
+  const{data:{session}}=await sb.auth.getSession();
+  const res=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({salon_id:id,plan})});
+  sel.disabled=false;
+  if(!res.ok){alert('Fehler beim Umstellen');return;}
+  load();
+}
+load();
+</script>
+</body></html>

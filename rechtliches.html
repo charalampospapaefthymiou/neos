@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>neos · Rechtliches</title>
+<style>
+:root{--bg:#121010;--bg2:#181311;--border:rgba(255,255,255,0.07);--text:#f5efe9;--text2:#a89a8c;--accent:#e0a3ac;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"Inter",system-ui,sans-serif;background:var(--bg);color:var(--text);padding:36px 18px 80px;line-height:1.7;}
+.wrap{max-width:760px;margin:0 auto;}
+h1{font-size:24px;margin-bottom:6px;}
+h2{font-size:18px;margin:34px 0 10px;color:var(--accent);}
+h3{font-size:15px;margin:18px 0 6px;}
+p,li{font-size:14px;color:#d8cec5;}
+ul{padding-left:22px;margin:6px 0 12px;}
+.note{background:rgba(240,163,94,0.1);border:1px solid rgba(240,163,94,0.3);border-radius:10px;padding:12px 16px;font-size:13px;margin:14px 0 24px;}
+.ph{background:rgba(201,115,127,0.15);border-radius:4px;padding:0 6px;font-weight:600;color:var(--accent);}
+a{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Rechtliches</h1>
+<p style="color:var(--text2);font-size:13px;">Impressum und Datenschutzerklärung der neos-Plattform.</p>
+<div class="note">⚠️ <strong>Entwurf:</strong> Die <span class="ph">markierten Platzhalter</span> müssen mit den echten Unternehmensdaten gefüllt und das Ganze vor dem öffentlichen Launch von einer Anwältin / einem Anwalt geprüft werden.</div>
+
+<h2>Impressum</h2>
+<p>Angaben gemäß § 5 DDG:</p>
+<p><span class="ph">[Vor- und Nachname / Firmenname]</span><br/>
+<span class="ph">[Straße und Hausnummer]</span><br/>
+<span class="ph">[PLZ und Ort]</span>, Deutschland</p>
+<p>E-Mail: <span class="ph">[Kontakt-E-Mail]</span><br/>
+Telefon: <span class="ph">[Telefonnummer]</span></p>
+<p>Umsatzsteuer-ID gemäß § 27a UStG: <span class="ph">[USt-IdNr. oder „nicht vorhanden — Kleinunternehmer gem. § 19 UStG"]</span></p>
+<p>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV: <span class="ph">[Name, Anschrift wie oben]</span></p>
+
+<h2>Datenschutzerklärung</h2>
+
+<h3>1. Verantwortlicher</h3>
+<p>Verantwortlich für die Datenverarbeitung auf dieser Plattform ist die im Impressum genannte Stelle.</p>
+
+<h3>2. Welche Daten wir verarbeiten</h3>
+<ul>
+<li><strong>Salon-Accounts:</strong> E-Mail-Adresse, Studio-Name, Telefonnummer — zur Bereitstellung des Dienstes (Art. 6 Abs. 1 lit. b DSGVO).</li>
+<li><strong>Kundendaten der Salons:</strong> Namen, Kontaktdaten, Termine, Behandlungsdokumentation und Anamneseangaben, die Salons in neos speichern. Hierfür ist der jeweilige Salon Verantwortlicher; neos verarbeitet diese Daten als Auftragsverarbeiter (Art. 28 DSGVO). Ein Auftragsverarbeitungsvertrag (AVV) wird mit jedem Salon geschlossen.</li>
+<li><strong>Online-Buchungen &amp; Formulare:</strong> Von Endkundinnen eingegebene Daten (Name, Telefonnummer, Anamneseangaben, Unterschrift) werden ausschließlich für den jeweiligen Salon verarbeitet.</li>
+<li><strong>Gesundheitsdaten</strong> (Anamnesebögen) werden nur mit ausdrücklicher Einwilligung der Endkundin verarbeitet (Art. 9 Abs. 2 lit. a DSGVO) und können jederzeit widerrufen werden.</li>
+</ul>
+
+<h3>3. KI-gestützte Funktionen</h3>
+<p>Zur Strukturierung von Notizen und zur Erstellung von Nachrichtenvorschlägen werden Texteingaben an Anthropic (Claude API) übermittelt. Es werden nur die für die jeweilige Funktion erforderlichen Inhalte übertragen; eine Nutzung zu Trainingszwecken durch den Anbieter ist vertraglich ausgeschlossen. <span class="ph">[Ggf. Standardvertragsklauseln/Übermittlung in Drittländer ergänzen]</span></p>
+
+<h3>4. Empfänger und Auftragsverarbeiter</h3>
+<ul>
+<li>Supabase (Datenbank &amp; Authentifizierung) — Region: <span class="ph">[EU-Region eintragen/prüfen]</span></li>
+<li>Vercel (Hosting)</li>
+<li>Stripe (Zahlungsabwicklung)</li>
+<li>Anthropic (KI-Funktionen)</li>
+<li>Meta Platforms Ireland / WhatsApp Business (Nachrichtenversand, sofern vom Salon aktiviert)</li>
+</ul>
+
+<h3>5. Speicherdauer</h3>
+<p>Daten werden gelöscht, sobald der Zweck entfällt — Salon-Accounts und zugehörige Daten nach Vertragsende, spätestens nach Ablauf gesetzlicher Aufbewahrungsfristen. Salons können Kundendaten jederzeit selbst löschen.</p>
+
+<h3>6. Deine Rechte</h3>
+<p>Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerspruch sowie Widerruf erteilter Einwilligungen — jederzeit über <span class="ph">[Kontakt-E-Mail]</span>. Beschwerderecht bei der zuständigen Datenschutzaufsichtsbehörde.</p>
+
+<h3>7. Cookies &amp; Tracking</h3>
+<p>neos verwendet nur technisch notwendige Speichertechnologien (Login-Session im lokalen Speicher). Es findet kein Werbe-Tracking statt.</p>
+
+<p style="margin-top:36px;"><a href="/">← Zurück zur Startseite</a></p>
+</div>
+</body></html>

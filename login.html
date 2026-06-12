@@ -238,6 +238,7 @@
         <input type="password" id="loginPassword" placeholder="••••••••" />
       </div>
       <button class="btn-submit" onclick="handleLogin()">Einloggen</button>
+      <div style="text-align:center;margin-top:12px;"><a href="#" onclick="forgotPassword();return false;" style="font-size:12px;color:var(--accent2);text-decoration:none;">Passwort vergessen?</a></div>
       <div id="loginMessage" class="message"></div>
     </div>
 
@@ -273,7 +274,7 @@
 
     // Check if already logged in
     sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) window.location.href = '/app';
+      if (session && !window.location.hash.includes('type=recovery')) window.location.href = '/app';
     });
 
     function switchTab(tab) {
@@ -335,6 +336,26 @@
         btn.disabled = false; btn.textContent = 'Konto erstellen';
       }
     }
+
+    async function forgotPassword() {
+      let email = document.getElementById('loginEmail').value.trim();
+      if (!email) email = window.prompt('Deine E-Mail-Adresse:') || '';
+      email = email.trim();
+      if (!email) return;
+      const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/login' });
+      showMessage('loginMessage', error ? error.message : 'E-Mail verschickt! Klick auf den Link darin, um ein neues Passwort zu setzen.', error ? 'error' : 'success');
+    }
+
+    sb.auth.onAuthStateChange(async (event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        const pw = window.prompt('Neues Passwort festlegen (mind. 6 Zeichen):');
+        if (!pw || pw.length < 6) { alert('Passwort zu kurz — bitte den Link in der E-Mail erneut öffnen.'); return; }
+        const { error } = await sb.auth.updateUser({ password: pw });
+        if (error) { alert('Fehler: ' + error.message); return; }
+        alert('Passwort gespeichert! Du wirst jetzt eingeloggt.');
+        window.location.href = '/app';
+      }
+    });
 
     function showMessage(id, text, type) {
       const el = document.getElementById(id);

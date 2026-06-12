@@ -4,7 +4,9 @@
     { "source": "/login", "destination": "/login.html" },
     { "source": "/client", "destination": "/client.html" },
     { "source": "/book/:slug", "destination": "/book.html" },
-    { "source": "/f/:token", "destination": "/form.html" }
+    { "source": "/f/:token", "destination": "/form.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/rechtliches", "destination": "/rechtliches.html" }
   ],
   "crons": [
     { "path": "/api/cron", "schedule": "0 7 * * *" }

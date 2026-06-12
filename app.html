@@ -762,7 +762,7 @@ function renderDashboard(revenue){
   list.innerHTML=atRisk.sort((a,b)=>(b.days||0)-(a.days||0)).slice(0,5).map(c=>{
     const initials=c.name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
     const crit=c.risk==='critical';
-    return `<div class="churn-item" style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}</div><div class="churn-detail">Letzter Besuch: vor ${c.days} Tagen · ${c.treatment}</div></div><span class="churn-badge ${crit?'badge-red':'badge-orange'}">${crit?'Kritisch':'Warnung'}</span><button class="btn-send" onclick="event.stopPropagation();showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></div>`;
+    return `<div class="churn-item" style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}</div><div class="churn-detail">Letzter Besuch: vor ${c.days} Tagen · ${c.treatment}</div></div><span class="churn-badge ${crit?'badge-red':'badge-orange'}">${crit?'Kritisch':'Warnung'}</span><button class="btn-send" onclick='event.stopPropagation();openCampaignMsg({id:"${c.id}",name:"${c.name.replace(/"/g,'')}",phone:"${(c.phone||'')}",days:${c.days},rhythm:60,treatment:"${(c.treatment||'').replace(/"/g,'')}"})'>Senden</button></div>`;
   }).join("");
 }
 
@@ -775,7 +775,7 @@ function renderClientsTable(data){
     const[label,badge,dot]=riskMap[c.risk];
     const daysTxt=c.days===null?"–":c.days+" Tage";
     const safeName=c.name.replace(/'/g,"\\'");
-    return `<tr style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><td class="name" style="color:var(--accent2);">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="event.stopPropagation();openVoiceNote('${c.id}','${safeName}')">🎤 Notiz</button> <button class="btn-send" onclick="event.stopPropagation();showToast('WhatsApp-Versand kommt bald ✓','success')">Senden</button></td></tr>`;
+    return `<tr style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><td class="name" style="color:var(--accent2);">${c.name}</td><td>${c.date}</td><td><span class="risk-dot"><span class="dot ${dot}"></span>${daysTxt}</span></td><td>${c.treatment}</td><td><span class="churn-badge ${badge}">${label}</span></td><td><button class="btn-send" onclick="event.stopPropagation();openVoiceNote('${c.id}','${safeName}')">🎤 Notiz</button> <button class="btn-send" onclick='event.stopPropagation();openCampaignMsg({id:"${c.id}",name:"${c.name.replace(/"/g,'')}",phone:"${(c.phone||'')}",days:${c.days===null?0:c.days},rhythm:60,treatment:"${(c.treatment||'').replace(/"/g,'')}"})'>Senden</button></td></tr>`;
   }).join("");
 }
 function setFilter(f,btn){currentFilter=f;document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderClientsTable(clientsData);}
