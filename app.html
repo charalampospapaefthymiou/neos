@@ -259,7 +259,7 @@ td.name{font-weight:600;color:var(--text);}
 <div class="topbar-title" id="pageTitle">Dashboard</div>
 <div class="topbar-right">
 <button class="btn-sm btn-ghost-sm" onclick="openModal('addClient')">+ Kunde hinzufügen</button>
-<button class="btn-sm btn-primary-sm" onclick="openModal('sendCampaign')">🚀 Kampagne senden</button>
+<button class="btn-sm btn-primary-sm" onclick="showPage('campaigns',null)">🚀 Kampagnen</button>
 </div>
 </div>
 <div class="content">
@@ -282,7 +282,7 @@ td.name{font-weight:600;color:var(--text);}
 </div></div></div>
 <div class="card"><div class="card-header"><span class="card-title">⚡ Schnellaktionen</span></div>
 <div class="card-body"><div class="actions-grid">
-<div class="action-btn" onclick="openModal('sendCampaign')"><div class="action-icon">📣</div><div class="action-title">Kampagne starten</div><div class="action-desc">Alle gefährdeten Kunden kontaktieren</div></div>
+<div class="action-btn" onclick="showPage('campaigns',null)"><div class="action-icon">📣</div><div class="action-title">Kampagne starten</div><div class="action-desc">Alle gefährdeten Kunden kontaktieren</div></div>
 <div class="action-btn" onclick="showPage('photos',null)"><div class="action-icon">📸</div><div class="action-title">Foto hochladen</div><div class="action-desc">Vorher/Nachher dokumentieren</div></div>
 <div class="action-btn" onclick="showPage('suggestions',null)"><div class="action-icon">✨</div><div class="action-title">KI-Empfehlungen</div><div class="action-desc">Upsell-Vorschläge ansehen</div></div>
 <div class="action-btn" onclick="openModal('addClient')"><div class="action-icon">➕</div><div class="action-title">Kunde hinzufügen</div><div class="action-desc">Neuen Kunden anlegen</div></div>
@@ -314,17 +314,19 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 </div>
 <div class="page" id="page-suggestions">
-<div class="ai-card"><div class="ai-icon">✨</div><div class="ai-text"><div class="ai-client">Anna Müller</div><div class="ai-suggestion">Basierend auf ihrer letzten Botox-Behandlung (Stirn, März) und einem Abstand von 94 Tagen empfehle ich eine Auffrischung. Zusatzpotenzial: Lippen-Filler.</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Empfehlung an Anna gesendet ✓','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
-<div class="ai-card"><div class="ai-icon">✨</div><div class="ai-text"><div class="ai-client">Lisa Paulsen</div><div class="ai-suggestion">Nach 3 Gesichtsbehandlungen zeigt ihr Profil eine Präferenz für Tiefenreinigung. Empfehle ein monatliches Abo-Paket (4x/Monat).</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Paketangebot an Lisa gesendet ✓','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
-<div class="ai-card"><div class="ai-icon">✨</div><div class="ai-text"><div class="ai-client">Thomas Klein</div><div class="ai-suggestion">Massage-Kunden mit 60+ Tagen reagieren am besten auf Kombiangebote. Empfehle: "Massage + Rückenbehandlung" Paket.</div><div class="ai-actions"><button class="btn-ai btn-ai-primary" onclick="showToast('Angebot an Thomas gesendet ✓','success')">Jetzt senden</button><button class="btn-ai btn-ai-ghost">Bearbeiten</button><button class="btn-ai btn-ai-ghost">Ignorieren</button></div></div></div>
+<div class="card"><div class="card-body" style="text-align:center;padding:60px 20px;">
+<div style="font-size:46px;margin-bottom:14px;">✨</div>
+<div style="font-size:18px;font-weight:800;margin-bottom:8px;">KI-Empfehlungen — bald verfügbar</div>
+<div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Die KI analysiert Behandlungshistorie und Kartei-Notizen deiner Kundinnen und schlägt passende Zusatzbehandlungen vor. Je mehr Sprachnotizen du aufnimmst, desto besser wird sie. Bis dahin: Die Reaktivierungs-Vorschläge findest du unter Kampagnen.</div>
+<button class="btn-sm btn-primary-sm" style="margin-top:18px;" onclick="showPage('campaigns',null)">Zu den Kampagnen</button>
+</div></div>
 </div>
 <div class="page" id="page-photos">
-<div class="upload-zone" onclick="showToast('Foto-Upload kommt bald','success')"><div class="upload-icon">📸</div><div class="upload-text">Vorher/Nachher Fotos hochladen</div><div class="upload-sub">Klicken oder Fotos hier reinziehen · JPG, PNG bis 10MB</div></div>
-<div class="photos-grid">
-<div class="photo-card"><div class="photo-placeholder">✨<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
-<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#1a1f2e,#181311)">🌿<span class="photo-label">Vorher</span></div><div class="photo-info"><div class="photo-client">Anna Müller</div><div class="photo-treatment">Botox Stirn</div><div class="photo-date">15. März 2026</div></div></div>
-<div class="photo-card"><div class="photo-placeholder" style="background:linear-gradient(135deg,#0f1a1a,#181311)">💆<span class="photo-label">Nachher</span></div><div class="photo-info"><div class="photo-client">Lisa Paulsen</div><div class="photo-treatment">Gesichtsbehandlung</div><div class="photo-date">2. April 2026</div></div></div>
-</div>
+<div class="card"><div class="card-body" style="text-align:center;padding:60px 20px;">
+<div style="font-size:46px;margin-bottom:14px;">📸</div>
+<div style="font-size:18px;font-weight:800;margin-bottom:8px;">Vorher/Nachher-Fotos — bald verfügbar</div>
+<div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Dokumentiere Behandlungsergebnisse direkt in der Kundenkartei — sicher gespeichert und auf Wunsch als Erfolgs-Story für deine Kundin per WhatsApp.</div>
+</div></div>
 </div>
 <div class="page" id="page-settings">
 <div class="card" style="max-width:700px"><div class="card-body">
@@ -437,6 +439,34 @@ td.name{font-weight:600;color:var(--text);}
 
 </div>
 </main>
+<div class="modal-overlay" id="modal-apptEdit">
+<div class="modal"><div class="modal-title">📅 Termin — <span id="aeCustomer"></span></div><div class="modal-form">
+<div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="aeTreat"></div>
+<div class="form-group"><label>Datum</label><input type="date" id="aeDate" /></div>
+<div class="form-group"><label>Uhrzeit</label><input type="time" id="aeTime" step="900" /></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+<button class="btn-sm btn-ghost-sm" onclick="setApptStatus('completed')">✓ Erledigt</button>
+<button class="btn-sm btn-ghost-sm" onclick="setApptStatus('no_show')">👻 Nicht erschienen</button>
+<button class="btn-sm btn-ghost-sm" style="color:#f87171;" onclick="setApptStatus('cancelled')">✗ Stornieren</button>
+</div>
+</div><div class="modal-actions">
+<button class="btn-sm btn-ghost-sm" onclick="closeModal('apptEdit')">Schließen</button>
+<button class="btn-sm btn-ghost-sm" id="aeProfileBtn">👤 Profil</button>
+<button class="btn-sm btn-primary-sm" onclick="saveApptEdit()">Verschieben speichern</button>
+</div></div>
+</div>
+<div class="modal-overlay" id="modal-editCustomer">
+<div class="modal"><div class="modal-title">✏️ Kundin bearbeiten</div><div class="modal-form">
+<div class="form-group"><label>Name</label><input type="text" id="ecName" /></div>
+<div class="form-group"><label>Telefon</label><input type="tel" id="ecPhone" /></div>
+<div class="form-group"><label>E-Mail</label><input type="email" id="ecEmail" /></div>
+<div class="form-group"><label>Geburtstag</label><input type="date" id="ecBirthday" /></div>
+</div><div class="modal-actions">
+<button class="btn-sm btn-ghost-sm" onclick="closeModal('editCustomer')">Abbrechen</button>
+<button class="btn-sm btn-ghost-sm" style="color:#f87171;" onclick="deleteCustomer()">Löschen</button>
+<button class="btn-sm btn-primary-sm" onclick="saveCustomerEdit()">Speichern</button>
+</div></div>
+</div>
 <div class="modal-overlay" id="modal-campaign">
 <div class="modal"><div class="modal-title">✨ Nachricht an <span id="cmName"></span></div><div class="modal-form">
 <div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="cmContext"></div>
@@ -489,6 +519,7 @@ td.name{font-weight:600;color:var(--text);}
 <div id="pfNotes" style="font-size:13px;"></div>
 <div class="modal-actions" style="margin-top:20px;">
   <button class="btn-sm btn-ghost-sm" onclick="closeModal('profile')">Schließen</button>
+  <button class="btn-sm btn-ghost-sm" id="pfEditBtn">✏️ Bearbeiten</button>
   <button class="btn-sm btn-primary-sm" id="pfNoteBtn">🎤 Notiz aufnehmen</button>
 </div>
 </div>
@@ -761,6 +792,82 @@ async function addClient(){
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
 
+// ===== Termin bearbeiten =====
+let calApptsById={},aeId=null;
+
+function openApptEdit(id){
+  const a=calApptsById[id];if(!a)return;
+  aeId=id;
+  document.getElementById('aeCustomer').textContent=a.customers?.name||'–';
+  const stLabel={requested:'Anfrage',booked:'Gebucht',completed:'Erledigt',no_show:'Nicht erschienen'};
+  document.getElementById('aeTreat').textContent=(a.treatments?.name||'–')+' · Status: '+(stLabel[a.status]||a.status);
+  document.getElementById('aeDate').value=a.starts_at.slice(0,10);
+  document.getElementById('aeTime').value=a.starts_at.slice(11,16);
+  document.getElementById('aeProfileBtn').onclick=()=>{closeModal('apptEdit');openCustomerProfile(a.customer_id);};
+  openModal('apptEdit');
+}
+
+async function saveApptEdit(){
+  const a=calApptsById[aeId];
+  const date=document.getElementById('aeDate').value,time=document.getElementById('aeTime').value;
+  if(!date||!time){showToast('Bitte Datum und Zeit angeben','error');return;}
+  let upd={starts_at:`${date}T${time}:00Z`};
+  if(a.ends_at){
+    const dur=(new Date(a.ends_at)-new Date(a.starts_at))/60000;
+    const[h,m]=time.split(':').map(Number);
+    const e=h*60+m+dur;
+    upd.ends_at=`${date}T${String(Math.floor(e/60)).padStart(2,'0')}:${String(Math.round(e%60)).padStart(2,'0')}:00Z`;
+  }
+  const{error}=await sb.from('appointments').update(upd).eq('id',aeId);
+  if(error){showToast(error.message,'error');return;}
+  closeModal('apptEdit');
+  showToast('Termin verschoben ✓','success');
+  loadCalendar();loadDashboardData();loadNoShowRadar();
+}
+
+async function setApptStatus(status){
+  const{error}=await sb.from('appointments').update({status}).eq('id',aeId);
+  if(error){showToast(error.message,'error');return;}
+  closeModal('apptEdit');
+  showToast(status==='cancelled'?'Termin storniert':status==='no_show'?'Als nicht erschienen markiert':'Termin erledigt ✓','success');
+  loadCalendar();loadDashboardData();loadNoShowRadar();loadRequests();
+}
+
+// ===== Kundin bearbeiten =====
+let ecId=null;
+
+async function openEditCustomer(id){
+  const{data:c,error}=await sb.from('customers').select('id,name,phone,email,birthday').eq('id',id).single();
+  if(error||!c){showToast('Kundin nicht gefunden','error');return;}
+  ecId=c.id;
+  document.getElementById('ecName').value=c.name||'';
+  document.getElementById('ecPhone').value=c.phone||'';
+  document.getElementById('ecEmail').value=c.email||'';
+  document.getElementById('ecBirthday').value=c.birthday||'';
+  closeModal('profile');
+  openModal('editCustomer');
+}
+
+async function saveCustomerEdit(){
+  const name=document.getElementById('ecName').value.trim();
+  if(!name){showToast('Name darf nicht leer sein','error');return;}
+  const val=id=>document.getElementById(id).value.trim()||null;
+  const{error}=await sb.from('customers').update({name,phone:val('ecPhone'),email:val('ecEmail'),birthday:val('ecBirthday')}).eq('id',ecId);
+  if(error){showToast(error.message,'error');return;}
+  closeModal('editCustomer');
+  showToast('Kundin aktualisiert ✓','success');
+  loadDashboardData();
+}
+
+async function deleteCustomer(){
+  if(!confirm('Kundin wirklich löschen? Alle Termine und Notizen werden mit entfernt.'))return;
+  const{error}=await sb.from('customers').delete().eq('id',ecId);
+  if(error){showToast(error.message,'error');return;}
+  closeModal('editCustomer');
+  showToast('Kundin gelöscht','success');
+  loadDashboardData();loadNoShowRadar();
+}
+
 // ===== Retention-Kampagnen =====
 let cmCustomer=null;
 
@@ -903,13 +1010,13 @@ async function loadCalendar(){
     .gte('starts_at',from+'T00:00:00Z').lte('starts_at',to+'T23:59:59Z')
     .neq('status','cancelled').order('starts_at');
   if(error){showToast('Kalender: '+error.message,'error');return;}
-  const byDay={};(data||[]).forEach(a=>{const k=a.starts_at.slice(0,10);(byDay[k]=byDay[k]||[]).push(a);});
+  const byDay={};calApptsById={};(data||[]).forEach(a=>{calApptsById[a.id]=a;const k=a.starts_at.slice(0,10);(byDay[k]=byDay[k]||[]).push(a);});
   const names=['Mo','Di','Mi','Do','Fr','Sa','So'];
   const todayIso=new Date(Date.now()).toISOString().slice(0,10);
   const stLabel={requested:'Anfrage',booked:'',completed:'✓',no_show:'No-Show'};
   document.getElementById('calGrid').innerHTML=days.map((iso,i)=>{
     const appts=(byDay[iso]||[]).map(a=>
-      `<div class="cal-appt st-${a.status}" onclick="openCustomerProfile('${a.customer_id}')"><span class="t">${a.starts_at.slice(11,16)}</span> ${a.customers?.name||'–'}<br>${a.treatments?.name||''}${stLabel[a.status]?' · <b>'+stLabel[a.status]+'</b>':''}</div>`
+      `<div class="cal-appt st-${a.status}" onclick="openApptEdit('${a.id}')"><span class="t">${a.starts_at.slice(11,16)}</span> ${a.customers?.name||'–'}<br>${a.treatments?.name||''}${stLabel[a.status]?' · <b>'+stLabel[a.status]+'</b>':''}</div>`
     ).join('');
     return `<div class="cal-day${iso===todayIso?' today':''}"><div class="cal-day-head">${names[i]} ${iso.slice(8,10)}.${iso.slice(5,7)}.</div>${appts||'<div class="cal-empty">–</div>'}</div>`;
   }).join('');
@@ -1222,6 +1329,7 @@ async function openCustomerProfile(customerId){
     c.phone?`<a href="https://wa.me/${c.phone.replace(/[^0-9]/g,'')}" target="_blank" class="btn-sm btn-ghost-sm" style="text-decoration:none;">💬 WhatsApp</a>`:'',
   ].filter(Boolean).join('')||'<span style="font-size:12px;color:var(--text2);">Keine Kontaktdaten hinterlegt</span>';
   document.getElementById('pfNoteBtn').onclick=()=>{closeModal('profile');openVoiceNote(c.id,c.name);};
+  document.getElementById('pfEditBtn').onclick=()=>openEditCustomer(c.id);
   document.getElementById('pfAppointments').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   document.getElementById('pfNotes').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   openModal('profile');
