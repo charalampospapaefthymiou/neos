@@ -601,6 +601,7 @@ sb.auth.onAuthStateChange((event,session)=>{
   loadTreatmentsSettings();
   loadRequests();
   loadNoShowRadar();
+  startRealtime();
   document.getElementById('bkMode').addEventListener('change',updateBookingLinkBox);
   document.getElementById('bkSlug').addEventListener('input',updateBookingLinkBox);
 });
@@ -806,6 +807,24 @@ async function addClient(){
   loadDashboardData();
 }
 function sendCampaign(){closeModal("sendCampaign");showToast("Kampagne wird gesendet... ✓","success");}
+
+// ===== Echtzeit-Updates =====
+let rtStarted=false;
+function startRealtime(){
+  if(rtStarted)return;rtStarted=true;
+  sb.channel('neos-rt')
+    .on('postgres_changes',{event:'*',schema:'public',table:'appointments'},payload=>{
+      if(payload.eventType==='INSERT'&&payload.new?.status==='requested')showToast('💌 Neue Terminanfrage!','success');
+      else if(payload.eventType==='INSERT'&&payload.new?.status==='booked')showToast('🎉 Neue Buchung!','success');
+      loadRequests();loadDashboardData();loadNoShowRadar();
+      const cal=document.getElementById('page-calendar');
+      if(cal&&cal.classList.contains('active'))loadCalendar();
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'forms'},payload=>{
+      if(payload.new?.signed_at)showToast('📋 Anamnese-Bogen ausgefüllt ✓','success');
+    })
+    .subscribe();
+}
 
 // ===== Kalender-Feed =====
 async function copyIcsLink(btn){
