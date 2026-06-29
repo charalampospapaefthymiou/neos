@@ -24,7 +24,7 @@ async function rest(path, opts = {}) {
 }
 
 async function getSalon(slug) {
-  const rows = await rest(`profiles?booking_slug=eq.${encodeURIComponent(slug)}&select=id,studio_name,booking`);
+  const rows = await rest(`profiles?booking_slug=eq.${encodeURIComponent(slug)}&select=id,studio_name,booking,consult_link`);
   return rows[0] || null;
 }
 
@@ -81,7 +81,7 @@ export default async function handler(req) {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ error: 'Ungültiges Datum' }, 400);
         return json({ slots: await computeSlots(salon, date, treatment) });
       }
-      const treatments = await rest(`treatments?salon_id=eq.${salon.id}&active=eq.true&select=id,name,price,duration_min&order=name`);
+      const treatments = await rest(`treatments?salon_id=eq.${salon.id}&active=eq.true&select=id,name,price,duration_min,is_online&order=name`);
       return json({
         salon: { name: salon.studio_name || slug, mode: salon.booking.mode, hours: salon.booking.hours || {} },
         treatments,
@@ -89,9 +89,11 @@ export default async function handler(req) {
     }
 
     if (req.method === 'POST') {
-      const { slug, treatment_id, date, time, name, phone } = await req.json();
+      const { slug, treatment_id, date, time, name, phone, opt_in } = await req.json();
       if (!slug || !treatment_id || !date || !time || !name || !phone) return json({ error: 'Bitte alle Felder ausfüllen' }, 400);
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !/^\d{2}:\d{2}$/.test(time)) return json({ error: 'Ungültige Eingabe' }, 400);
+      const OPT_IN_TEXT = 'Die Kundin hat bei der Online-Buchung eingewilligt, Terminerinnerungen, Nachsorge-Hinweise und gelegentliche persönliche Nachrichten per WhatsApp zu erhalten. Widerruf jederzeit möglich.';
+      const optInFields = opt_in ? { whatsapp_opt_in: true, opt_in_at: new Date().toISOString(), opt_in_source: 'booking_widget', opt_in_text: OPT_IN_TEXT, opt_in_revoked_at: null } : {};
       const salon = await getSalon(slug);
       if (!salon || !salon.booking || salon.booking.mode === 'off') return json({ error: 'Online-Buchung nicht verfügbar' }, 404);
       // Slot nochmal validieren (Race-Schutz)
@@ -108,22 +110,34 @@ export default async function handler(req) {
         const ins = await rest('customers', {
           method: 'POST',
           headers: { Prefer: 'return=representation' },
-          body: JSON.stringify({ salon_id: salon.id, name: name.slice(0, 120), phone: phone.slice(0, 40) }),
+          body: JSON.stringify({ salon_id: salon.id, name: name.slice(0, 120), phone: phone.slice(0, 40), ...optInFields }),
         });
         customer = ins[0];
+      } else if (opt_in) {
+        // Bestehende Kundin: Einwilligung dokumentieren/erneuern
+        await rest(`customers?id=eq.${customer.id}`, { method: 'PATCH', body: JSON.stringify(optInFields) });
       }
-      const tr = await rest(`treatments?id=eq.${treatment_id}&salon_id=eq.${salon.id}&select=duration_min`);
+      const tr = await rest(`treatments?id=eq.${treatment_id}&salon_id=eq.${salon.id}&select=duration_min,is_online`);
       const dur = tr[0]?.duration_min || 60;
+      const isOnline = !!tr[0]?.is_online;
       const endMin = toMin(time) + dur;
       const status = salon.booking.mode === 'direct' ? 'booked' : 'requested';
+      // Online-Beratung: eigenen Link des Salons nutzen, sonst Auto-Video-Raum (Jitsi)
+      let meeting_url = null;
+      if (isOnline) {
+        const own = (salon.consult_link || '').trim();
+        const room = `neos-${slug}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+        meeting_url = own || `https://meet.jit.si/${room}`;
+      }
       await rest('appointments', {
         method: 'POST',
         body: JSON.stringify({
           salon_id: salon.id, customer_id: customer.id, treatment_id,
           starts_at: `${date}T${time}:00Z`, ends_at: `${date}T${toHHMM(endMin)}:00Z`, status,
+          meeting_url,
         }),
       });
-      return json({ ok: true, status });
+      return json({ ok: true, status, is_online: isOnline, meeting_url });
     }
 
     return json({ error: 'Method not allowed' }, 405);
