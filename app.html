@@ -271,6 +271,8 @@ td.name{font-weight:600;color:var(--text);}
 <div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)" id="statRisk">–</div><div class="stat-card-change down" id="statRiskSub">&nbsp;</div></div>
 <div class="stat-card"><div class="stat-card-label">Umsatz</div><div class="stat-card-value" style="color:var(--success)" id="statRevenue">€0</div><div class="stat-card-change">diesen Monat</div></div>
 </div>
+<div class="card" id="roiCard" style="margin-bottom:20px;border-color:rgba(201,169,106,0.45);background:linear-gradient(135deg,rgba(201,169,106,0.06),rgba(201,115,127,0.04));"><div class="card-header"><span class="card-title">💎 Retention-Wirkung — was neos diesen Monat zurückgeholt hat</span></div>
+<div class="card-body"><div id="roiBody"><div style="color:var(--text2);font-size:13px;padding:8px 0;">Lade…</div></div></div></div>
 <div class="card" id="requestsCard" style="display:none;margin-bottom:20px;border-color:rgba(201,115,127,0.4);"><div class="card-header"><span class="card-title">💌 Offene Terminanfragen</span></div>
 <div class="card-body"><div id="requestsList"></div></div></div>
 <div class="card" id="noShowCard" style="display:none;margin-bottom:20px;border-color:rgba(251,146,60,0.4);"><div class="card-header"><span class="card-title">⚠️ No-Show-Radar — riskante Termine (7 Tage)</span></div>
@@ -336,7 +338,7 @@ td.name{font-weight:600;color:var(--text);}
 </div>
 <div class="settings-section"><div class="settings-title">💆 Behandlungen</div>
 <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Preis &amp; Dauer steuern Buchungswidget und Umsatzanzeige. Rhythmus = nach wie vielen Tagen die Behandlung wieder fällig ist (Basis für Erinnerungen).</div>
-<div style="display:flex;gap:6px;font-size:11px;color:var(--text2);padding:0 2px;margin-bottom:4px;"><span style="flex:2;min-width:140px;">Name</span><span style="width:80px;">Preis €</span><span style="width:80px;">Dauer Min.</span><span style="width:80px;">Rhythmus Tage</span><span style="width:40px;">Aktiv</span><span style="width:40px;"></span></div>
+<div style="display:flex;gap:6px;font-size:11px;color:var(--text2);padding:0 2px;margin-bottom:4px;"><span style="flex:2;min-width:140px;">Name</span><span style="width:80px;">Preis €</span><span style="width:80px;">Dauer Min.</span><span style="width:80px;">Rhythmus Tage</span><span style="width:40px;">Aktiv</span><span style="width:40px;">🎥 Online</span><span style="width:40px;"></span></div>
 <div id="trMgmtList" style="display:flex;flex-direction:column;gap:8px;"></div>
 <button class="btn-sm btn-ghost-sm" style="margin-top:10px;" onclick="addTreatmentRow()">+ Behandlung hinzufügen</button>
 </div>
@@ -352,6 +354,7 @@ td.name{font-weight:600;color:var(--text);}
 <div style="display:flex;flex-direction:column;gap:6px;" id="bkHours"></div></div>
 <div class="setting-row"><div class="setting-info"><h4>Slot-Raster</h4><p>Abstand der Termine</p></div>
 <select class="setting-input" id="bkSlotMin"><option value="15">15 Min.</option><option value="30" selected>30 Min.</option><option value="60">60 Min.</option></select></div>
+<div class="setting-row"><div class="setting-info"><h4>🎥 Video-Link für Online-Beratung</h4><p>Optional. Leer lassen = neos erzeugt automatisch einen Video-Raum pro Termin. Oder eigenen Zoom-/Meet-Link eintragen.</p></div><input class="setting-input" type="url" id="bkConsultLink" placeholder="leer = Auto-Video-Raum" /></div>
 <div id="bkLinkBox" style="display:none;background:rgba(201,115,127,0.08);border:1px solid rgba(201,115,127,0.2);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;">
 🔗 <a id="bkLinkA" target="_blank" style="color:var(--accent2);"></a>
 <button class="btn-sm btn-ghost-sm" style="margin-left:8px;" onclick="copyBookingLink()">Kopieren</button>
@@ -456,6 +459,7 @@ td.name{font-weight:600;color:var(--text);}
 <div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="aeTreat"></div>
 <div class="form-group"><label>Datum</label><input type="date" id="aeDate" /></div>
 <div class="form-group"><label>Uhrzeit</label><input type="time" id="aeTime" step="900" /></div>
+<div id="aeMeeting" style="display:none;margin-bottom:10px;"></div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
 <button class="btn-sm btn-ghost-sm" onclick="setApptStatus('completed')">✓ Erledigt</button>
 <button class="btn-sm btn-ghost-sm" onclick="setApptStatus('no_show')">👻 Nicht erschienen</button>
@@ -529,6 +533,8 @@ td.name{font-weight:600;color:var(--text);}
 <div id="pfAppointments" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">📋 Anamnese &amp; Einverständnis</div>
 <div id="pfForms" style="font-size:13px;margin-bottom:18px;"></div>
+<div style="font-weight:700;margin-bottom:8px;">💬 WhatsApp-Einwilligung</div>
+<div id="pfOptIn" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">🧠 KI-Kartei</div>
 <div id="pfNotes" style="font-size:13px;"></div>
 <div class="modal-actions" style="margin-top:20px;">
@@ -717,7 +723,7 @@ function riskFromDays(days){
 
 async function loadDashboardData(){
   const{data:customers,error}=await sb.from('customers')
-    .select('id,name,phone,email,created_at,appointments(starts_at,status,price,treatments(name))')
+    .select('id,name,phone,email,created_at,appointments(starts_at,status,price,treatments(name,price))')
     .order('created_at',{ascending:false});
   if(error){console.error('Daten laden:',error);showToast('Fehler beim Laden der Daten','error');return;}
   const now=Date.now();
@@ -737,15 +743,50 @@ async function loadDashboardData(){
   (customers||[]).forEach(c=>(c.appointments||[]).forEach(a=>{
     if(a.status==='completed'&&a.price&&new Date(a.starts_at)>=monthStart)revenue+=Number(a.price);
   }));
-  renderDashboard(revenue);
+  // Retention-Wirkung: kontaktierte Kundinnen, die DANACH wieder gebucht haben
+  const roi=await computeRoi(customers||[],monthStart);
+  renderDashboard(revenue,roi);
+  renderRoi(roi);
   renderClientsTable(clientsData);
 }
 
-function renderDashboard(revenue){
+// Reaktivierung = Kundin bekam eine Kampagnen-Nachricht und hatte DANACH (innerhalb 45 Tagen)
+// einen Termin, der in diesen Monat fällt. Konservativ, ehrlich attribuiert.
+async function computeRoi(customers,monthStart){
+  const ATTRIB_DAYS=45;
+  const empty={count:0,revenue:0,items:[]};
+  const{data:msgs,error}=await sb.from('wa_messages')
+    .select('customer_id,created_at').eq('kind','campaign').eq('direction','out');
+  if(error||!msgs||!msgs.length)return empty;
+  const sentBy={};
+  msgs.forEach(m=>{if(!m.customer_id)return;(sentBy[m.customer_id]=sentBy[m.customer_id]||[]).push(new Date(m.created_at).getTime());});
+  const items=[];
+  customers.forEach(c=>{
+    const sends=sentBy[c.id];if(!sends)return;
+    let best=null;
+    (c.appointments||[]).forEach(a=>{
+      if(a.status==='cancelled'||a.status==='no_show')return;
+      const t=new Date(a.starts_at).getTime();
+      if(t<monthStart.getTime()||t>Date.now())return; // Termin fällt in diesen Monat, schon stattgefunden
+      const precededByCampaign=sends.some(s=>s<=t&&s>=t-ATTRIB_DAYS*86400000);
+      if(!precededByCampaign)return;
+      const val=Number(a.price||a.treatments?.price||0);
+      if(!best||t<best.t)best={t,val,treatment:a.treatments?.name||'Termin'};
+    });
+    if(best)items.push({name:c.name,treatment:best.treatment,value:best.val});
+  });
+  return{count:items.length,revenue:items.reduce((s,i)=>s+i.value,0),items};
+}
+
+function renderDashboard(revenue,roi){
   const total=clientsData.length;
   const atRisk=clientsData.filter(c=>c.risk==='critical'||c.risk==='warning');
   document.getElementById('statActive').textContent=total;
   document.getElementById('statActiveSub').textContent=total===0?"Lege deinen ersten Kunden an":"in deiner Kartei";
+  if(roi){
+    document.getElementById('statReact').textContent=roi.count;
+    document.getElementById('statReactSub').textContent=roi.count>0?("€"+roi.revenue.toLocaleString('de-DE')+" zurückgeholt"):"diesen Monat";
+  }
   document.getElementById('statRisk').textContent=atRisk.length;
   document.getElementById('statRiskSub').textContent=atRisk.length>0?"Handlung empfohlen":"alles im grünen Bereich";
   document.getElementById('statRevenue').textContent="€"+revenue.toLocaleString('de-DE');
@@ -765,6 +806,18 @@ function renderDashboard(revenue){
     const crit=c.risk==='critical';
     return `<div class="churn-item" style="cursor:pointer;" onclick="openCustomerProfile('${c.id}')"><div class="churn-avatar">${initials}</div><div class="churn-info"><div class="churn-name">${c.name}</div><div class="churn-detail">Letzter Besuch: vor ${c.days} Tagen · ${c.treatment}</div></div><span class="churn-badge ${crit?'badge-red':'badge-orange'}">${crit?'Kritisch':'Warnung'}</span><button class="btn-send" onclick='event.stopPropagation();openCampaignMsg({id:"${c.id}",name:"${c.name.replace(/"/g,'')}",phone:"${(c.phone||'')}",days:${c.days},rhythm:60,treatment:"${(c.treatment||'').replace(/"/g,'')}"})'>Senden</button></div>`;
   }).join("");
+}
+
+function renderRoi(roi){
+  const body=document.getElementById('roiBody');if(!body)return;
+  if(!roi||roi.count===0){
+    body.innerHTML='<div style="color:var(--text2);font-size:13px;line-height:1.5;padding:4px 0;">Noch keine Reaktivierung gemessen. Sobald eine Kundin, die du über neos kontaktiert hast, wieder einen Termin bucht, erscheint ihr Wert hier — so siehst du schwarz auf weiß, was neos dir zurückbringt.</div>';
+    return;
+  }
+  const rows=roi.items.sort((a,b)=>b.value-a.value).map(i=>
+    `<div class="churn-item" style="cursor:default;"><div class="churn-avatar">${i.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${i.name}</div><div class="churn-detail">kontaktiert → wieder gebucht · ${i.treatment}</div></div><span style="font-weight:700;color:var(--gold,#c9a96a);">${i.value?('+€'+Number(i.value).toLocaleString('de-DE')):'gebucht'}</span></div>`
+  ).join('');
+  body.innerHTML=`<div style="font-size:14px;margin-bottom:12px;line-height:1.5;"><strong style="color:var(--gold,#c9a96a);font-size:22px;">€${roi.revenue.toLocaleString('de-DE')}</strong> diesen Monat zurückgeholt — <strong>${roi.count}</strong> ${roi.count===1?'Kundin':'Kundinnen'} kamen nach deiner Nachricht wieder.</div><div class="churn-list">${rows}</div><div style="font-size:11px;color:var(--text2);margin-top:10px;">Gezählt wird, wer innerhalb von 45 Tagen nach einer neos-Nachricht wieder gebucht hat. Konservativ gerechnet.</div>`;
 }
 
 function renderClientsTable(data){
@@ -903,6 +956,12 @@ function openApptEdit(id){
   document.getElementById('aeDate').value=a.starts_at.slice(0,10);
   document.getElementById('aeTime').value=a.starts_at.slice(11,16);
   document.getElementById('aeProfileBtn').onclick=()=>{closeModal('apptEdit');openCustomerProfile(a.customer_id);};
+  const mEl=document.getElementById('aeMeeting');
+  if(a.meeting_url){
+    const safe=String(a.meeting_url).replace(/"/g,'&quot;');
+    mEl.innerHTML=`<a href="${safe}" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(201,115,127,0.15);border:1px solid var(--accent);color:var(--accent2);text-decoration:none;border-radius:10px;padding:11px;font-weight:700;font-size:13px;">🎥 Video-Beratung beitreten</a>`;
+    mEl.style.display='block';
+  }else mEl.style.display='none';
   openModal('apptEdit');
 }
 
@@ -1036,6 +1095,14 @@ async function sendCampaignMsg(){
   const text=document.getElementById('cmText').value.trim();
   if(!text||text.startsWith('✨')){showToast('Noch keine Nachricht','error');return;}
   const c=cmCustomer;
+  // UWG §7: Kampagnen-Nachricht (Werbung) nur mit dokumentierter Einwilligung
+  const{data:optRow}=await sb.from('customers').select('whatsapp_opt_in,opt_in_revoked_at').eq('id',c.id).single();
+  if(!optRow||!optRow.whatsapp_opt_in||optRow.opt_in_revoked_at){
+    if(confirm('⚠ Für '+c.name+' liegt keine WhatsApp-Werbe-Einwilligung vor.\n\nReaktivierungs-Nachrichten ohne Einwilligung sind rechtlich riskant (UWG §7). Möchtest du die Einwilligung jetzt dokumentieren (z.B. weil die Kundin mündlich zugestimmt hat)?')){
+      closeModal('campaign');openCustomerProfile(c.id);
+    }
+    return;
+  }
   await sb.from('wa_messages').insert({salon_id:currentUser.id,customer_id:c.id,direction:'out',body:text,kind:'campaign'});
   window.open('https://wa.me/'+(c.phone||'').replace(/[^0-9]/g,'').replace(/^00/,'')+'?text='+encodeURIComponent(text),'_blank');
   closeModal('campaign');
@@ -1105,7 +1172,7 @@ async function loadCalendar(){
   const from=days[0],to=days[6];
   document.getElementById('calLabel').textContent='📅 '+from.split('-').reverse().slice(0,2).join('.')+'. – '+to.split('-').reverse().join('.');
   const{data,error}=await sb.from('appointments')
-    .select('id,starts_at,status,customer_id,customers(name),treatments(name)')
+    .select('id,starts_at,status,customer_id,meeting_url,customers(name),treatments(name)')
     .gte('starts_at',from+'T00:00:00Z').lte('starts_at',to+'T23:59:59Z')
     .neq('status','cancelled').order('starts_at');
   if(error){showToast('Kalender: '+error.message,'error');return;}
@@ -1157,13 +1224,14 @@ function trRowHtml(t,i){
   <input class="setting-input" style="width:80px;min-width:0;" id="trD${i}" type="number" step="5" min="5" value="${t.duration_min??''}" placeholder="60"/>
   <input class="setting-input" style="width:80px;min-width:0;" id="trR${i}" type="number" step="1" min="1" value="${t.repeat_interval_days??''}" placeholder="–"/>
   <button class="toggle ${t.active!==false?'on':''}" style="width:40px;flex-shrink:0;" id="trA${i}" onclick="this.classList.toggle('on')"></button>
+  <button class="toggle ${t.is_online?'on':''}" style="width:40px;flex-shrink:0;" id="trO${i}" title="Online-Beratung per Video (Kundin bekommt beim Buchen einen Video-Link)" onclick="this.classList.toggle('on')"></button>
   <button class="btn-sm btn-ghost-sm" style="width:40px;" title="Texte für WhatsApp-Automatik (Vorbereitung, Nachsorge, Video)" onclick="openTreatContent(${i})">📝</button>
   <button class="btn-sm btn-primary-sm" style="width:40px;" title="Speichern" onclick="saveTreatmentRow(${i})">✓</button>
   </div>`;
 }
 
 async function loadTreatmentsSettings(){
-  const{data,error}=await sb.from('treatments').select('id,name,price,duration_min,repeat_interval_days,active,prep_text,aftercare_text,aftercare_video_url').order('name');
+  const{data,error}=await sb.from('treatments').select('id,name,price,duration_min,repeat_interval_days,active,is_online,prep_text,aftercare_text,aftercare_video_url').order('name');
   if(error){console.error(error);return;}
   trRows=data||[];
   document.getElementById('trMgmtList').innerHTML=trRows.length
@@ -1189,7 +1257,8 @@ async function saveTreatmentRow(i){
     price:val('trP'+i),
     duration_min:val('trD'+i),
     repeat_interval_days:val('trR'+i),
-    active:document.getElementById('trA'+i).classList.contains('on')
+    active:document.getElementById('trA'+i).classList.contains('on'),
+    is_online:document.getElementById('trO'+i).classList.contains('on')
   };
   let error;
   if(trRows[i].id){
@@ -1240,11 +1309,12 @@ function renderHoursInputs(hours){
 }
 
 async function loadBookingSettings(){
-  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name').eq('id',currentUser.id).single();
+  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link').eq('id',currentUser.id).single();
   const b=data?.booking||{};
   document.getElementById('bkMode').value=b.mode||'off';
   document.getElementById('bkSlug').value=data?.booking_slug||'';
   document.getElementById('bkSlotMin').value=String(b.slot_min||30);
+  document.getElementById('bkConsultLink').value=data?.consult_link||'';
   renderHoursInputs(b.hours);
   updateBookingLinkBox();
 }
@@ -1277,6 +1347,7 @@ async function saveBookingSettings(){
   });
   const{error}=await sb.from('profiles').update({
     booking_slug:slug||null,
+    consult_link:document.getElementById('bkConsultLink').value.trim()||null,
     booking:{mode,slot_min:Number(document.getElementById('bkSlotMin').value),hours}
   }).eq('id',currentUser.id);
   if(error){showToast(error.message.includes('duplicate')?'Dieser Link-Name ist schon vergeben':error.message,'error');return;}
@@ -1285,14 +1356,14 @@ async function saveBookingSettings(){
 }
 
 async function loadRequests(){
-  const{data}=await sb.from('appointments').select('id,starts_at,customers(name,phone),treatments(name)').eq('status','requested').order('starts_at');
+  const{data}=await sb.from('appointments').select('id,starts_at,meeting_url,customers(name,phone),treatments(name)').eq('status','requested').order('starts_at');
   const card=document.getElementById('requestsCard');
   if(!data||!data.length){card.style.display='none';return;}
   card.style.display='block';
   document.getElementById('requestsList').innerHTML=data.map(r=>{
     const d=r.starts_at.slice(0,10).split('-').reverse().join('.');
     const t=r.starts_at.slice(11,16);
-    return `<div class="churn-item"><div class="churn-avatar">${(r.customers?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${r.customers?.name||'–'}</div><div class="churn-detail">${d} um ${t} Uhr · ${r.treatments?.name||'–'}${r.customers?.phone?' · '+r.customers.phone:''}</div></div><button class="btn-send" style="background:rgba(52,211,153,0.15);" onclick="answerRequest('${r.id}','booked')">✓ Bestätigen</button> <button class="btn-send" onclick="answerRequest('${r.id}','cancelled')">✗ Ablehnen</button></div>`;
+    return `<div class="churn-item"><div class="churn-avatar">${(r.customers?.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${r.customers?.name||'–'}</div><div class="churn-detail">${d} um ${t} Uhr · ${r.treatments?.name||'–'}${r.customers?.phone?' · '+r.customers.phone:''}${r.meeting_url?` · <a href="${String(r.meeting_url).replace(/"/g,'&quot;')}" target="_blank" rel="noopener" style="color:var(--accent2);">🎥 Video</a>`:''}</div></div><button class="btn-send" style="background:rgba(52,211,153,0.15);" onclick="answerRequest('${r.id}','booked')">✓ Bestätigen</button> <button class="btn-send" onclick="answerRequest('${r.id}','cancelled')">✗ Ablehnen</button></div>`;
   }).join('');
 }
 
@@ -1412,6 +1483,45 @@ async function runImport(){
 // ===== Kundenprofil =====
 function setBottomNav(btn){document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');}
 
+// ===== WhatsApp-Werbe-Einwilligung (Nachweis für UWG §7 / DSGVO) =====
+const OPT_IN_TEXT='Die Kundin hat eingewilligt, von diesem Studio Terminerinnerungen, Nachsorge-Hinweise und gelegentliche persönliche Nachrichten (z.B. wenn ein neuer Termin ansteht) per WhatsApp zu erhalten. Widerruf jederzeit möglich.';
+
+function renderOptIn(data,customerId,name){
+  const el=document.getElementById('pfOptIn');if(!el)return;
+  const active=data.whatsapp_opt_in&&!data.opt_in_revoked_at;
+  if(active){
+    const since=data.opt_in_at?data.opt_in_at.slice(0,10):'–';
+    const srcMap={manual_salon:'manuell durch Studio',booking_widget:'Online-Buchung',import:'Import',form:'Anamnese-Bogen'};
+    el.innerHTML=`<div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:10px;padding:10px 12px;line-height:1.5;">
+      <span style="color:var(--success);font-weight:700;">✓ Einwilligung erteilt</span> · seit ${since} · ${srcMap[data.opt_in_source]||data.opt_in_source||'unbekannt'}
+      <div style="font-size:11px;color:var(--text2);margin-top:6px;">Kampagnen-Nachrichten sind für diese Kundin erlaubt.</div>
+      <button class="btn-sm btn-ghost-sm" style="margin-top:8px;" onclick="revokeOptIn('${customerId}')">Widerrufen</button>
+    </div>`;
+  }else{
+    el.innerHTML=`<div style="background:rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.3);border-radius:10px;padding:10px 12px;line-height:1.5;">
+      <span style="color:var(--warning);font-weight:700;">⚠ Keine Werbe-Einwilligung</span>
+      <div style="font-size:11px;color:var(--text2);margin-top:6px;">Reaktivierungs-/Kampagnen-Nachrichten dürfen ohne Einwilligung nicht versendet werden (UWG §7). Terminerinnerungen zu selbst gebuchten Terminen sind davon nicht betroffen.</div>
+      <button class="btn-sm btn-primary-sm" style="margin-top:8px;" onclick="grantOptIn('${customerId}')">✓ Einwilligung dokumentieren</button>
+    </div>`;
+  }
+}
+
+async function grantOptIn(customerId){
+  if(!confirm('Bestätigst du, dass diese Kundin der WhatsApp-Kommunikation zugestimmt hat (z.B. mündlich im Studio, auf einem Formular oder per Nachricht)?\n\nDieser Nachweis wird mit Datum gespeichert.'))return;
+  const{error}=await sb.from('customers').update({whatsapp_opt_in:true,opt_in_at:new Date().toISOString(),opt_in_source:'manual_salon',opt_in_text:OPT_IN_TEXT,opt_in_revoked_at:null}).eq('id',customerId);
+  if(error){showToast(error.message,'error');return;}
+  showToast('Einwilligung dokumentiert ✓','success');
+  openCustomerProfile(customerId);
+}
+
+async function revokeOptIn(customerId){
+  if(!confirm('Einwilligung widerrufen? Es werden dann keine Kampagnen-Nachrichten mehr an diese Kundin versendet.'))return;
+  const{error}=await sb.from('customers').update({whatsapp_opt_in:false,opt_in_revoked_at:new Date().toISOString()}).eq('id',customerId);
+  if(error){showToast(error.message,'error');return;}
+  showToast('Einwilligung widerrufen','success');
+  openCustomerProfile(customerId);
+}
+
 async function openCustomerProfile(customerId){
   const c=clientsData.find(x=>x.id===customerId);
   if(!c)return;
@@ -1438,9 +1548,10 @@ async function openCustomerProfile(customerId){
   const[appts,notes,cust]=await Promise.all([
     sb.from('appointments').select('starts_at,status,price,treatments(name)').eq('customer_id',customerId).order('starts_at',{ascending:false}).limit(10),
     sb.from('notes').select('created_at,structured,raw_text').eq('customer_id',customerId).order('created_at',{ascending:false}).limit(5),
-    sb.from('customers').select('created_at').eq('id',customerId).single()
+    sb.from('customers').select('created_at,whatsapp_opt_in,opt_in_at,opt_in_source,opt_in_revoked_at').eq('id',customerId).single()
   ]);
   if(cust.data)document.getElementById('pfSince').textContent='Kundin seit '+cust.data.created_at.slice(0,10);
+  renderOptIn(cust.data||{},customerId,c.name);
   document.getElementById('pfApptCount').textContent=appts.data?appts.data.length+(appts.data.length===10?'+':''):'0';
   const statusLabel={booked:'Gebucht',completed:'✓',cancelled:'Abgesagt',no_show:'Nicht erschienen'};
   document.getElementById('pfAppointments').innerHTML=(appts.data&&appts.data.length)?appts.data.map(a=>
@@ -1484,17 +1595,25 @@ function startRecording(){
     document.getElementById('vnTranscript').value=finalText+interim;
   };
   vnRecognition.onerror=e=>{
+    // 'no-speech'/'aborted' sind harmlos (v.a. iOS) — onend startet neu, solange aufgenommen wird
+    if(e.error==='no-speech'||e.error==='aborted')return;
     document.getElementById('vnStatus').textContent='Fehler: '+e.error;
     stopRecording();
+  };
+  // iOS-Safari ignoriert continuous und stoppt nach der ersten Sprechpause.
+  // Workaround: solange die Kundin „aufnimmt", Erkennung automatisch neu starten.
+  vnRecognition.onend=()=>{
+    if(vnRecording){try{vnRecognition.start();}catch(e){}}
   };
   vnRecognition.start();
   vnRecording=true;
   document.getElementById('vnRecordBtn').textContent='⏹ Aufnahme stoppen';
-  document.getElementById('vnStatus').textContent='● Aufnahme läuft — sprich einfach...';
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  document.getElementById('vnStatus').textContent=isIOS?'● Aufnahme läuft — kurz absetzen ist ok, Erkennung läuft weiter...':'● Aufnahme läuft — sprich einfach...';
 }
 function stopRecording(){
-  if(vnRecognition){try{vnRecognition.stop();}catch(e){}vnRecognition=null;}
-  vnRecording=false;
+  vnRecording=false; // zuerst: verhindert Auto-Neustart in onend
+  if(vnRecognition){try{vnRecognition.onend=null;vnRecognition.stop();}catch(e){}vnRecognition=null;}
   const btn=document.getElementById('vnRecordBtn');
   if(btn){btn.textContent='🎤 Aufnahme starten';}
   const st=document.getElementById('vnStatus');

@@ -60,6 +60,10 @@ input:focus{outline:none;border-color:var(--accent);}
       <div class="step-title">4 · Deine Daten</div>
       <input type="text" id="bkName" placeholder="Dein Name" autocomplete="name" />
       <input type="tel" id="bkPhone" placeholder="Handynummer (für die Bestätigung)" autocomplete="tel" />
+      <label style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text2);margin:4px 2px 10px;cursor:pointer;">
+        <input type="checkbox" id="bkOptIn" style="margin-top:2px;flex-shrink:0;" />
+        <span>Ich möchte Terminerinnerungen und gelegentliche Nachrichten per WhatsApp erhalten. Jederzeit widerrufbar.</span>
+      </label>
       <button class="btn" id="bkSubmit" onclick="submitBooking()">Termin anfragen</button>
       <div class="err hidden" id="bkErr"></div>
       <div class="note" id="modeNote"></div>
@@ -92,7 +96,7 @@ async function init(){
     $('loading').classList.add('hidden');
     if(!treatments.length){$('unavailable').classList.remove('hidden');return;}
     $('flow').classList.remove('hidden');
-    $('treatList').innerHTML=treatments.map(t=>`<div class="opt" onclick="pickT('${t.id}',this)"><div><div class="nm">${t.name}</div><div class="meta">${t.duration_min||60} Min.</div></div><div class="nm">${fmtPrice(t.price)}</div></div>`).join('');
+    $('treatList').innerHTML=treatments.map(t=>`<div class="opt" onclick="pickT('${t.id}',this)"><div><div class="nm">${t.name}${t.is_online?' <span style="font-size:11px;font-weight:600;color:var(--accent2);background:rgba(201,115,127,0.12);padding:2px 7px;border-radius:6px;margin-left:4px;">🎥 Online</span>':''}</div><div class="meta">${t.duration_min||60} Min.${t.is_online?' · per Video':''}</div></div><div class="nm">${fmtPrice(t.price)}</div></div>`).join('');
     $('modeNote').textContent=salon.mode==='direct'?'Dein Termin ist nach dem Absenden fest gebucht.':'Der Salon bestätigt deine Anfrage schnellstmöglich — du gehst keine Verpflichtung ein.';
     $('bkSubmit').textContent=salon.mode==='direct'?'Verbindlich buchen':'Termin anfragen';
     renderDays();
@@ -151,20 +155,31 @@ async function submitBooking(){
   const btn=$('bkSubmit');btn.disabled=true;btn.textContent='Einen Moment…';
   try{
     const res=await fetch('/api/booking',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({slug,treatment_id:selT,date:selDate,time:selTime,name,phone})});
+      body:JSON.stringify({slug,treatment_id:selT,date:selDate,time:selTime,name,phone,opt_in:$('bkOptIn').checked})});
     const json=await res.json();
     if(!res.ok)throw new Error(json.error||'Fehler');
     const tName=treatments.find(t=>t.id===selT)?.name||'';
     $('flow').classList.add('hidden');
     $('done').classList.remove('hidden');
+    const when=`${selDate.split('-').reverse().join('.')} um ${selTime} Uhr`;
     if(json.status==='booked'){
-      $('doneIcon').textContent='🎉';
+      $('doneIcon').textContent=json.is_online?'🎥':'🎉';
       $('doneTitle').textContent='Termin gebucht!';
-      $('doneText').textContent=`${tName} am ${selDate.split('-').reverse().join('.')} um ${selTime} Uhr. Wir freuen uns auf dich!`;
+      $('doneText').textContent=`${tName} am ${when}. Wir freuen uns auf dich!`;
     }else{
       $('doneIcon').textContent='💌';
       $('doneTitle').textContent='Anfrage gesendet!';
-      $('doneText').textContent=`${tName} am ${selDate.split('-').reverse().join('.')} um ${selTime} Uhr. Der Salon bestätigt dir den Termin schnellstmöglich.`;
+      $('doneText').textContent=`${tName} am ${when}. Der Salon bestätigt dir den Termin schnellstmöglich.`;
+    }
+    if(json.meeting_url){
+      const safe=String(json.meeting_url).replace(/"/g,'&quot;');
+      $('doneText').insertAdjacentHTML('afterend',
+        `<div style="margin-top:18px;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px;">
+          <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Deine Online-Beratung findet per Video statt. Zum Termin einfach hier beitreten:</div>
+          <a href="${safe}" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#c9737f,#a85a68);color:#fff;text-decoration:none;border-radius:11px;padding:13px;font-weight:700;">🎥 Video-Beratung beitreten</a>
+          <div style="font-size:11px;color:var(--text2);margin-top:9px;word-break:break-all;">${safe}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:6px;">Tipp: Speichere dir diesen Link — du brauchst ihn zum Termin.</div>
+        </div>`);
     }
   }catch(e){
     err.textContent=e.message;err.classList.remove('hidden');
