@@ -217,19 +217,26 @@ td.name{font-weight:600;color:var(--text);}
 /* Kalender */
 .cal-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
 .cal-nav{display:flex;gap:6px;align-items:center;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;}
-.cal-day{background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:12px;padding:9px;min-height:120px;min-width:0;display:flex;flex-direction:column;}
-.cal-day.today{border-color:rgba(79,124,255,0.5);background:rgba(79,124,255,0.05);}
-.cal-day-head{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;}
-.cal-day.today .cal-day-head{color:var(--accent2);}
-.cal-appt{border-radius:9px;padding:7px 9px;margin-bottom:6px;font-size:12px;cursor:pointer;border:1px solid transparent;line-height:1.35;min-width:0;overflow-wrap:anywhere;}
-.cal-appt .t{font-weight:700;}
-.cal-appt.st-booked{background:rgba(79,124,255,0.13);border-color:rgba(79,124,255,0.3);}
-.cal-appt.st-requested{background:rgba(251,146,60,0.12);border-color:rgba(251,146,60,0.35);}
-.cal-appt.st-completed{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.25);color:var(--text2);}
-.cal-appt.st-no_show{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);}
-.cal-empty{font-size:11px;color:var(--text3,#555c6e);}
-@media(max-width:768px){.cal-grid{grid-template-columns:1fr;}.cal-day{min-height:auto;}}
+.cal-scroll{display:flex;max-height:calc(100vh - 235px);overflow-y:auto;border:1px solid var(--border);border-radius:12px;background:var(--bg2);}
+.cal-times{flex-shrink:0;width:52px;border-right:1px solid var(--border);}
+.cal-corner{height:42px;position:sticky;top:0;background:var(--bg2);z-index:3;border-bottom:1px solid var(--border);}
+.cal-hr{font-size:11px;color:var(--text3);text-align:right;padding-right:7px;box-sizing:border-box;}
+.cal-cols{flex:1;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));}
+.cal-col{border-right:1px solid var(--border);min-width:0;}
+.cal-col:last-child{border-right:none;}
+.cal-col-head{height:42px;position:sticky;top:0;background:var(--bg2);z-index:2;border-bottom:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);}
+.cal-col-head span{font-size:11px;font-weight:600;color:var(--text3);}
+.cal-col.today .cal-col-head{color:var(--accent);}
+.cal-col.today{background:rgba(59,108,246,0.045);}
+.cal-col-body{position:relative;background-image:linear-gradient(var(--border) 1px,transparent 1px);}
+.cal-ev{position:absolute;left:3px;right:3px;border-radius:7px;padding:2px 7px;font-size:11px;line-height:1.25;overflow:hidden;cursor:pointer;border:1px solid transparent;}
+.cal-ev .evt{font-weight:700;}
+.cal-ev .evx{opacity:.8;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cal-ev.st-booked{background:rgba(59,108,246,0.15);border-color:rgba(59,108,246,0.4);color:#1e3a8a;}
+.cal-ev.st-requested{background:rgba(245,158,11,0.16);border-color:rgba(245,158,11,0.45);color:#92600a;}
+.cal-ev.st-completed{background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.35);color:#0f7a5a;}
+.cal-ev.st-no_show{background:rgba(239,68,68,0.13);border-color:rgba(239,68,68,0.4);color:#b42318;}
+@media(max-width:768px){.cal-scroll{max-height:none;}.cal-cols{grid-template-columns:repeat(7,minmax(96px,1fr));}}
 </style>
 </head>
 <body>
@@ -360,6 +367,15 @@ td.name{font-weight:600;color:var(--text);}
 <button class="btn-sm btn-ghost-sm" style="margin-left:8px;" onclick="copyBookingLink()">Kopieren</button>
 </div>
 <button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveBookingSettings()">Buchungseinstellungen speichern</button>
+</div>
+<div class="settings-section"><div class="settings-title">🗓️ Kalender-Ansicht</div>
+<div class="setting-row"><div class="setting-info"><h4>Angezeigter Zeitraum</h4><p>Von wann bis wann der Tag im Wochenkalender angezeigt wird</p></div>
+<div style="display:flex;gap:8px;align-items:center;">
+<select class="setting-input" id="calStartSel" style="min-width:0;width:110px;"></select>
+<span style="color:var(--text2);">bis</span>
+<select class="setting-input" id="calEndSel" style="min-width:0;width:110px;"></select>
+</div></div>
+<button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveCalView()">Kalender-Ansicht speichern</button>
 </div>
 <div class="settings-section"><div class="settings-title">📆 Kalender-Verknüpfung</div>
 <div class="setting-row"><div class="setting-info"><h4>Google / Apple / Outlook</h4><p>Deine neos-Termine erscheinen automatisch in deinem Kalender. In Google: „Weitere Kalender" → „+" → „Per URL" → Link einfügen.</p></div>
@@ -1166,13 +1182,22 @@ function mondayOf(d){const x=new Date(d);const wd=(x.getDay()+6)%7;x.setDate(x.g
 function calToday(){calMonday=mondayOf(new Date());loadCalendar();}
 function calShift(days){calMonday=new Date(calMonday.getTime()+days*86400000);loadCalendar();}
 
+let calStart=6, calEnd=24, calViewLoaded=false;
 async function loadCalendar(){
   if(!calMonday)calMonday=mondayOf(new Date());
+  if(!calViewLoaded){
+    const{data:p}=await sb.from('profiles').select('booking').eq('id',currentUser.id).single();
+    const v=p?.booking||{};
+    if(typeof v.cal_start==='number')calStart=v.cal_start;
+    if(typeof v.cal_end==='number')calEnd=v.cal_end;
+    calViewLoaded=true;
+  }
+  const endH=(calEnd<=calStart)?24:calEnd;
   const days=[...Array(7)].map((_,i)=>new Date(calMonday.getTime()+i*86400000).toISOString().slice(0,10));
   const from=days[0],to=days[6];
   document.getElementById('calLabel').textContent='📅 '+from.split('-').reverse().slice(0,2).join('.')+'. – '+to.split('-').reverse().join('.');
   const{data,error}=await sb.from('appointments')
-    .select('id,starts_at,status,customer_id,meeting_url,customers(name),treatments(name)')
+    .select('id,starts_at,ends_at,status,customer_id,meeting_url,customers(name),treatments(name)')
     .gte('starts_at',from+'T00:00:00Z').lte('starts_at',to+'T23:59:59Z')
     .neq('status','cancelled').order('starts_at');
   if(error){showToast('Kalender: '+error.message,'error');return;}
@@ -1180,12 +1205,24 @@ async function loadCalendar(){
   const names=['Mo','Di','Mi','Do','Fr','Sa','So'];
   const todayIso=new Date(Date.now()).toISOString().slice(0,10);
   const stLabel={requested:'Anfrage',booked:'',completed:'✓',no_show:'No-Show'};
-  document.getElementById('calGrid').innerHTML=days.map((iso,i)=>{
-    const appts=(byDay[iso]||[]).map(a=>
-      `<div class="cal-appt st-${a.status}" onclick="openApptEdit('${a.id}')"><span class="t">${a.starts_at.slice(11,16)}</span> ${a.customers?.name||'–'}<br>${a.treatments?.name||''}${stLabel[a.status]?' · <b>'+stLabel[a.status]+'</b>':''}</div>`
-    ).join('');
-    return `<div class="cal-day${iso===todayIso?' today':''}"><div class="cal-day-head">${names[i]} ${iso.slice(8,10)}.${iso.slice(5,7)}.</div>${appts||'<div class="cal-empty">–</div>'}</div>`;
+  const HOUR=46, totalH=(endH-calStart)*HOUR;
+  let times='<div class="cal-times"><div class="cal-corner"></div>';
+  for(let h=calStart;h<endH;h++){times+=`<div class="cal-hr" style="height:${HOUR}px;">${String(h%24).padStart(2,'0')}:00</div>`;}
+  times+='</div>';
+  const cols=days.map((iso,i)=>{
+    const evs=(byDay[iso]||[]).map(a=>{
+      const sm=parseInt(a.starts_at.slice(11,13),10)*60+parseInt(a.starts_at.slice(14,16),10);
+      let dur=60; if(a.ends_at){dur=(new Date(a.ends_at)-new Date(a.starts_at))/60000;} if(!dur||dur<30)dur=30;
+      const top=Math.max(0,((sm-calStart*60)/60)*HOUR);
+      const height=Math.max(22,(Math.min(dur,(endH*60)-sm)/60)*HOUR);
+      const lbl=stLabel[a.status]?' · '+stLabel[a.status]:'';
+      const nm=(a.customers?.name||'–').replace(/</g,'&lt;');
+      const tr=(a.treatments?.name||'').replace(/</g,'&lt;');
+      return `<div class="cal-ev st-${a.status}" style="top:${top}px;height:${height}px;" onclick="openApptEdit('${a.id}')"><span class="evt">${a.starts_at.slice(11,16)}</span> ${nm}<div class="evx">${tr}${lbl}</div></div>`;
+    }).join('');
+    return `<div class="cal-col${iso===todayIso?' today':''}"><div class="cal-col-head">${names[i]}<span>${iso.slice(8,10)}.${iso.slice(5,7)}.</span></div><div class="cal-col-body" style="height:${totalH}px;background-size:100% ${HOUR}px;">${evs}</div></div>`;
   }).join('');
+  document.getElementById('calGrid').innerHTML=`<div class="cal-scroll">${times}<div class="cal-cols">${cols}</div></div>`;
 }
 
 async function openApptModal(){
@@ -1315,8 +1352,28 @@ async function loadBookingSettings(){
   document.getElementById('bkSlug').value=data?.booking_slug||'';
   document.getElementById('bkSlotMin').value=String(b.slot_min||30);
   document.getElementById('bkConsultLink').value=data?.consult_link||'';
+  // Kalender-Zeitfenster
+  const cs=typeof b.cal_start==='number'?b.cal_start:6, ce=typeof b.cal_end==='number'?b.cal_end:24;
+  calStart=cs;calEnd=ce;
+  const startSel=document.getElementById('calStartSel'),endSel=document.getElementById('calEndSel');
+  const lbl=h=>String(h%24).padStart(2,'0')+':00'+(h===24?' (Mitternacht)':'');
+  startSel.innerHTML=Array.from({length:13},(_,h)=>`<option value="${h}"${h===cs?' selected':''}>${lbl(h)}</option>`).join('');
+  endSel.innerHTML=Array.from({length:13},(_,k)=>{const h=k+12;return `<option value="${h}"${h===ce?' selected':''}>${lbl(h)}</option>`;}).join('');
   renderHoursInputs(b.hours);
   updateBookingLinkBox();
+}
+
+async function saveCalView(){
+  const s=parseInt(document.getElementById('calStartSel').value,10);
+  const e=parseInt(document.getElementById('calEndSel').value,10);
+  if(e<=s){showToast('Ende muss nach Start liegen','error');return;}
+  const{data}=await sb.from('profiles').select('booking').eq('id',currentUser.id).single();
+  const booking={...(data?.booking||{}),cal_start:s,cal_end:e};
+  const{error}=await sb.from('profiles').update({booking}).eq('id',currentUser.id);
+  if(error){showToast(error.message,'error');return;}
+  calStart=s;calEnd=e;calViewLoaded=true;
+  showToast('Kalender-Ansicht gespeichert ✓','success');
+  loadCalendar();
 }
 
 function updateBookingLinkBox(){
@@ -1348,7 +1405,7 @@ async function saveBookingSettings(){
   const{error}=await sb.from('profiles').update({
     booking_slug:slug||null,
     consult_link:document.getElementById('bkConsultLink').value.trim()||null,
-    booking:{mode,slot_min:Number(document.getElementById('bkSlotMin').value),hours}
+    booking:{mode,slot_min:Number(document.getElementById('bkSlotMin').value),hours,cal_start:calStart,cal_end:calEnd}
   }).eq('id',currentUser.id);
   if(error){showToast(error.message.includes('duplicate')?'Dieser Link-Name ist schon vergeben':error.message,'error');return;}
   updateBookingLinkBox();
