@@ -6,7 +6,7 @@
 <title>Anamnese & Einverständnis</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
-:root{--bg:#0a0e1a;--bg2:#111728;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#f3f6fc;--text2:#9aa6c0;--accent:#4f7cff;--success:#34d399;}
+:root{--bg:#f6f7fb;--bg2:#ffffff;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--success:#10b981;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
 .wrap{width:100%;max-width:520px;}
@@ -21,10 +21,10 @@ h1{font-size:20px;text-align:center;margin-bottom:4px;}
 .yn button{flex:1;padding:10px;border:1px solid var(--border2);border-radius:10px;background:transparent;color:var(--text);font-family:inherit;font-size:14px;cursor:pointer;}
 .yn button.sel-ja{border-color:#f0a35e;background:rgba(240,163,94,0.12);}
 .yn button.sel-nein{border-color:var(--success);background:rgba(52,211,153,0.1);}
-textarea,input[type=text]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;font-family:inherit;}
+textarea,input[type=text]{width:100%;background:rgba(0,0,0,0.04);border:1px solid var(--border2);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;font-family:inherit;}
 .consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.6;color:var(--text2);}
 .consent input{width:auto;margin-top:3px;}
-canvas{width:100%;height:140px;background:rgba(255,255,255,0.04);border:1px dashed var(--border2);border-radius:10px;touch-action:none;}
+canvas{width:100%;height:140px;background:rgba(0,0,0,0.04);border:1px dashed var(--border2);border-radius:10px;touch-action:none;}
 .sig-actions{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px;color:var(--text2);}
 .btn{width:100%;background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;}
 .btn:disabled{opacity:.5;}
@@ -97,7 +97,7 @@ let drawing=false,sigUsed=false,ctx=null;
 function initSig(){
   const c=document.getElementById('sig');
   c.width=c.offsetWidth*2;c.height=280;
-  ctx=c.getContext('2d');ctx.strokeStyle='#f5efe9';ctx.lineWidth=3;ctx.lineCap='round';
+  ctx=c.getContext('2d');ctx.strokeStyle='#14192a';ctx.lineWidth=3;ctx.lineCap='round';
   const pos=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return[(t.clientX-r.left)*2,(t.clientY-r.top)*2];};
   const start=e=>{drawing=true;sigUsed=true;const[x,y]=pos(e);ctx.beginPath();ctx.moveTo(x,y);e.preventDefault();};
   const move=e=>{if(!drawing)return;const[x,y]=pos(e);ctx.lineTo(x,y);ctx.stroke();e.preventDefault();};
