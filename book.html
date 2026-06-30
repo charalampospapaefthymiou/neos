@@ -4,32 +4,33 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Termin buchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
-:root{--bg:#121010;--bg2:#181311;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f5efe9;--text2:#a89a8c;--accent:#c9737f;--accent2:#e0a3ac;--success:#34d399;}
+:root{--bg:#0a0e1a;--bg2:#111728;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--text:#f3f6fc;--text2:#9aa6c0;--accent:#4f7cff;--accent2:#7aa0ff;--success:#34d399;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:"Inter",-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
 .wrap{width:100%;max-width:440px;}
 .logo{display:flex;align-items:center;gap:10px;justify-content:center;margin:18px 0 6px;}
-.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#c9737f,#c9a96a);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#9b6bff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
 .salon-name{text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;}
 .sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:24px;}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
 .step-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
 .opt{display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border:1px solid var(--border2);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
-.opt:hover,.opt.sel{border-color:var(--accent);background:rgba(201,115,127,0.08);}
+.opt:hover,.opt.sel{border-color:var(--accent);background:rgba(79,124,255,0.08);}
 .opt .nm{font-weight:600;font-size:15px;}
 .opt .meta{font-size:12px;color:var(--text2);}
 .chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;}
 .chip{flex:0 0 auto;text-align:center;padding:10px 12px;border:1px solid var(--border2);border-radius:12px;cursor:pointer;min-width:62px;}
-.chip.sel{border-color:var(--accent);background:rgba(201,115,127,0.1);}
+.chip.sel{border-color:var(--accent);background:rgba(79,124,255,0.1);}
 .chip .d1{font-size:11px;color:var(--text2);}
 .chip .d2{font-weight:700;font-size:15px;}
 .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
 .slot{text-align:center;padding:11px 0;border:1px solid var(--border2);border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;}
-.slot.sel{border-color:var(--accent);background:rgba(201,115,127,0.12);}
+.slot.sel{border-color:var(--accent);background:rgba(79,124,255,0.12);}
 input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:11px;padding:13px 14px;color:var(--text);font-size:15px;font-family:inherit;margin-bottom:10px;}
 input:focus{outline:none;border-color:var(--accent);}
-.btn{width:100%;background:linear-gradient(135deg,#c9737f,#a85a68);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn{width:100%;background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
 .btn:disabled{opacity:.5;cursor:default;}
 .note{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;}
 .done{text-align:center;padding:40px 10px;}
@@ -39,7 +40,7 @@ input:focus{outline:none;border-color:var(--accent);}
 .hidden{display:none;}
 .err{color:#f87171;font-size:13px;text-align:center;margin-top:10px;}
 .powered{text-align:center;margin-top:26px;font-size:12px;color:var(--text2);}
-.powered b{background:linear-gradient(135deg,#e0a3ac,#d9bc82);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.powered b{background:linear-gradient(135deg,#7aa0ff,#b89bff);-webkit-background-clip:text;background-clip:text;color:transparent;}
 .loading{text-align:center;color:var(--text2);padding:30px;}
 </style>
 </head>
@@ -96,7 +97,7 @@ async function init(){
     $('loading').classList.add('hidden');
     if(!treatments.length){$('unavailable').classList.remove('hidden');return;}
     $('flow').classList.remove('hidden');
-    $('treatList').innerHTML=treatments.map(t=>`<div class="opt" onclick="pickT('${t.id}',this)"><div><div class="nm">${t.name}${t.is_online?' <span style="font-size:11px;font-weight:600;color:var(--accent2);background:rgba(201,115,127,0.12);padding:2px 7px;border-radius:6px;margin-left:4px;">🎥 Online</span>':''}</div><div class="meta">${t.duration_min||60} Min.${t.is_online?' · per Video':''}</div></div><div class="nm">${fmtPrice(t.price)}</div></div>`).join('');
+    $('treatList').innerHTML=treatments.map(t=>`<div class="opt" onclick="pickT('${t.id}',this)"><div><div class="nm">${t.name}${t.is_online?' <span style="font-size:11px;font-weight:600;color:var(--accent2);background:rgba(79,124,255,0.12);padding:2px 7px;border-radius:6px;margin-left:4px;">🎥 Online</span>':''}</div><div class="meta">${t.duration_min||60} Min.${t.is_online?' · per Video':''}</div></div><div class="nm">${fmtPrice(t.price)}</div></div>`).join('');
     $('modeNote').textContent=salon.mode==='direct'?'Dein Termin ist nach dem Absenden fest gebucht.':'Der Salon bestätigt deine Anfrage schnellstmöglich — du gehst keine Verpflichtung ein.';
     $('bkSubmit').textContent=salon.mode==='direct'?'Verbindlich buchen':'Termin anfragen';
     renderDays();
@@ -176,7 +177,7 @@ async function submitBooking(){
       $('doneText').insertAdjacentHTML('afterend',
         `<div style="margin-top:18px;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px;">
           <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Deine Online-Beratung findet per Video statt. Zum Termin einfach hier beitreten:</div>
-          <a href="${safe}" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#c9737f,#a85a68);color:#fff;text-decoration:none;border-radius:11px;padding:13px;font-weight:700;">🎥 Video-Beratung beitreten</a>
+          <a href="${safe}" target="_blank" rel="noopener" style="display:block;text-align:center;background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;text-decoration:none;border-radius:11px;padding:13px;font-weight:700;">🎥 Video-Beratung beitreten</a>
           <div style="font-size:11px;color:var(--text2);margin-top:9px;word-break:break-all;">${safe}</div>
           <div style="font-size:11px;color:var(--text2);margin-top:6px;">Tipp: Speichere dir diesen Link — du brauchst ihn zum Termin.</div>
         </div>`);

@@ -6,37 +6,45 @@
   <title>neos — Software für Beauty Studios</title>
   <meta name="description" content="Die smarte Software für dein Beauty Studio: KI-Kundenkartei, Online-Buchung, Video-Beratung, automatische Reaktivierung und WhatsApp-Nachsorge — alles verbunden, alles automatisch." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #121010;
-      --bg2: #181311;
-      --bg3: #1d1714;
-      --border: rgba(255,255,255,0.07);
-      --border2: rgba(255,255,255,0.12);
-      --text: #f5efe9;
-      --text2: #a89a8c;
-      --text3: #6e6258;
-      --accent: #c9737f;
-      --accent2: #e0a3ac;
-      --accent3: #edc7cc;
-      --teal: #c9a96a;
-      --teal2: #d9bc82;
-      --glow: rgba(201,115,127,0.15);
-      --glow2: rgba(201,169,106,0.12);
+      --bg: #0a0e1a;
+      --bg2: #111728;
+      --bg3: #161d33;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f3f6fc;
+      --text2: #9aa6c0;
+      --text3: #5d6885;
+      --accent: #4f7cff;
+      --accent2: #7aa0ff;
+      --accent3: #b9caff;
+      --teal: #9b6bff;
+      --teal2: #b89bff;
+      --glow: rgba(79,124,255,0.18);
+      --glow2: rgba(155,107,255,0.14);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
       line-height: 1.6;
     }
+    h1, h2, h3, .logo-text, .footer-logo-text, .stat-number, .plan-price, .hero h1, .section-title {
+      font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    }
+    /* Scroll-Reveal Animationen */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(.16,1,.3,1), transform 0.7s cubic-bezier(.16,1,.3,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: .08s; } .reveal.d2 { transition-delay: .16s; } .reveal.d3 { transition-delay: .24s; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
     /* ── NOISE TEXTURE ── */
     body::before {
@@ -69,11 +77,21 @@
       gap: 9px;
       text-decoration: none;
     }
+    .logo-mark {
+      width: 26px; height: 26px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--teal));
+      box-shadow: 0 0 16px var(--glow);
+      flex-shrink: 0;
+    }
     .logo-text {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      letter-spacing: -0.5px;
-      color: var(--text);
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent2), var(--teal2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .nav-links {
@@ -109,7 +127,7 @@
     .btn-ghost:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #a85a68);
+      background: linear-gradient(135deg, var(--accent), #3258d8);
       color: #fff;
       text-decoration: none;
       font-size: 14px;
@@ -119,11 +137,11 @@
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 0 20px rgba(201,115,127,0.3);
+      box-shadow: 0 0 20px rgba(79,124,255,0.3);
     }
     .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 0 30px rgba(201,115,127,0.5);
+      box-shadow: 0 0 30px rgba(79,124,255,0.5);
     }
 
     /* ── HERO ── */
@@ -142,7 +160,7 @@
     .hero-orb1 {
       position: absolute;
       width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(201,115,127,0.12) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(79,124,255,0.12) 0%, transparent 70%);
       top: -200px; left: 50%;
       transform: translateX(-50%);
       pointer-events: none;
@@ -150,14 +168,14 @@
     .hero-orb2 {
       position: absolute;
       width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(201,169,106,0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(155,107,255,0.08) 0%, transparent 70%);
       bottom: 0; right: -100px;
       pointer-events: none;
     }
     .hero-orb3 {
       position: absolute;
       width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(167,139,250,0.06) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(155,107,255,0.06) 0%, transparent 70%);
       bottom: 100px; left: -100px;
       pointer-events: none;
     }
@@ -166,8 +184,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(201,115,127,0.1);
-      border: 1px solid rgba(201,115,127,0.25);
+      background: rgba(79,124,255,0.1);
+      border: 1px solid rgba(79,124,255,0.25);
       border-radius: 100px;
       padding: 6px 16px;
       font-size: 12px;
@@ -222,7 +240,7 @@
     }
 
     .btn-hero {
-      background: linear-gradient(135deg, var(--accent), #a85a68);
+      background: linear-gradient(135deg, var(--accent), #3258d8);
       color: #fff;
       text-decoration: none;
       font-size: 16px;
@@ -232,11 +250,11 @@
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 0 40px rgba(201,115,127,0.35);
+      box-shadow: 0 0 40px rgba(79,124,255,0.35);
     }
     .btn-hero:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 60px rgba(201,115,127,0.55);
+      box-shadow: 0 0 60px rgba(79,124,255,0.55);
     }
 
     .btn-outline {
@@ -361,7 +379,7 @@
     /* ── FEATURES ── */
     .features-section {
       padding: 100px 40px;
-      background: linear-gradient(180deg, transparent, rgba(201,115,127,0.03) 50%, transparent);
+      background: linear-gradient(180deg, transparent, rgba(79,124,255,0.03) 50%, transparent);
     }
 
     .features-inner {
@@ -399,9 +417,9 @@
     }
     .feature-card:hover::before { opacity: 1; }
     .feature-card:hover {
-      border-color: rgba(201,115,127,0.3);
+      border-color: rgba(79,124,255,0.3);
       transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(201,115,127,0.1);
+      box-shadow: 0 20px 60px rgba(79,124,255,0.1);
     }
 
     .feature-icon {
@@ -415,8 +433,8 @@
       position: relative;
       z-index: 1;
     }
-    .icon-purple { background: rgba(201,115,127,0.15); }
-    .icon-teal { background: rgba(201,169,106,0.15); }
+    .icon-purple { background: rgba(79,124,255,0.15); }
+    .icon-teal { background: rgba(155,107,255,0.15); }
     .icon-pink { background: rgba(236,72,153,0.12); }
     .icon-orange { background: rgba(249,115,22,0.12); }
     .icon-blue { background: rgba(59,130,246,0.12); }
@@ -448,11 +466,11 @@
       z-index: 1;
     }
     .tag-new {
-      background: rgba(201,115,127,0.15);
+      background: rgba(79,124,255,0.15);
       color: var(--accent3);
     }
     .tag-ai {
-      background: rgba(201,169,106,0.15);
+      background: rgba(155,107,255,0.15);
       color: var(--teal2);
     }
 
@@ -512,7 +530,7 @@
     /* ── PRICING ── */
     .pricing-section {
       padding: 100px 40px;
-      background: linear-gradient(180deg, transparent, rgba(201,169,106,0.03) 50%, transparent);
+      background: linear-gradient(180deg, transparent, rgba(155,107,255,0.03) 50%, transparent);
     }
     .pricing-inner {
       max-width: 1100px;
@@ -536,8 +554,8 @@
       transition: all 0.3s;
     }
     .pricing-card.popular {
-      background: linear-gradient(135deg, rgba(201,115,127,0.08), rgba(201,169,106,0.05));
-      border-color: rgba(201,115,127,0.4);
+      background: linear-gradient(135deg, rgba(79,124,255,0.08), rgba(155,107,255,0.05));
+      border-color: rgba(79,124,255,0.4);
       position: relative;
     }
     .popular-badge {
@@ -545,7 +563,7 @@
       top: -14px;
       left: 50%;
       transform: translateX(-50%);
-      background: linear-gradient(135deg, var(--accent), #a85a68);
+      background: linear-gradient(135deg, var(--accent), #3258d8);
       color: #fff;
       font-size: 11px;
       font-weight: 700;
@@ -622,13 +640,13 @@
       transition: all 0.2s;
     }
     .btn-plan-primary {
-      background: linear-gradient(135deg, var(--accent), #a85a68);
+      background: linear-gradient(135deg, var(--accent), #3258d8);
       color: #fff;
-      box-shadow: 0 0 30px rgba(201,115,127,0.3);
+      box-shadow: 0 0 30px rgba(79,124,255,0.3);
     }
     .btn-plan-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 0 45px rgba(201,115,127,0.5);
+      box-shadow: 0 0 45px rgba(79,124,255,0.5);
     }
     .btn-plan-ghost {
       background: rgba(255,255,255,0.04);
@@ -706,7 +724,7 @@
     .cta-orb {
       position: absolute;
       width: 800px; height: 800px;
-      background: radial-gradient(circle, rgba(201,115,127,0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(79,124,255,0.08) 0%, transparent 70%);
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       pointer-events: none;
@@ -794,6 +812,20 @@
       footer { flex-direction: column; gap: 20px; text-align: center; }
       .footer-links { flex-wrap: wrap; justify-content: center; }
     }
+    /* FAQ + Trust */
+    .faq { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 4px 20px; transition: border-color .2s; }
+    .faq[open] { border-color: rgba(79,124,255,0.35); }
+    .faq summary { cursor: pointer; list-style: none; padding: 16px 0; font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: '+'; color: var(--accent2); font-size: 22px; font-weight: 400; transition: transform .2s; }
+    .faq[open] summary::after { transform: rotate(45deg); }
+    .faq p { font-size: 14px; color: var(--text2); line-height: 1.65; padding: 0 0 18px; margin: 0; }
+    .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+    .trust-card { background: linear-gradient(135deg, var(--glow), transparent); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .trust-card .ti { font-size: 28px; margin-bottom: 12px; }
+    .trust-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .trust-card p { font-size: 14px; color: var(--text2); line-height: 1.6; }
+    @media (max-width: 900px) { .trust-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -801,16 +833,7 @@
   <!-- NAV -->
   <nav>
     <a href="/" class="logo">
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="26" height="26" rx="7" fill="url(#neos-lg)"/>
-        <path d="M7 20V6L19 20V6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <defs>
-          <linearGradient id="neos-lg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#c9737f"/>
-            <stop offset="100%" stop-color="#c9a96a"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <span class="logo-mark"></span>
       <span class="logo-text">neos</span>
     </a>
     <ul class="nav-links">
@@ -1094,6 +1117,35 @@
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section class="section">
+    <div style="text-align:center;">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Häufige Fragen</h2>
+    </div>
+    <div style="max-width:760px;margin:48px auto 0;display:flex;flex-direction:column;gap:12px;">
+      <details class="faq"><summary>Wie komme ich von Treatwell oder Fresha zu neos?</summary><p>Du musst nichts wegwerfen. neos läuft zusätzlich — als Schicht für Wiederkehr und Kartei. Deine Kundenliste importierst du in Minuten per CSV oder Excel-Copy-Paste; die KI erkennt die Spalten automatisch.</p></details>
+      <details class="faq"><summary>Läuft das auf dem Handy?</summary><p>Ja. neos ist fürs Handy gebaut — du kannst es wie eine App auf den Homescreen legen. Sprachnotizen, Kalender, Kampagnen: alles unterwegs.</p></details>
+      <details class="faq"><summary>Brauchen meine Kunden eine App?</summary><p>Nein. Buchung und Online-Beratung laufen über einen einfachen Link im Browser — ein Klick, keine Installation.</p></details>
+      <details class="faq"><summary>Was passiert mit meinen Daten?</summary><p>Sie liegen verschlüsselt auf Servern in Frankfurt (EU), DSGVO-konform. Du kannst sie jederzeit exportieren und dein Konto jederzeit kündigen.</p></details>
+      <details class="faq"><summary>Ist neos ein Treatwell-Konkurrent?</summary><p>Nein. Treatwell bringt dir Neukunden über seinen Marktplatz. neos sorgt dafür, dass die Kunden, die du schon hast, wiederkommen — ohne Provision. Viele nutzen beides.</p></details>
+      <details class="faq"><summary>Was kostet WhatsApp?</summary><p>Die neos-Automatik ist im Growth-Plan enthalten. Meta berechnet kleine Versandgebühren nach Verbrauch (typisch 15–30 €/Monat) — die reichen wir transparent ohne Aufschlag weiter.</p></details>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="section">
+    <div style="text-align:center;">
+      <div class="section-label">Vertrauen</div>
+      <h2 class="section-title">Deine Daten gehören dir.</h2>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card"><div class="ti">🇩🇪</div><h3>Server in Frankfurt</h3><p>Alle Daten werden in der EU gehostet — DSGVO-konform und verschlüsselt.</p></div>
+      <div class="trust-card"><div class="ti">🔒</div><h3>Keine Provision, keine Limits</h3><p>Du zahlst einen fairen Festpreis — nicht 35 % deiner Neukunden, keine Kundenlimits.</p></div>
+      <div class="trust-card"><div class="ti">🗑️</div><h3>Jederzeit kündbar</h3><p>Kein Lock-in. Du kannst deine Daten jederzeit exportieren. Was du aufbaust, bleibt deins.</p></div>
+    </div>
+  </section>
+
   <!-- CTA -->
   <section class="cta-section">
     <div class="cta-orb"></div>
@@ -1102,7 +1154,7 @@
       <p>Starte heute kostenlos. In 3 Minuten eingerichtet. Keine Kreditkarte nötig. Kündigung jederzeit möglich.</p>
       <div class="cta-actions">
         <a href="/login?tab=signup" class="btn-hero">14 Tage kostenlos testen</a>
-        <a href="#pricing" class="btn-outline">Preise ansehen</a>
+        <a href="mailto:hello@neos.app?subject=Demo%20neos" class="btn-outline">Persönliche Demo mit dem Gründer</a>
       </div>
     </div>
   </section>
@@ -1110,16 +1162,7 @@
   <!-- FOOTER -->
   <footer>
     <div class="footer-logo">
-      <svg width="22" height="22" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="26" height="26" rx="7" fill="url(#neos-flg)"/>
-        <path d="M7 20V6L19 20V6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <defs>
-          <linearGradient id="neos-flg" x1="0" y1="0" x2="26" y2="26" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#c9737f"/>
-            <stop offset="100%" stop-color="#c9a96a"/>
-          </linearGradient>
-        </defs>
-      </svg>
+      <span class="logo-mark" style="width:22px;height:22px;border-radius:7px;"></span>
       <span class="footer-logo-text">neos</span>
     </div>
     <div class="footer-links">
@@ -1131,5 +1174,17 @@
     <div class="footer-copy">© 2026 neos. Alle Rechte vorbehalten.</div>
   </footer>
 
+<script>
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var sel = '.problem-card, .feature-card, .pricing-card, .step-card, .testimonial-card, .trust-card, .faq, .features-header, .pricing-header, #problem .section-label, #problem .section-title, #problem .section-sub';
+  var els = document.querySelectorAll(sel);
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  els.forEach(function(el,i){ el.classList.add('reveal'); el.style.transitionDelay = (i % 3) * 0.08 + 's'; io.observe(el); });
+})();
+</script>
 </body>
 </html>

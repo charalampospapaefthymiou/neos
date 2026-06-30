@@ -4,20 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>neos — Anmelden</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #121010; --bg2: #181311; --bg3: #1d1714;
-      --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.12);
-      --text: #f5efe9; --text2: #a89a8c; --text3: #6e6258;
-      --accent: #c9737f; --accent2: #e0a3ac; --accent3: #edc7cc;
-      --teal: #c9a96a; --teal2: #d9bc82;
+      --bg: #0a0e1a; --bg2: #111728; --bg3: #161d33;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #f3f6fc; --text2: #9aa6c0; --text3: #5d6885;
+      --accent: #4f7cff; --accent2: #7aa0ff; --accent3: #b9caff;
+      --teal: #9b6bff; --teal2: #b89bff;
       --error: #f87171; --success: #34d399;
     }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -28,8 +28,8 @@
       position: relative;
       overflow: hidden;
     }
-    .orb1 { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,115,127,0.1) 0%, transparent 70%); top: -200px; left: -100px; pointer-events: none; }
-    .orb2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(201,169,106,0.08) 0%, transparent 70%); bottom: -100px; right: -100px; pointer-events: none; }
+    .orb1 { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(79,124,255,0.1) 0%, transparent 70%); top: -200px; left: -100px; pointer-events: none; }
+    .orb2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(155,107,255,0.08) 0%, transparent 70%); bottom: -100px; right: -100px; pointer-events: none; }
 
     .card {
       background: var(--bg2);
@@ -148,13 +148,13 @@
       outline: none;
       transition: all 0.2s;
     }
-    input:focus { border-color: rgba(201,115,127,0.5); background: rgba(201,115,127,0.05); box-shadow: 0 0 0 3px rgba(201,115,127,0.1); }
+    input:focus { border-color: rgba(79,124,255,0.5); background: rgba(79,124,255,0.05); box-shadow: 0 0 0 3px rgba(79,124,255,0.1); }
     input::placeholder { color: var(--text3); }
 
     .btn-submit {
       width: 100%;
       padding: 13px;
-      background: linear-gradient(135deg, var(--accent), #a85a68);
+      background: linear-gradient(135deg, var(--accent), #3258d8);
       color: #fff;
       font-size: 14px;
       font-weight: 700;
@@ -162,10 +162,10 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 0 30px rgba(201,115,127,0.3);
+      box-shadow: 0 0 30px rgba(79,124,255,0.3);
       margin-top: 8px;
     }
-    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 0 45px rgba(201,115,127,0.5); }
+    .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 0 45px rgba(79,124,255,0.5); }
     .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .message {
