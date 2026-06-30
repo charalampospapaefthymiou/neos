@@ -228,7 +228,8 @@ td.name{font-weight:600;color:var(--text);}
 .cal-col-head span{font-size:11px;font-weight:600;color:var(--text3);}
 .cal-col.today .cal-col-head{color:var(--accent);}
 .cal-col.today{background:rgba(59,108,246,0.045);}
-.cal-col-body{position:relative;background-image:linear-gradient(var(--border) 1px,transparent 1px);}
+.cal-col-body{position:relative;background-image:linear-gradient(var(--border) 1px,transparent 1px);cursor:pointer;}
+.cal-col-body:hover{background-color:rgba(59,108,246,0.05);}
 .cal-ev{position:absolute;left:3px;right:3px;border-radius:7px;padding:2px 7px;font-size:11px;line-height:1.25;overflow:hidden;cursor:pointer;border:1px solid transparent;}
 .cal-ev .evt{font-weight:700;}
 .cal-ev .evx{opacity:.8;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -1225,7 +1226,7 @@ async function loadCalendar(){
       const tr=(a.treatments?.name||'').replace(/</g,'&lt;');
       return `<div class="cal-ev st-${a.status}" style="top:${top}px;height:${height}px;" onclick="openApptEdit('${a.id}')"><span class="evt">${a.starts_at.slice(11,16)}</span> ${nm}<div class="evx">${tr}${lbl}</div></div>`;
     }).join('');
-    return `<div class="cal-col${iso===todayIso?' today':''}"><div class="cal-col-head">${names[i]}<span>${iso.slice(8,10)}.${iso.slice(5,7)}.</span></div><div class="cal-col-body" style="height:${totalH}px;background-size:100% ${HOUR}px;">${evs}</div></div>`;
+    return `<div class="cal-col${iso===todayIso?' today':''}"><div class="cal-col-head">${names[i]}<span>${iso.slice(8,10)}.${iso.slice(5,7)}.</span></div><div class="cal-col-body" style="height:${totalH}px;background-size:100% ${HOUR}px;" onclick="onCalSlotClick(event,'${iso}',${HOUR},${calStart})" title="Klicken, um hier einen Termin anzulegen">${evs}</div></div>`;
   }).join('');
   document.getElementById('calGrid').innerHTML=`<div class="cal-scroll">${times}<div class="cal-cols">${cols}</div></div>`;
 }
@@ -1237,6 +1238,24 @@ async function openApptModal(){
   document.getElementById('apTreatment').innerHTML=(trs||[]).map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
   document.getElementById('apDate').value=new Date().toISOString().slice(0,10);
   openModal('addAppt');
+}
+
+// Klick auf einen leeren Kalender-Slot → Termin-Modal mit Datum+Uhrzeit vorausgefüllt öffnen
+function onCalSlotClick(ev,dateIso,hourPx,startHour){
+  if(ev.target.closest('.cal-ev'))return; // Klick war auf einem bestehenden Termin, nicht auf leerem Slot
+  const rect=ev.currentTarget.getBoundingClientRect();
+  const offsetY=ev.clientY-rect.top;
+  let totalMin=startHour*60+(offsetY/hourPx)*60;
+  totalMin=Math.max(0,Math.round(totalMin/15)*15); // auf 15-Minuten-Raster einrasten
+  const hh=String(Math.floor(totalMin/60)%24).padStart(2,'0');
+  const mm=String(totalMin%60).padStart(2,'0');
+  openApptModalAt(dateIso,`${hh}:${mm}`);
+}
+
+async function openApptModalAt(dateIso,timeStr){
+  await openApptModal();
+  document.getElementById('apDate').value=dateIso;
+  document.getElementById('apTime').value=timeStr;
 }
 
 async function saveAppt(){
