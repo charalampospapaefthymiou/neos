@@ -1267,7 +1267,20 @@ async function saveAppt(){
   let dur=60;
   if(treatment_id){const{data:t}=await sb.from('treatments').select('duration_min').eq('id',treatment_id).single();dur=t?.duration_min||60;}
   const[h,m]=time.split(':').map(Number);
-  const end=`${String(Math.floor((h*60+m+dur)/60)).padStart(2,'0')}:${String((h*60+m+dur)%60).padStart(2,'0')}`;
+  const startMin=h*60+m,endMin=startMin+dur;
+  const end=`${String(Math.floor(endMin/60)).padStart(2,'0')}:${String(endMin%60).padStart(2,'0')}`;
+  // Konflikt-Check: warnen, falls sich der neue Termin mit einem bestehenden überschneidet
+  const{data:sameDay}=await sb.from('appointments').select('starts_at,ends_at,customers(name)').gte('starts_at',date+'T00:00:00Z').lte('starts_at',date+'T23:59:59Z').neq('status','cancelled');
+  const conflict=(sameDay||[]).find(a=>{
+    const exStart=parseInt(a.starts_at.slice(11,13),10)*60+parseInt(a.starts_at.slice(14,16),10);
+    let exDur=60;if(a.ends_at)exDur=(new Date(a.ends_at)-new Date(a.starts_at))/60000;
+    const exEnd=exStart+(exDur||60);
+    return startMin<exEnd&&endMin>exStart;
+  });
+  if(conflict){
+    const nm=conflict.customers?.name||'ein anderer Termin';
+    if(!confirm(`Achtung: überschneidet sich mit ${nm} (${conflict.starts_at.slice(11,16)} Uhr). Trotzdem speichern?`))return;
+  }
   const{error}=await sb.from('appointments').insert({salon_id:currentUser.id,customer_id,treatment_id,starts_at:`${date}T${time}:00Z`,ends_at:`${date}T${end}:00Z`,status:'booked'});
   if(error){showToast(error.message,'error');return;}
   closeModal('addAppt');
