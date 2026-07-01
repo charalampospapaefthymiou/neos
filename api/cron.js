@@ -30,7 +30,7 @@ export default async function handler(req) {
   const isCron = !!req.headers.get('x-vercel-cron') || (process.env.CRON_SECRET && auth === `Bearer ${process.env.CRON_SECRET}`);
   if (!isCron) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403 });
 
-  const report = { reminders: 0, aftercare: 0, skipped: 0, errors: [] };
+  const report = { reminders: 0, aftercare: 0, reviews: 0, skipped: 0, errors: [] };
   if (!process.env.WHATSAPP_API_KEY) {
     return new Response(JSON.stringify({ ...report, note: 'WhatsApp nicht konfiguriert — nichts versendet' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
   }
@@ -75,6 +75,27 @@ export default async function handler(req) {
         await rest('wa_messages', { method: 'POST', body: JSON.stringify({ salon_id: a.salon_id, customer_id: c.id, direction: 'out', body: msg, kind: 'aftercare' }) });
         report.aftercare++;
       } catch (e) { report.errors.push('aftercare: ' + e.message); }
+    }
+    // 3. Bewertungsanfrage für vor 2 Tagen ERLEDIGTE Termine (kein Review-Gating: geht an alle)
+    const twoDaysAgo = day(-2);
+    const doneAppts = await rest(`appointments?status=eq.completed&starts_at=gte.${twoDaysAgo}T00:00:00Z&starts_at=lte.${twoDaysAgo}T23:59:59Z&select=id,salon_id,customers(id,name,phone,whatsapp_opt_in,opt_in_revoked_at),profiles(studio_name,google_review_link,automation)`);
+    for (const a of doneAppts || []) {
+      try {
+        const c = a.customers;
+        const gLink = a.profiles?.google_review_link;
+        if (!c?.phone || !gLink) { report.skipped++; continue; }
+        if (!c.whatsapp_opt_in || c.opt_in_revoked_at) { report.skipped++; continue; }
+        if (a.profiles?.automation && a.profiles.automation.reviews === false) { report.skipped++; continue; }
+        const existing = await rest(`reviews?appointment_id=eq.${a.id}&select=id&limit=1`);
+        if (existing && existing.length) { report.skipped++; continue; }
+        const rev = await rest('reviews', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ salon_id: a.salon_id, customer_id: c.id, appointment_id: a.id }) });
+        const url = `${process.env.APP_URL || 'https://neos-roan.vercel.app'}/r/${rev[0].token}`;
+        const studio = a.profiles?.studio_name || 'dein Studio';
+        const msg = `Hallo ${c.name.split(' ')[0]}! Wie war dein Termin bei ${studio}? Wir freuen uns über dein Feedback: ${url}`;
+        await sendWhatsApp({ to: c.phone, text: msg });
+        await rest('wa_messages', { method: 'POST', body: JSON.stringify({ salon_id: a.salon_id, customer_id: c.id, direction: 'out', body: msg, kind: 'review_request' }) });
+        report.reviews++;
+      } catch (e) { report.errors.push('review: ' + e.message); }
     }
   } catch (e) {
     report.errors.push(e.message);
