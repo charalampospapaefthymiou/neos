@@ -29,7 +29,7 @@ export default async function handler(req) {
     if (req.method === 'GET') {
       const token = new URL(req.url).searchParams.get('token');
       if (!token || !UUID.test(token)) return json({ error: 'Ungültig' }, 404);
-      const rows = await rest(`reviews?token=eq.${token}&select=responded_at,customers(name),profiles(studio_name,google_review_link)`);
+      const rows = await rest(`reviews?token=eq.${token}&select=responded_at,customers(name),profiles(studio_name,google_review_link,logo_url,brand_color)`);
       const r = rows?.[0];
       if (!r) return json({ error: 'Nicht gefunden' }, 404);
       if (!r.profiles?.google_review_link) return json({ error: 'Bewertungslink nicht konfiguriert' }, 404);
@@ -37,6 +37,8 @@ export default async function handler(req) {
         customerName: (r.customers?.name || '').split(' ')[0],
         studioName: r.profiles?.studio_name || 'dein Studio',
         googleLink: r.profiles.google_review_link,
+        logoUrl: r.profiles.logo_url || null,
+        brandColor: r.profiles.brand_color || null,
         responded: !!r.responded_at,
       });
     }

@@ -26,12 +26,14 @@ export default async function handler(req) {
     if (req.method === 'GET') {
       const token = new URL(req.url).searchParams.get('token');
       if (!token || !UUID.test(token)) return json({ error: 'Ungültig' }, 404);
-      const rows = await rest(`forms?token=eq.${token}&select=signed_at,customers(name),profiles(studio_name)`);
+      const rows = await rest(`forms?token=eq.${token}&select=signed_at,customers(name),profiles(studio_name,logo_url,brand_color)`);
       const f = rows?.[0];
       if (!f) return json({ error: 'Nicht gefunden' }, 404);
       return json({
         customerName: (f.customers?.name || '').split(' ')[0],
         studioName: f.profiles?.studio_name || 'dein Studio',
+        logoUrl: f.profiles?.logo_url || null,
+        brandColor: f.profiles?.brand_color || null,
         signed: !!f.signed_at,
       });
     }

@@ -24,7 +24,7 @@ async function rest(path, opts = {}) {
 }
 
 async function getSalon(slug) {
-  const rows = await rest(`profiles?booking_slug=eq.${encodeURIComponent(slug)}&select=id,studio_name,booking,consult_link`);
+  const rows = await rest(`profiles?booking_slug=eq.${encodeURIComponent(slug)}&select=id,studio_name,booking,consult_link,logo_url,brand_color,studio_description,address`);
   return rows[0] || null;
 }
 
@@ -83,7 +83,11 @@ export default async function handler(req) {
       }
       const treatments = await rest(`treatments?salon_id=eq.${salon.id}&active=eq.true&select=id,name,price,duration_min,is_online&order=name`);
       return json({
-        salon: { name: salon.studio_name || slug, mode: salon.booking.mode, hours: salon.booking.hours || {} },
+        salon: {
+          name: salon.studio_name || slug, mode: salon.booking.mode, hours: salon.booking.hours || {},
+          logoUrl: salon.logo_url || null, brandColor: salon.brand_color || null,
+          description: salon.studio_description || null, address: salon.address || null,
+        },
         treatments,
       });
     }
