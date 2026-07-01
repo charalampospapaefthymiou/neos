@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Bewertung</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#f6f7fb;--bg2:#ffffff;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--accent2:#4f7cff;--success:#10b981;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
+.wrap{width:100%;max-width:480px;}
+.logo{display:flex;align-items:center;gap:10px;justify-content:center;margin:18px 0 6px;}
+.logo .word{font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#4f7cff,#9b6bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.salon-name{text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;}
+.sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:24px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+.g-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;text-decoration:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;text-align:center;}
+.g-note{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;}
+.divider{display:flex;align-items:center;gap:10px;margin:22px 0;color:var(--text2);font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2);}
+.stars{display:flex;justify-content:center;gap:6px;margin-bottom:14px;}
+.star{font-size:30px;cursor:pointer;color:var(--border2);transition:color .1s;user-select:none;}
+.star.on{color:#f0a35e;}
+textarea{width:100%;background:rgba(0,0,0,0.04);border:1px solid var(--border2);border-radius:11px;padding:13px 14px;color:var(--text);font-size:14px;font-family:inherit;resize:vertical;margin-bottom:12px;}
+textarea:focus{outline:none;border-color:var(--accent);}
+.btn{width:100%;background:var(--text);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn:disabled{opacity:.5;cursor:default;}
+.note{font-size:12px;color:var(--text2);text-align:center;line-height:1.5;}
+.done{text-align:center;padding:40px 10px;}
+.done .big{font-size:52px;margin-bottom:14px;}
+.done p{color:var(--text2);font-size:14px;line-height:1.6;}
+.hidden{display:none;}
+.err{color:#f87171;font-size:13px;text-align:center;margin-top:10px;}
+.powered{text-align:center;margin-top:26px;font-size:12px;color:var(--text2);}
+.powered b{background:linear-gradient(135deg,#7aa0ff,#b89bff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.loading{text-align:center;color:var(--text2);padding:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><div class="word">neos</div></div>
+  <div class="salon-name" id="salonName">&nbsp;</div>
+  <div class="sub" id="sub">Wie war dein Termin?</div>
+
+  <div id="loading" class="loading">Lade…</div>
+  <div id="invalid" class="done hidden"><div class="big">🔍</div><h2>Link ungültig</h2><p>Dieser Bewertungs-Link ist nicht (mehr) gültig.</p></div>
+
+  <div id="flow" class="hidden">
+    <div class="card">
+      <a id="googleBtn" class="g-btn" target="_blank" rel="noopener" onclick="trackGoogleClick()">★ Auf Google bewerten</a>
+      <div class="g-note">Öffnet Google in einem neuen Tab. Diese Einladung geht an alle Kundinnen gleichermaßen.</div>
+    </div>
+
+    <div class="divider">oder direktes Feedback ans Studio</div>
+
+    <div class="card" id="feedbackCard">
+      <div class="stars" id="starsRow">
+        <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span><span class="star" data-v="3">★</span><span class="star" data-v="4">★</span><span class="star" data-v="5">★</span>
+      </div>
+      <textarea id="fbText" rows="3" placeholder="Was können wir besser machen? (optional)"></textarea>
+      <button class="btn" id="fbSubmit" onclick="submitFeedback()">Privat an Studio senden</button>
+      <div class="err hidden" id="fbErr"></div>
+      <div class="note" style="margin-top:10px;">Dieses Feedback ist privat und erscheint nicht öffentlich.</div>
+    </div>
+  </div>
+
+  <div id="done" class="done hidden"><div class="big">🙏</div><h2>Danke für dein Feedback!</h2><p>Wir geben uns Mühe, noch besser zu werden.</p></div>
+
+  <div class="powered">bereitgestellt mit <b>neos</b></div>
+</div>
+
+<script>
+const token=location.pathname.split('/').filter(Boolean).pop();
+const $=id=>document.getElementById(id);
+let selRating=0;
+
+async function init(){
+  try{
+    const res=await fetch('/api/review?token='+encodeURIComponent(token));
+    if(!res.ok)throw 0;
+    const json=await res.json();
+    $('salonName').textContent=json.studioName;
+    $('loading').classList.add('hidden');
+    $('googleBtn').href=json.googleLink;
+    if(json.responded){
+      $('feedbackCard').innerHTML='<div class="note">Danke — dein privates Feedback wurde bereits übermittelt. Der Google-Button oben bleibt jederzeit verfügbar.</div>';
+    }
+    $('flow').classList.remove('hidden');
+    document.querySelectorAll('.star').forEach(s=>{
+      s.addEventListener('click',()=>{
+        selRating=Number(s.dataset.v);
+        document.querySelectorAll('.star').forEach(x=>x.classList.toggle('on',Number(x.dataset.v)<=selRating));
+      });
+    });
+  }catch(e){
+    $('loading').classList.add('hidden');
+    $('invalid').classList.remove('hidden');
+  }
+}
+
+async function trackGoogleClick(){
+  try{ await fetch('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,event:'google_click'})}); }catch(e){}
+}
+
+async function submitFeedback(){
+  const err=$('fbErr');err.classList.add('hidden');
+  const text=$('fbText').value.trim();
+  if(!selRating&&!text){err.textContent='Bitte Sterne auswählen oder Text eingeben.';err.classList.remove('hidden');return;}
+  const btn=$('fbSubmit');btn.disabled=true;btn.textContent='Wird gesendet…';
+  try{
+    const res=await fetch('/api/review',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,rating:selRating||null,feedback_text:text})});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    $('flow').classList.add('hidden');
+    $('done').classList.remove('hidden');
+  }catch(e){
+    err.textContent=e.message;err.classList.remove('hidden');
+    btn.disabled=false;btn.textContent='Privat an Studio senden';
+  }
+}
+init();
+</script>
+</body></html>

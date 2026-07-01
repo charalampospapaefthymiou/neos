@@ -388,6 +388,11 @@ td.name{font-weight:600;color:var(--text);}
 <div class="setting-row"><div class="setting-info"><h4>Google / Apple / Outlook</h4><p>Deine neos-Termine erscheinen automatisch in deinem Kalender. In Google: „Weitere Kalender" → „+" → „Per URL" → Link einfügen.</p></div>
 <button class="btn-sm btn-primary-sm" onclick="copyIcsLink(this)">Kalender-Link kopieren</button></div>
 </div>
+<div class="settings-section"><div class="settings-title">⭐ Bewertungen</div>
+<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Jede Kundin bekommt dieselbe Einladung — einen Google-Bewertungslink plus die Möglichkeit, dir privat direktes Feedback zu schreiben. Es gibt keine Vorfilterung nach Zufriedenheit (rechtlich nicht zulässig).</div>
+<div class="setting-row"><div class="setting-info"><h4>Dein Google-Bewertungslink</h4><p>In der Google-Business-Profil-App: „Kunden" → „Rezensionen" → „Mehr Rezensionen erhalten" → Link kopieren</p></div><input class="setting-input" type="url" id="googleReviewLink" placeholder="https://g.page/r/.../review" /></div>
+<button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveGoogleReviewLink()">Bewertungslink speichern</button>
+</div>
 <div class="settings-section"><div class="settings-title">Automatisierung</div>
 <div class="setting-row"><div class="setting-info"><h4>Churn-Schwelle (Tage)</h4><p>Ab wann ein Kunde als gefährdet gilt</p></div><input class="setting-input" type="number" value="60" style="min-width:120px" /></div>
 <div class="setting-row"><div class="setting-info"><h4>Reaktivierung automatisch</h4><p>Nachrichten ohne Bestätigung senden</p></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
@@ -563,11 +568,14 @@ td.name{font-weight:600;color:var(--text);}
 <div id="pfForms" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">💬 WhatsApp-Einwilligung</div>
 <div id="pfOptIn" style="font-size:13px;margin-bottom:18px;"></div>
+<div style="font-weight:700;margin-bottom:8px;">⭐ Bewertung</div>
+<div id="pfReviews" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">🧠 KI-Kartei</div>
 <div id="pfNotes" style="font-size:13px;"></div>
 <div class="modal-actions" style="margin-top:20px;">
   <button class="btn-sm btn-ghost-sm" onclick="closeModal('profile')">Schließen</button>
   <button class="btn-sm btn-ghost-sm" id="pfFormBtn">📋 Anamnese</button>
+  <button class="btn-sm btn-ghost-sm" id="pfReviewBtn">⭐ Bewertung anfragen</button>
   <button class="btn-sm btn-ghost-sm" id="pfEditBtn">✏️ Bearbeiten</button>
   <button class="btn-sm btn-primary-sm" id="pfNoteBtn">🎤 Notiz aufnehmen</button>
 </div>
@@ -954,6 +962,43 @@ async function requestForm(customerId,customerName,phone){
 
 async function copyFormLink(i){
   await navigator.clipboard.writeText(location.origin+'/f/'+pfFormsCache[i].token);
+  showToast('Link kopiert ✓','success');
+}
+
+let pfReviewsCache=[];
+
+async function loadCustomerReviews(customerId){
+  const{data}=await sb.from('reviews').select('id,token,rating,feedback_text,google_clicked_at,responded_at,created_at').eq('customer_id',customerId).order('created_at',{ascending:false}).limit(5);
+  pfReviewsCache=data||[];
+  const el=document.getElementById('pfReviews');
+  if(!pfReviewsCache.length){el.innerHTML='<span style="color:var(--text2);">Noch keine Anfrage — über „⭐ Bewertung anfordern" anfordern.</span>';return;}
+  el.innerHTML=pfReviewsCache.map((r,i)=>{
+    const d=r.created_at.slice(0,10).split('-').reverse().join('.');
+    const stars=r.rating?'★'.repeat(r.rating)+'☆'.repeat(5-r.rating):'';
+    if(r.responded_at)return`<div style="padding:7px 0;border-bottom:1px solid var(--border);"><div>✅ Privates Feedback am ${r.responded_at.slice(0,10).split('-').reverse().join('.')} ${stars?'· '+stars:''}</div>${r.feedback_text?`<div style="color:var(--text2);margin-top:4px;">"${r.feedback_text}"</div>`:''}</div>`;
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><span style="color:var(--text2);">⏳ Angefragt am ${d}${r.google_clicked_at?' · Google-Link angeklickt':''}</span><button class="btn-send" onclick="copyReviewLink(${i})">Link kopieren</button></div>`;
+  }).join('');
+}
+
+async function requestReview(customerId,customerName,phone){
+  const{data:prof}=await sb.from('profiles').select('google_review_link,studio_name').eq('id',currentUser.id).single();
+  if(!prof?.google_review_link){showToast('Bitte zuerst deinen Google-Bewertungslink in den Einstellungen hinterlegen','error');return;}
+  const{data,error}=await sb.from('reviews').insert({salon_id:currentUser.id,customer_id:customerId}).select().single();
+  if(error){showToast(error.message,'error');return;}
+  const url=location.origin+'/r/'+data.token;
+  const msg=`Hallo ${customerName.split(' ')[0]}! Wie war dein Termin bei ${prof.studio_name||'uns'}? Wir freuen uns über dein Feedback: ${url}`;
+  if(phone){
+    window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'').replace(/^00/,'')+'?text='+encodeURIComponent(msg),'_blank');
+    showToast('WhatsApp geöffnet — Bewertungslink ist drin ✓','success');
+  }else{
+    await navigator.clipboard.writeText(url);
+    showToast('Keine Nummer hinterlegt — Link kopiert','success');
+  }
+  loadCustomerReviews(customerId);
+}
+
+async function copyReviewLink(i){
+  await navigator.clipboard.writeText(location.origin+'/r/'+pfReviewsCache[i].token);
   showToast('Link kopiert ✓','success');
 }
 
@@ -1389,12 +1434,13 @@ function renderHoursInputs(hours){
 }
 
 async function loadBookingSettings(){
-  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link').eq('id',currentUser.id).single();
+  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link,google_review_link').eq('id',currentUser.id).single();
   const b=data?.booking||{};
   document.getElementById('bkMode').value=b.mode||'off';
   document.getElementById('bkSlug').value=data?.booking_slug||'';
   document.getElementById('bkSlotMin').value=String(b.slot_min||30);
   document.getElementById('bkConsultLink').value=data?.consult_link||'';
+  document.getElementById('googleReviewLink').value=data?.google_review_link||'';
   // Kalender-Zeitfenster
   const cs=typeof b.cal_start==='number'?b.cal_start:6, ce=typeof b.cal_end==='number'?b.cal_end:24;
   calStart=cs;calEnd=ce;
@@ -1462,6 +1508,14 @@ async function saveBookingSettings(){
   if(error){showToast(error.message.includes('duplicate')?'Dieser Link-Name ist schon vergeben':error.message,'error');return;}
   updateBookingLinkBox();
   showToast('Buchungseinstellungen gespeichert ✓','success');
+}
+
+async function saveGoogleReviewLink(){
+  const link=document.getElementById('googleReviewLink').value.trim();
+  if(link&&!/^https?:\/\//.test(link)){showToast('Bitte einen vollständigen Link mit https:// angeben','error');return;}
+  const{error}=await sb.from('profiles').update({google_review_link:link||null}).eq('id',currentUser.id);
+  if(error){showToast(error.message,'error');return;}
+  showToast('Bewertungslink gespeichert ✓','success');
 }
 
 async function loadRequests(){
@@ -1649,7 +1703,9 @@ async function openCustomerProfile(customerId){
   document.getElementById('pfNoteBtn').onclick=()=>{closeModal('profile');openVoiceNote(c.id,c.name);};
   document.getElementById('pfEditBtn').onclick=()=>openEditCustomer(c.id);
   document.getElementById('pfFormBtn').onclick=()=>requestForm(c.id,c.name,c.phone);
+  document.getElementById('pfReviewBtn').onclick=()=>requestReview(c.id,c.name,c.phone);
   loadCustomerForms(c.id);
+  loadCustomerReviews(c.id);
   document.getElementById('pfAppointments').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   document.getElementById('pfNotes').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   openModal('profile');
