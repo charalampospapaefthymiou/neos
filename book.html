@@ -54,9 +54,11 @@ input:focus{outline:none;border-color:var(--accent);}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo"><div class="word">neos</div></div>
+  <img id="studioLogo" class="hidden" style="width:56px;height:56px;border-radius:14px;object-fit:cover;display:block;margin:6px auto 10px;" />
   <div class="salon-name" id="salonName">&nbsp;</div>
   <div class="sub" id="salonSub">Online-Termin</div>
+  <div class="sub hidden" id="salonDesc" style="margin-top:-16px;"></div>
+  <div class="sub hidden" id="salonAddress" style="margin-top:-16px;font-size:12px;"></div>
 
   <div id="loading" class="loading">Lade…</div>
   <div id="unavailable" class="done hidden"><div class="big">📞</div><h2>Online-Buchung nicht aktiv</h2><p>Bitte kontaktiere den Salon direkt für einen Termin.</p></div>
@@ -99,6 +101,15 @@ let salon=null,treatments=[],selT=null,selDate=null,selTime=null;
 const $=id=>document.getElementById(id);
 const fmtPrice=p=>p?Number(p).toLocaleString('de-DE',{minimumFractionDigits:0})+' €':'';
 
+function applyBrandColor(color){
+  if(!color)return;
+  const s=document.createElement('style');
+  s.textContent=`.btn{background:${color} !important;}
+.opt:hover,.opt.sel,.chip.sel,.slot.sel{border-color:${color} !important;background:${color}1a !important;}
+input:focus{border-color:${color} !important;}`;
+  document.head.appendChild(s);
+}
+
 function updateSteps(step){
   const ids=['dotT','dotD','dotS','dotK'];
   ids.forEach((id,i)=>{
@@ -115,6 +126,10 @@ async function init(){
     const json=await res.json();
     salon=json.salon;treatments=json.treatments;
     $('salonName').textContent=salon.name;
+    if(salon.logoUrl){$('studioLogo').src=salon.logoUrl;$('studioLogo').classList.remove('hidden');}
+    if(salon.description){$('salonDesc').textContent=salon.description;$('salonDesc').classList.remove('hidden');}
+    if(salon.address){$('salonAddress').textContent='📍 '+salon.address;$('salonAddress').classList.remove('hidden');}
+    applyBrandColor(salon.brandColor);
     $('loading').classList.add('hidden');
     if(!treatments.length){$('unavailable').classList.remove('hidden');return;}
     $('flow').classList.remove('hidden');

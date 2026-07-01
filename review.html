@@ -39,7 +39,7 @@ textarea:focus{outline:none;border-color:var(--accent);}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo"><div class="word">neos</div></div>
+  <img id="studioLogo" class="hidden" style="width:56px;height:56px;border-radius:14px;object-fit:cover;display:block;margin:6px auto 10px;" />
   <div class="salon-name" id="salonName">&nbsp;</div>
   <div class="sub" id="sub">Wie war dein Termin?</div>
 
@@ -75,12 +75,22 @@ const token=location.pathname.split('/').filter(Boolean).pop();
 const $=id=>document.getElementById(id);
 let selRating=0;
 
+function applyBrandColor(color){
+  if(!color)return;
+  const s=document.createElement('style');
+  s.textContent=`.g-btn{background:${color} !important;}
+.star.on{color:${color} !important;}`;
+  document.head.appendChild(s);
+}
+
 async function init(){
   try{
     const res=await fetch('/api/review?token='+encodeURIComponent(token));
     if(!res.ok)throw 0;
     const json=await res.json();
     $('salonName').textContent=json.studioName;
+    if(json.logoUrl){$('studioLogo').src=json.logoUrl;$('studioLogo').classList.remove('hidden');}
+    applyBrandColor(json.brandColor);
     $('loading').classList.add('hidden');
     $('googleBtn').href=json.googleLink;
     if(json.responded){

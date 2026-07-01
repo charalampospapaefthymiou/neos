@@ -38,7 +38,7 @@ canvas{width:100%;height:140px;background:rgba(0,0,0,0.04);border:1px dashed var
 </head>
 <body>
 <div class="wrap">
-  <div class="logo"><div class="word">neos</div></div>
+  <img id="studioLogo" class="hidden" style="width:56px;height:56px;border-radius:14px;object-fit:cover;display:block;margin:6px auto 10px;" />
   <h1 id="title">Anamnese & Einverständnis</h1>
   <div class="sub" id="sub">Lade…</div>
 
@@ -77,6 +77,14 @@ const QUESTIONS=[
 ];
 const answers={};
 
+function applyBrandColor(color){
+  if(!color)return;
+  const s=document.createElement('style');
+  s.textContent=`.btn{background:${color} !important;}
+.yn button.sel-ja{border-color:${color} !important;background:${color}1e !important;}`;
+  document.head.appendChild(s);
+}
+
 function renderQuestions(){
   document.getElementById('questions').innerHTML=QUESTIONS.map(([k,q,detail])=>`
    <div class="q"><label>${q}</label>
@@ -114,6 +122,8 @@ async function init(){
     if(!res.ok)throw 0;
     const json=await res.json();
     document.getElementById('sub').textContent=`Für ${json.customerName} · ${json.studioName}`;
+    if(json.logoUrl){document.getElementById('studioLogo').src=json.logoUrl;document.getElementById('studioLogo').classList.remove('hidden');}
+    applyBrandColor(json.brandColor);
     if(json.signed){document.getElementById('done').classList.remove('hidden');return;}
     document.getElementById('formArea').classList.remove('hidden');
     renderQuestions();initSig();

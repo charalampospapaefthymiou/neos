@@ -342,8 +342,28 @@ td.name{font-weight:600;color:var(--text);}
 <div class="page" id="page-settings">
 <div class="card" style="max-width:700px"><div class="card-body">
 <div class="settings-section"><div class="settings-title">Studio-Informationen</div>
-<div class="setting-row"><div class="setting-info"><h4>Studio-Name</h4><p>Wird in Nachrichten verwendet</p></div><input class="setting-input" type="text" placeholder="Mein Studio" /></div>
-<div class="setting-row"><div class="setting-info"><h4>WhatsApp Nummer</h4><p>Für automatische Nachrichten</p></div><input class="setting-input" type="text" placeholder="+49 123 456789" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Studio-Name</h4><p>Wird in Nachrichten verwendet</p></div><input class="setting-input" type="text" id="studioNameInput" placeholder="Mein Studio" /></div>
+<div class="setting-row"><div class="setting-info"><h4>WhatsApp Nummer</h4><p>Für automatische Nachrichten</p></div><input class="setting-input" type="text" id="studioWhatsappInput" placeholder="+49 123 456789" /></div>
+<button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveStudioInfo()">Studio-Informationen speichern</button>
+</div>
+<div class="settings-section"><div class="settings-title">🎨 Profil &amp; Branding</div>
+<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Erscheint auf deinem Buchungswidget, der Bewertungsseite und dem Anamnese-Bogen — so wirkt es wie deine eigene Seite, nicht wie eine fremde Software.</div>
+<div class="setting-row"><div class="setting-info"><h4>Logo</h4><p>Quadratisch, wird auf Kundenseiten angezeigt</p></div>
+<div style="display:flex;align-items:center;gap:10px;">
+<div id="logoPreview" style="width:44px;height:44px;border-radius:10px;background:var(--bg3);background-size:cover;background-position:center;border:1px solid var(--border);flex-shrink:0;"></div>
+<input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp" onchange="uploadLogo(this)" />
+</div></div>
+<div class="setting-row"><div class="setting-info"><h4>Markenfarbe</h4><p>Färbt Buttons auf Kundenseiten und dezent auch dein Dashboard</p></div>
+<div style="display:flex;align-items:center;gap:8px;">
+<input type="color" id="brandColorPicker" value="#4f7cff" style="width:44px;height:36px;padding:2px;border:1px solid var(--border2);border-radius:8px;cursor:pointer;" />
+<input class="setting-input" type="text" id="brandColorHex" placeholder="#4f7cff" style="width:110px;min-width:0;" />
+</div></div>
+<div class="setting-row"><div class="setting-info"><h4>Studio-Beschreibung</h4><p>Kurzer Text auf der Buchungsseite</p></div><input class="setting-input" type="text" id="studioDescInput" placeholder="z.B. Dein Beauty-Studio im Herzen von München" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Adresse</h4><p>Wird Kundinnen angezeigt</p></div><input class="setting-input" type="text" id="studioAddressInput" placeholder="Musterstraße 1, 80331 München" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Kontakt-E-Mail</h4><p>Öffentlich, für Rückfragen von Kundinnen</p></div><input class="setting-input" type="email" id="studioContactEmailInput" placeholder="hallo@mein-studio.de" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Instagram</h4><p>Link zu deinem Profil</p></div><input class="setting-input" type="url" id="studioInstagramInput" placeholder="https://instagram.com/dein-studio" /></div>
+<div class="setting-row"><div class="setting-info"><h4>Website</h4><p>Deine eigene Studio-Website</p></div><input class="setting-input" type="url" id="studioWebsiteInput" placeholder="https://mein-studio.de" /></div>
+<button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveBranding()">Branding speichern</button>
 </div>
 <div class="settings-section"><div class="settings-title">💆 Behandlungen</div>
 <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Preis &amp; Dauer steuern Buchungswidget und Umsatzanzeige. Rhythmus = nach wie vielen Tagen die Behandlung wieder fällig ist (Basis für Erinnerungen).</div>
@@ -398,6 +418,12 @@ td.name{font-weight:600;color:var(--text);}
 <div class="setting-row"><div class="setting-info"><h4>Reaktivierung automatisch</h4><p>Nachrichten ohne Bestätigung senden</p></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 </div>
 <button class="btn-sm btn-primary-sm" onclick="showToast('Einstellungen gespeichert ✓','success')">Speichern</button>
+<div class="settings-section"><div class="settings-title">🔐 Account</div>
+<div class="setting-row"><div class="setting-info"><h4>Login-E-Mail</h4><p>Aktuell: <span id="currentEmailLabel">–</span>. Nach der Änderung musst du den Bestätigungslink in deinem neuen Postfach öffnen.</p></div>
+<div style="display:flex;gap:8px;"><input class="setting-input" type="email" id="newEmailInput" placeholder="neue@email.de" /><button class="btn-sm btn-ghost-sm" onclick="changeEmail()">Ändern</button></div></div>
+<div class="setting-row"><div class="setting-info"><h4>Passwort</h4><p>Mindestens 8 Zeichen</p></div>
+<div style="display:flex;gap:8px;"><input class="setting-input" type="password" id="newPasswordInput" placeholder="Neues Passwort" /><button class="btn-sm btn-ghost-sm" onclick="changePassword()">Ändern</button></div></div>
+</div>
 </div></div>
 </div>
 
@@ -1434,13 +1460,29 @@ function renderHoursInputs(hours){
 }
 
 async function loadBookingSettings(){
-  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link,google_review_link').eq('id',currentUser.id).single();
+  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link,google_review_link,whatsapp_number,logo_url,brand_color,studio_description,address,contact_email,instagram_url,website_url').eq('id',currentUser.id).single();
   const b=data?.booking||{};
   document.getElementById('bkMode').value=b.mode||'off';
   document.getElementById('bkSlug').value=data?.booking_slug||'';
   document.getElementById('bkSlotMin').value=String(b.slot_min||30);
   document.getElementById('bkConsultLink').value=data?.consult_link||'';
   document.getElementById('googleReviewLink').value=data?.google_review_link||'';
+  // Studio-Informationen
+  document.getElementById('studioNameInput').value=data?.studio_name||'';
+  document.getElementById('studioWhatsappInput').value=data?.whatsapp_number||'';
+  // Profil & Branding
+  document.getElementById('studioDescInput').value=data?.studio_description||'';
+  document.getElementById('studioAddressInput').value=data?.address||'';
+  document.getElementById('studioContactEmailInput').value=data?.contact_email||'';
+  document.getElementById('studioInstagramInput').value=data?.instagram_url||'';
+  document.getElementById('studioWebsiteInput').value=data?.website_url||'';
+  const brandColor=data?.brand_color||'#4f7cff';
+  document.getElementById('brandColorPicker').value=brandColor;
+  document.getElementById('brandColorHex').value=brandColor;
+  if(data?.logo_url)document.getElementById('logoPreview').style.backgroundImage=`url(${data.logo_url})`;
+  applyBrandColor(data?.brand_color);
+  // Account
+  document.getElementById('currentEmailLabel').textContent=currentUser.email||'–';
   // Kalender-Zeitfenster
   const cs=typeof b.cal_start==='number'?b.cal_start:6, ce=typeof b.cal_end==='number'?b.cal_end:24;
   calStart=cs;calEnd=ce;
@@ -1508,6 +1550,77 @@ async function saveBookingSettings(){
   if(error){showToast(error.message.includes('duplicate')?'Dieser Link-Name ist schon vergeben':error.message,'error');return;}
   updateBookingLinkBox();
   showToast('Buchungseinstellungen gespeichert ✓','success');
+}
+
+async function saveStudioInfo(){
+  const name=document.getElementById('studioNameInput').value.trim();
+  const wa=document.getElementById('studioWhatsappInput').value.trim();
+  const{error}=await sb.from('profiles').update({studio_name:name||null,whatsapp_number:wa||null}).eq('id',currentUser.id);
+  if(error){showToast(error.message,'error');return;}
+  showToast('Studio-Informationen gespeichert ✓','success');
+}
+
+function applyBrandColor(color){
+  const id='brandColorOverride';
+  document.getElementById(id)?.remove();
+  if(!color)return;
+  const style=document.createElement('style');
+  style.id=id;
+  style.textContent=`:root{--accent2:${color} !important;}`;
+  document.head.appendChild(style);
+}
+
+async function uploadLogo(input){
+  const file=input.files?.[0];
+  if(!file)return;
+  if(file.size>2*1024*1024){showToast('Bitte ein Bild unter 2MB verwenden','error');return;}
+  const ext=(file.name.split('.').pop()||'png').toLowerCase();
+  const path=`${currentUser.id}/logo.${ext}`;
+  const{error:upErr}=await sb.storage.from('branding').upload(path,file,{upsert:true,cacheControl:'3600'});
+  if(upErr){showToast(upErr.message,'error');return;}
+  const{data:pub}=sb.storage.from('branding').getPublicUrl(path);
+  const url=pub.publicUrl+'?v='+Date.now();
+  const{error}=await sb.from('profiles').update({logo_url:url}).eq('id',currentUser.id);
+  if(error){showToast(error.message,'error');return;}
+  document.getElementById('logoPreview').style.backgroundImage=`url(${url})`;
+  showToast('Logo hochgeladen ✓','success');
+}
+
+document.getElementById('brandColorPicker')?.addEventListener('input',e=>{document.getElementById('brandColorHex').value=e.target.value;});
+
+async function saveBranding(){
+  const hex=document.getElementById('brandColorHex').value.trim();
+  if(hex&&!/^#[0-9a-fA-F]{6}$/.test(hex)){showToast('Bitte eine gültige Hex-Farbe angeben (z.B. #4f7cff)','error');return;}
+  const payload={
+    brand_color:hex||null,
+    studio_description:document.getElementById('studioDescInput').value.trim()||null,
+    address:document.getElementById('studioAddressInput').value.trim()||null,
+    contact_email:document.getElementById('studioContactEmailInput').value.trim()||null,
+    instagram_url:document.getElementById('studioInstagramInput').value.trim()||null,
+    website_url:document.getElementById('studioWebsiteInput').value.trim()||null,
+  };
+  const{error}=await sb.from('profiles').update(payload).eq('id',currentUser.id);
+  if(error){showToast(error.message,'error');return;}
+  applyBrandColor(payload.brand_color);
+  showToast('Branding gespeichert ✓','success');
+}
+
+async function changeEmail(){
+  const email=document.getElementById('newEmailInput').value.trim();
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('Bitte eine gültige E-Mail-Adresse angeben','error');return;}
+  const{error}=await sb.auth.updateUser({email});
+  if(error){showToast(error.message,'error');return;}
+  showToast('Bestätigungslink an beide Adressen gesendet — bitte E-Mail-Postfach prüfen','success');
+  document.getElementById('newEmailInput').value='';
+}
+
+async function changePassword(){
+  const pw=document.getElementById('newPasswordInput').value;
+  if(!pw||pw.length<8){showToast('Passwort muss mindestens 8 Zeichen haben','error');return;}
+  const{error}=await sb.auth.updateUser({password:pw});
+  if(error){showToast(error.message,'error');return;}
+  showToast('Passwort geändert ✓','success');
+  document.getElementById('newPasswordInput').value='';
 }
 
 async function saveGoogleReviewLink(){
