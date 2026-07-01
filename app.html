@@ -18,8 +18,9 @@
 html,body{height:100%;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;overflow:hidden;}
 .sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:10;}
-.sidebar-logo{padding:24px 20px 20px;font-size:22px;font-weight:800;letter-spacing:-0.5px;border-bottom:1px solid var(--border);}
-.sidebar-logo span{color:var(--accent2);}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.sidebar-logo-mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent2),var(--teal2));flex-shrink:0;}
+.sidebar-logo-text{font-size:22px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent2),var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .sidebar-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
 .nav-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:8px 8px 4px;margin-top:8px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;}
@@ -242,7 +243,7 @@ td.name{font-weight:600;color:var(--text);}
 </head>
 <body>
 <aside class="sidebar">
-<div class="sidebar-logo">ne<span>os</span></div>
+<div class="sidebar-logo"><div class="sidebar-logo-mark"></div><div class="sidebar-logo-text">neos</div></div>
 <nav class="sidebar-nav">
 <div class="nav-label">Übersicht</div>
 <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span> Dashboard</button>

@@ -11,7 +11,8 @@
 body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
 .wrap{width:100%;max-width:440px;}
 .logo{display:flex;align-items:center;gap:10px;justify-content:center;margin:18px 0 6px;}
-.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#9b6bff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;}
+.logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#9b6bff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;flex-shrink:0;}
+.logo .word{font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#4f7cff,#9b6bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .salon-name{text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;}
 .sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:24px;}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
@@ -46,7 +47,7 @@ input:focus{outline:none;border-color:var(--accent);}
 </head>
 <body>
 <div class="wrap">
-  <div class="logo"><div class="mark">n</div></div>
+  <div class="logo"><div class="mark">n</div><div class="word">neos</div></div>
   <div class="salon-name" id="salonName">&nbsp;</div>
   <div class="sub" id="salonSub">Online-Termin</div>
 
