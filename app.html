@@ -368,6 +368,11 @@ td.name{font-weight:600;color:var(--text);}
 🔗 <a id="bkLinkA" target="_blank" style="color:var(--accent2);"></a>
 <button class="btn-sm btn-ghost-sm" style="margin-left:8px;" onclick="copyBookingLink()">Kopieren</button>
 </div>
+<div id="bkEmbedBox" style="display:none;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:13px;">
+<div style="margin-bottom:8px;">🧩 <strong>Einbetten auf deiner eigenen Website</strong><br/><span style="color:var(--text2);">Diesen Code in die Studio-Website einfügen — das Buchungswidget erscheint direkt dort, ohne Weiterleitung.</span></div>
+<textarea id="bkEmbedCode" readonly rows="3" style="width:100%;font-family:monospace;font-size:12px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px;resize:vertical;"></textarea>
+<button class="btn-sm btn-ghost-sm" style="margin-top:8px;" onclick="copyEmbedCode()">Code kopieren</button>
+</div>
 <button class="btn-sm btn-primary-sm" style="margin-top:10px;" onclick="saveBookingSettings()">Buchungseinstellungen speichern</button>
 </div>
 <div class="settings-section"><div class="settings-title">🗓️ Kalender-Ansicht</div>
@@ -1418,16 +1423,25 @@ function updateBookingLinkBox(){
   const slug=document.getElementById('bkSlug').value.trim();
   const mode=document.getElementById('bkMode').value;
   const box=document.getElementById('bkLinkBox');
+  const embedBox=document.getElementById('bkEmbedBox');
   if(slug&&mode!=='off'){
     const url=location.origin+'/book/'+slug;
     const a=document.getElementById('bkLinkA');a.textContent=url;a.href=url;
     box.style.display='block';
-  }else box.style.display='none';
+    const embedUrl=url+'?embed=1';
+    document.getElementById('bkEmbedCode').value=`<iframe src="${embedUrl}" style="width:100%;max-width:520px;height:780px;border:0;" title="Termin buchen"></iframe>`;
+    embedBox.style.display='block';
+  }else{box.style.display='none';embedBox.style.display='none';}
 }
 
 function copyBookingLink(){
   navigator.clipboard.writeText(document.getElementById('bkLinkA').textContent);
   showToast('Link kopiert ✓','success');
+}
+
+function copyEmbedCode(){
+  navigator.clipboard.writeText(document.getElementById('bkEmbedCode').value);
+  showToast('Einbett-Code kopiert ✓','success');
 }
 
 async function saveBookingSettings(){

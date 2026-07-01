@@ -9,7 +9,14 @@
 :root{--bg:#f6f7fb;--bg2:#ffffff;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--accent2:#4f7cff;--success:#10b981;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
+body.embed{background:transparent;padding:6px 4px 20px;}
+body.embed .powered{margin-top:16px;}
 .wrap{width:100%;max-width:440px;}
+.steps{display:flex;justify-content:center;gap:6px;margin:6px 0 18px;}
+.steps .dot{width:26px;height:4px;border-radius:99px;background:var(--border2);transition:background .2s;}
+.steps .dot.done{background:var(--accent);}
+.steps .dot.active{background:var(--accent2);}
+input.invalid{border-color:#f87171 !important;}
 .logo{display:flex;align-items:center;gap:10px;justify-content:center;margin:18px 0 6px;}
 .logo .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#9b6bff);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;flex-shrink:0;}
 .logo .word{font-size:20px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,#4f7cff,#9b6bff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
@@ -55,6 +62,9 @@ input:focus{outline:none;border-color:var(--accent);}
   <div id="unavailable" class="done hidden"><div class="big">📞</div><h2>Online-Buchung nicht aktiv</h2><p>Bitte kontaktiere den Salon direkt für einen Termin.</p></div>
 
   <div id="flow" class="hidden">
+    <div class="steps" id="stepsBar">
+      <div class="dot active" id="dotT"></div><div class="dot" id="dotD"></div><div class="dot" id="dotS"></div><div class="dot" id="dotK"></div>
+    </div>
     <div class="card"><div class="step-title">1 · Behandlung</div><div id="treatList"></div></div>
     <div class="card hidden" id="stepDay"><div class="step-title">2 · Tag</div><div class="chips" id="dayChips"></div></div>
     <div class="card hidden" id="stepSlot"><div class="step-title">3 · Uhrzeit</div><div class="slots" id="slotGrid"></div><div class="note hidden" id="noSlots">An diesem Tag sind keine Termine frei — wähle einen anderen Tag.</div></div>
@@ -62,8 +72,9 @@ input:focus{outline:none;border-color:var(--accent);}
       <div class="step-title">4 · Deine Daten</div>
       <input type="text" id="bkName" placeholder="Dein Name" autocomplete="name" />
       <input type="tel" id="bkPhone" placeholder="Handynummer (für die Bestätigung)" autocomplete="tel" />
+      <input type="email" id="bkEmail" placeholder="E-Mail-Adresse" autocomplete="email" />
       <label style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45;color:var(--text2);margin:4px 2px 10px;cursor:pointer;">
-        <input type="checkbox" id="bkOptIn" style="margin-top:2px;flex-shrink:0;" />
+        <input type="checkbox" id="bkOptIn" style="margin-top:2px;flex-shrink:0;width:auto;" />
         <span>Ich möchte Terminerinnerungen und gelegentliche Nachrichten per WhatsApp erhalten. Jederzeit widerrufbar.</span>
       </label>
       <button class="btn" id="bkSubmit" onclick="submitBooking()">Termin anfragen</button>
@@ -88,7 +99,16 @@ let salon=null,treatments=[],selT=null,selDate=null,selTime=null;
 const $=id=>document.getElementById(id);
 const fmtPrice=p=>p?Number(p).toLocaleString('de-DE',{minimumFractionDigits:0})+' €':'';
 
+function updateSteps(step){
+  const ids=['dotT','dotD','dotS','dotK'];
+  ids.forEach((id,i)=>{
+    const el=$(id);el.classList.remove('active','done');
+    if(i<step)el.classList.add('done');else if(i===step)el.classList.add('active');
+  });
+}
+
 async function init(){
+  if(new URLSearchParams(location.search).get('embed')==='1')document.body.classList.add('embed');
   try{
     const res=await fetch('/api/booking?slug='+encodeURIComponent(slug));
     if(!res.ok)throw 0;
@@ -128,6 +148,8 @@ function pickT(id,el){
   $('stepDay').classList.remove('hidden');
   $('stepSlot').classList.add('hidden');$('stepData').classList.add('hidden');
   document.querySelectorAll('#dayChips .chip').forEach(c=>c.classList.remove('sel'));
+  updateSteps(1);
+  setTimeout(()=>$('stepDay').scrollIntoView({behavior:'smooth',block:'start'}),80);
 }
 
 async function pickD(iso,el){
@@ -136,6 +158,8 @@ async function pickD(iso,el){
   el.classList.add('sel');
   $('stepSlot').classList.remove('hidden');$('stepData').classList.add('hidden');
   $('slotGrid').innerHTML='<div class="note">Lade freie Termine…</div>';$('noSlots').classList.add('hidden');
+  updateSteps(2);
+  setTimeout(()=>$('stepSlot').scrollIntoView({behavior:'smooth',block:'start'}),80);
   const res=await fetch(`/api/booking?slug=${encodeURIComponent(slug)}&date=${iso}&treatment=${selT}`);
   const json=await res.json();
   if(!json.slots||!json.slots.length){$('slotGrid').innerHTML='';$('noSlots').classList.remove('hidden');return;}
@@ -147,17 +171,29 @@ function pickS(t,el){
   document.querySelectorAll('.slot').forEach(s=>s.classList.remove('sel'));
   el.classList.add('sel');
   $('stepData').classList.remove('hidden');
-  $('stepData').scrollIntoView({behavior:'smooth'});
+  updateSteps(3);
+  setTimeout(()=>$('stepData').scrollIntoView({behavior:'smooth',block:'start'}),80);
 }
 
 async function submitBooking(){
-  const name=$('bkName').value.trim(),phone=$('bkPhone').value.trim();
+  const name=$('bkName').value.trim(),phone=$('bkPhone').value.trim(),email=$('bkEmail').value.trim();
   const err=$('bkErr');err.classList.add('hidden');
-  if(!name||phone.replace(/[^0-9]/g,'').length<6){err.textContent='Bitte Name und gültige Handynummer angeben.';err.classList.remove('hidden');return;}
+  [$('bkName'),$('bkPhone'),$('bkEmail')].forEach(i=>i.classList.remove('invalid'));
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  let bad=[];
+  if(!name)bad.push($('bkName'));
+  if(phone.replace(/[^0-9]/g,'').length<6)bad.push($('bkPhone'));
+  if(!emailOk)bad.push($('bkEmail'));
+  if(bad.length){
+    bad.forEach(i=>i.classList.add('invalid'));
+    err.textContent='Bitte Name, Handynummer und eine gültige E-Mail-Adresse angeben.';err.classList.remove('hidden');
+    bad[0].focus();
+    return;
+  }
   const btn=$('bkSubmit');btn.disabled=true;btn.textContent='Einen Moment…';
   try{
     const res=await fetch('/api/booking',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({slug,treatment_id:selT,date:selDate,time:selTime,name,phone,opt_in:$('bkOptIn').checked})});
+      body:JSON.stringify({slug,treatment_id:selT,date:selDate,time:selTime,name,phone,email,opt_in:$('bkOptIn').checked})});
     const json=await res.json();
     if(!res.ok)throw new Error(json.error||'Fehler');
     const tName=treatments.find(t=>t.id===selT)?.name||'';
