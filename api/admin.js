@@ -36,10 +36,70 @@ export default async function handler(req) {
     if (user.id !== ADMIN_ID()) return json({ error: 'Kein Zugriff' }, 403);
 
     if (req.method === 'POST') {
-      const { salon_id, plan } = await req.json();
+      const body = await req.json();
+
+      // ── CRM: Leads (action-basiert) ──
+      if (body.action === 'lead_create') {
+        const l = body.lead || {};
+        if (!l.name) return json({ error: 'Name fehlt' }, 400);
+        const allowed = ['name','studio','city','phone','email','instagram','source','status','notes','next_action','next_action_at','salon_id'];
+        const row = {}; allowed.forEach(k => { if (l[k] !== undefined && l[k] !== '') row[k] = l[k]; });
+        const created = await rest('leads', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify(row) });
+        return json({ ok: true, lead: created[0] });
+      }
+      if (body.action === 'lead_update') {
+        if (!body.id) return json({ error: 'id fehlt' }, 400);
+        const allowed = ['name','studio','city','phone','email','instagram','source','status','notes','next_action','next_action_at','salon_id'];
+        const row = { updated_at: new Date().toISOString() };
+        allowed.forEach(k => { if (body.fields && body.fields[k] !== undefined) row[k] = body.fields[k] === '' ? null : body.fields[k]; });
+        await rest(`leads?id=eq.${body.id}`, { method: 'PATCH', body: JSON.stringify(row) });
+        return json({ ok: true });
+      }
+      if (body.action === 'lead_delete') {
+        if (!body.id) return json({ error: 'id fehlt' }, 400);
+        await rest(`leads?id=eq.${body.id}`, { method: 'DELETE' });
+        return json({ ok: true });
+      }
+
+      // ── Bestand: Plan umstellen ──
+      const { salon_id, plan } = body;
       if (!['trial', 'starter', 'growth', 'pro'].includes(plan)) return json({ error: 'Ungültiger Plan' }, 400);
       await rest(`profiles?id=eq.${salon_id}`, { method: 'PATCH', body: JSON.stringify({ plan, plan_updated_at: new Date().toISOString() }) });
       return json({ ok: true });
+    }
+
+    // ── CRM: Leads laden (GET ?resource=leads) ──
+    const url = new URL(req.url);
+    if (url.searchParams.get('resource') === 'leads') {
+      const leads = await rest('leads?select=*&order=created_at.desc&limit=1000');
+
+      // Auto-Verknüpfung: Leads mit E-Mail gegen registrierte Accounts matchen
+      const unlinked = (leads || []).filter(l => !l.salon_id && l.email);
+      if (unlinked.length) {
+        try {
+          const usersRes = await fetch(`${process.env.SUPABASE_URL}/auth/v1/admin/users?per_page=1000`, { headers: svc() });
+          if (usersRes.ok) {
+            const { users } = await usersRes.json();
+            const byEmail = {}; (users || []).forEach(u => { if (u.email) byEmail[u.email.toLowerCase()] = u.id; });
+            for (const l of unlinked) {
+              const uid = byEmail[l.email.toLowerCase()];
+              if (uid) {
+                l.salon_id = uid;
+                await rest(`leads?id=eq.${l.id}`, { method: 'PATCH', body: JSON.stringify({ salon_id: uid }) });
+              }
+            }
+          }
+        } catch (e) { /* Verknüpfung ist Komfort, kein Blocker */ }
+      }
+
+      // Aktivitätsdaten der verknüpften Salons anreichern
+      const ids = [...new Set((leads || []).filter(l => l.salon_id).map(l => l.salon_id))];
+      let salonInfo = {};
+      if (ids.length) {
+        const profs = await rest(`profiles?select=id,studio_name,plan,created_at&id=in.(${ids.join(',')})`);
+        (profs || []).forEach(p => { salonInfo[p.id] = p; });
+      }
+      return json({ leads: leads || [], salonInfo });
     }
 
     // GET: alles einsammeln (Pilot-Maßstab — bewusst simpel)
