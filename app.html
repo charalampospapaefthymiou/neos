@@ -10,17 +10,17 @@
 <meta name="apple-mobile-web-app-title" content="neos" />
 <link rel="apple-touch-icon" href="/icon-192.png" />
 <title>neos — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --bg:#f6f7fb;--bg2:#ffffff;--bg3:#eef1f7;--bg4:#e4e8f0;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--text3:#8b95a7;--accent:#3b6cf6;--accent2:#4f7cff;--accent3:#2747c8;--teal:#7c4dff;--teal2:#9b6bff;--error:#ef4444;--success:#10b981;--warning:#f59e0b;--sidebar:240px; }
+:root { --bg:#f5f8fd;--bg2:#ffffff;--bg3:#ebf2fb;--bg4:#e1eaf6;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--text3:#8b95a7;--accent:#3b6cf6;--accent2:#4f7cff;--accent3:#2747c8;--teal:#0ea5e9;--teal2:#38bdf8;--error:#ef4444;--success:#10b981;--warning:#f59e0b;--sidebar:240px; }
 html,body{height:100%;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;overflow:hidden;}
 .sidebar{width:var(--sidebar);min-width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:10;}
 .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
 .sidebar-logo-mark{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--accent2),var(--teal2));flex-shrink:0;}
-.sidebar-logo-text{font-size:22px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent2),var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sidebar-logo-text{font-family:'Sora','Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.03em;background:linear-gradient(135deg,var(--accent2),var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .sidebar-nav{flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
 .nav-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:8px 8px 4px;margin-top:8px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 0.15s;border:none;background:none;width:100%;text-align:left;}
@@ -121,7 +121,7 @@ td.name{font-weight:600;color:var(--text);}
 .upload-icon{font-size:36px;margin-bottom:12px;}
 .upload-text{font-size:14px;font-weight:600;margin-bottom:4px;}
 .upload-sub{font-size:12px;color:var(--text3);}
-.ai-card{background:linear-gradient(135deg,rgba(79,124,255,0.08),rgba(155,107,255,0.05));border:1px solid rgba(79,124,255,0.2);border-radius:12px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.ai-card{background:linear-gradient(135deg,rgba(79,124,255,0.08),rgba(56,189,248,0.05));border:1px solid rgba(79,124,255,0.2);border-radius:12px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
 .ai-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
 .ai-text{flex:1;}
 .ai-client{font-size:13px;font-weight:700;margin-bottom:3px;}
@@ -176,7 +176,7 @@ td.name{font-weight:600;color:var(--text);}
 .toast.show{opacity:1;transform:translateY(0);}
 .toast.success{border-color:rgba(52,211,153,0.3);color:var(--success);}
 .toast.error{border-color:rgba(248,113,113,0.3);color:var(--error);}
-.plan-banner{background:linear-gradient(135deg,rgba(79,124,255,0.1),rgba(155,107,255,0.05));border:1px solid rgba(79,124,255,0.2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.plan-banner{background:linear-gradient(135deg,rgba(79,124,255,0.1),rgba(56,189,248,0.05));border:1px solid rgba(79,124,255,0.2);border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
 .plan-info{font-size:13px;}
 .plan-name-display{font-weight:700;color:var(--accent3);}
 .usage-bar-wrap{margin-top:6px;}
@@ -191,7 +191,7 @@ td.name{font-weight:600;color:var(--text);}
 .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:900px;margin:0 auto 40px;}
 .pricing-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px 24px;position:relative;transition:all 0.25s;display:flex;flex-direction:column;}
 .pricing-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-.pricing-card.featured{border-color:rgba(79,124,255,0.5);background:linear-gradient(135deg,rgba(79,124,255,0.08),rgba(155,107,255,0.04));box-shadow:0 0 40px rgba(79,124,255,0.15);}
+.pricing-card.featured{border-color:rgba(79,124,255,0.5);background:linear-gradient(135deg,rgba(79,124,255,0.08),rgba(56,189,248,0.04));box-shadow:0 0 40px rgba(79,124,255,0.15);}
 .pricing-card.featured:hover{box-shadow:0 20px 60px rgba(79,124,255,0.2);}
 .pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),#3258d8);color:#fff;font-size:11px;font-weight:700;padding:4px 14px;border-radius:100px;white-space:nowrap;letter-spacing:0.5px;}
 .pricing-plan{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
@@ -211,7 +211,7 @@ td.name{font-weight:600;color:var(--text);}
 .pricing-btn-ghost:hover{background:rgba(0,0,0,0.09);color:var(--text);}
 .pricing-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
 .current-plan-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--success);background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.25);padding:3px 10px;border-radius:100px;margin-bottom:8px;}
-.upgrade-success-banner{background:linear-gradient(135deg,rgba(52,211,153,0.1),rgba(155,107,255,0.05));border:1px solid rgba(52,211,153,0.3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;margin-bottom:32px;max-width:900px;margin-left:auto;margin-right:auto;}
+.upgrade-success-banner{background:linear-gradient(135deg,rgba(52,211,153,0.1),rgba(56,189,248,0.05));border:1px solid rgba(52,211,153,0.3);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;margin-bottom:32px;max-width:900px;margin-left:auto;margin-right:auto;}
 .upgrade-success-banner .icon{font-size:24px;}
 .upgrade-success-text{font-size:14px;font-weight:600;color:var(--success);}
 .upgrade-success-sub{font-size:12px;color:var(--text2);margin-top:2px;}
@@ -280,7 +280,7 @@ td.name{font-weight:600;color:var(--text);}
 <div class="stat-card"><div class="stat-card-label">Gefährdete Kunden</div><div class="stat-card-value" style="color:var(--warning)" id="statRisk">–</div><div class="stat-card-change down" id="statRiskSub">&nbsp;</div></div>
 <div class="stat-card"><div class="stat-card-label">Umsatz</div><div class="stat-card-value" style="color:var(--success)" id="statRevenue">€0</div><div class="stat-card-change">diesen Monat</div></div>
 </div>
-<div class="card" id="roiCard" style="margin-bottom:20px;border-color:rgba(155,107,255,0.45);background:linear-gradient(135deg,rgba(155,107,255,0.06),rgba(79,124,255,0.04));"><div class="card-header"><span class="card-title">💎 Retention-Wirkung — was neos diesen Monat zurückgeholt hat</span></div>
+<div class="card" id="roiCard" style="margin-bottom:20px;border-color:rgba(56,189,248,0.45);background:linear-gradient(135deg,rgba(56,189,248,0.06),rgba(79,124,255,0.04));"><div class="card-header"><span class="card-title">💎 Retention-Wirkung — was neos diesen Monat zurückgeholt hat</span></div>
 <div class="card-body"><div id="roiBody"><div style="color:var(--text2);font-size:13px;padding:8px 0;">Lade…</div></div></div></div>
 <div class="card" id="requestsCard" style="display:none;margin-bottom:20px;border-color:rgba(79,124,255,0.4);"><div class="card-header"><span class="card-title">💌 Offene Terminanfragen</span></div>
 <div class="card-body"><div id="requestsList"></div></div></div>
@@ -319,7 +319,7 @@ td.name{font-weight:600;color:var(--text);}
 <div class="card-body"><div id="campList" style="display:flex;flex-direction:column;gap:8px;"><div style="color:var(--text2);font-size:13px;">Lade…</div></div></div></div>
 <div class="campaign-list" style="display:none;">
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(79,124,255,0.15)">🔁</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 60 Tage</div><div class="campaign-desc">Automatische Nachricht an Kunden die 60+ Tage nicht da waren</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">18</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">7</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-<div class="campaign-card"><div class="campaign-icon" style="background:rgba(155,107,255,0.15)">⏰</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 90 Tage</div><div class="campaign-desc">Follow-up für Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
+<div class="campaign-card"><div class="campaign-icon" style="background:rgba(56,189,248,0.15)">⏰</div><div class="campaign-info"><div class="campaign-name">Reaktivierung — 90 Tage</div><div class="campaign-desc">Follow-up für Kunden die auf die erste Nachricht nicht reagiert haben</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">12</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">4</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(249,115,22,0.12)">🎂</div><div class="campaign-info"><div class="campaign-name">Geburtstags-Nachricht</div><div class="campaign-desc">Persönliche Glückwunschnachricht am Geburtstag + Sonderangebot</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">5</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--success)">3</div><div class="campaign-stat-label">Gebucht</div></div></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
 <div class="campaign-card"><div class="campaign-icon" style="background:rgba(236,72,153,0.12)">🎥</div><div class="campaign-info"><div class="campaign-name">Video-Nachsorge</div><div class="campaign-desc">Automatisches Pflegevideo nach jeder Behandlung per WhatsApp</div></div><div class="campaign-stats"><div class="campaign-stat"><div class="campaign-stat-val">31</div><div class="campaign-stat-label">Gesendet</div></div><div class="campaign-stat"><div class="campaign-stat-val" style="color:var(--teal2)">94%</div><div class="campaign-stat-label">Geöffnet</div></div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
 </div>
@@ -443,7 +443,7 @@ td.name{font-weight:600;color:var(--text);}
     </div>
   </div>
   <div style="text-align:center;font-size:13px;color:var(--text2);max-width:560px;margin:16px auto 0;line-height:1.6;">Keine Provision auf Buchungen, keine Kundenlimits — deine Kundinnen gehören dir. Eine zurückgeholte Kundin bringt 50–80&nbsp;€ Umsatz: oft reicht eine Kampagne im Monat, um den Plan zu finanzieren.</div>
-  <div style="max-width:620px;margin:18px auto 0;padding:14px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(79,124,255,0.10),rgba(155,107,255,0.08));border:1px solid rgba(79,124,255,0.25);text-align:center;">
+  <div style="max-width:620px;margin:18px auto 0;padding:14px 20px;border-radius:14px;background:linear-gradient(135deg,rgba(79,124,255,0.10),rgba(56,189,248,0.08));border:1px solid rgba(79,124,255,0.25);text-align:center;">
     <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:2px;">🌟 Gründungsmitglied werden</div>
     <div style="font-size:13px;color:var(--text2);">Als eine von 25 Gründungs-Studios bekommst du den Growth-Plan dauerhaft zum Starter-Preis — persönliches Onboarding inklusive. Sprich uns einfach an.</div>
   </div>
@@ -877,9 +877,9 @@ function renderRoi(roi){
     return;
   }
   const rows=roi.items.sort((a,b)=>b.value-a.value).map(i=>
-    `<div class="churn-item" style="cursor:default;"><div class="churn-avatar">${i.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${i.name}</div><div class="churn-detail">kontaktiert → wieder gebucht · ${i.treatment}</div></div><span style="font-weight:700;color:var(--gold,#9b6bff);">${i.value?('+€'+Number(i.value).toLocaleString('de-DE')):'gebucht'}</span></div>`
+    `<div class="churn-item" style="cursor:default;"><div class="churn-avatar">${i.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="churn-info"><div class="churn-name">${i.name}</div><div class="churn-detail">kontaktiert → wieder gebucht · ${i.treatment}</div></div><span style="font-weight:700;color:var(--gold,#38bdf8);">${i.value?('+€'+Number(i.value).toLocaleString('de-DE')):'gebucht'}</span></div>`
   ).join('');
-  body.innerHTML=`<div style="font-size:14px;margin-bottom:12px;line-height:1.5;"><strong style="color:var(--gold,#9b6bff);font-size:22px;">€${roi.revenue.toLocaleString('de-DE')}</strong> diesen Monat zurückgeholt — <strong>${roi.count}</strong> ${roi.count===1?'Kundin':'Kundinnen'} kamen nach deiner Nachricht wieder.</div><div class="churn-list">${rows}</div><div style="font-size:11px;color:var(--text2);margin-top:10px;">Gezählt wird, wer innerhalb von 45 Tagen nach einer neos-Nachricht wieder gebucht hat. Konservativ gerechnet.</div>`;
+  body.innerHTML=`<div style="font-size:14px;margin-bottom:12px;line-height:1.5;"><strong style="color:var(--gold,#38bdf8);font-size:22px;">€${roi.revenue.toLocaleString('de-DE')}</strong> diesen Monat zurückgeholt — <strong>${roi.count}</strong> ${roi.count===1?'Kundin':'Kundinnen'} kamen nach deiner Nachricht wieder.</div><div class="churn-list">${rows}</div><div style="font-size:11px;color:var(--text2);margin-top:10px;">Gezählt wird, wer innerhalb von 45 Tagen nach einer neos-Nachricht wieder gebucht hat. Konservativ gerechnet.</div>`;
 }
 
 function renderClientsTable(data){

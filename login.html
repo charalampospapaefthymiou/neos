@@ -4,16 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>neos — Anmelden</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #f6f7fb; --bg2: #ffffff; --bg3: #eef1f7;
+      --bg: #f5f8fd; --bg2: #ffffff; --bg3: #ebf2fb;
       --border: rgba(17,24,39,0.10); --border2: rgba(17,24,39,0.16);
       --text: #14192a; --text2: #5b6678; --text3: #8b95a7;
       --accent: #3b6cf6; --accent2: #4f7cff; --accent3: #2747c8;
-      --teal: #7c4dff; --teal2: #9b6bff;
+      --teal: #0ea5e9; --teal2: #38bdf8;
       --error: #ef4444; --success: #10b981;
     }
     body {
@@ -29,7 +29,7 @@
       overflow: hidden;
     }
     .orb1 { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(79,124,255,0.1) 0%, transparent 70%); top: -200px; left: -100px; pointer-events: none; }
-    .orb2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(155,107,255,0.08) 0%, transparent 70%); bottom: -100px; right: -100px; pointer-events: none; }
+    .orb2 { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%); bottom: -100px; right: -100px; pointer-events: none; }
 
     .card {
       background: var(--bg2);
@@ -52,9 +52,10 @@
       margin-bottom: 8px;
     }
     .logo-text {
+      font-family: 'Sora', 'Space Grotesk', sans-serif;
       font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
       background: linear-gradient(135deg, var(--accent2), var(--teal2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;

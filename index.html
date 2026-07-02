@@ -6,14 +6,14 @@
   <title>neos — Software für Beauty Studios</title>
   <meta name="description" content="Die smarte Software für dein Beauty Studio: KI-Kundenkartei, Online-Buchung, Video-Beratung, automatische Reaktivierung und WhatsApp-Nachsorge — alles verbunden, alles automatisch." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #f6f7fb;
+      --bg: #f5f8fd;
       --bg2: #ffffff;
-      --bg3: #eef1f7;
+      --bg3: #ebf2fb;
       --border: rgba(17,24,39,0.10);
       --border2: rgba(17,24,39,0.16);
       --text: #14192a;
@@ -22,10 +22,10 @@
       --accent: #3b6cf6;
       --accent2: #4f7cff;
       --accent3: #2747c8;
-      --teal: #7c4dff;
-      --teal2: #9b6bff;
+      --teal: #0ea5e9;
+      --teal2: #38bdf8;
       --glow: rgba(59,108,246,0.10);
-      --glow2: rgba(124,77,255,0.08);
+      --glow2: rgba(14,165,233,0.08);
     }
 
     html { scroll-behavior: smooth; }
@@ -120,9 +120,10 @@
       flex-shrink: 0;
     }
     .logo-text {
+      font-family: 'Sora', 'Space Grotesk', sans-serif;
       font-size: 22px;
       font-weight: 700;
-      letter-spacing: -1px;
+      letter-spacing: -0.03em;
       background: linear-gradient(135deg, var(--accent2), var(--teal2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -203,14 +204,14 @@
     .hero-orb2 {
       position: absolute;
       width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(155,107,255,0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%);
       bottom: 0; right: -100px;
       pointer-events: none;
     }
     .hero-orb3 {
       position: absolute;
       width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(155,107,255,0.06) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%);
       bottom: 100px; left: -100px;
       pointer-events: none;
     }
@@ -469,7 +470,7 @@
       z-index: 1;
     }
     .icon-purple { background: rgba(79,124,255,0.15); }
-    .icon-teal { background: rgba(155,107,255,0.15); }
+    .icon-teal { background: rgba(56,189,248,0.15); }
     .icon-pink { background: rgba(236,72,153,0.12); }
     .icon-orange { background: rgba(249,115,22,0.12); }
     .icon-blue { background: rgba(59,130,246,0.12); }
@@ -505,7 +506,7 @@
       color: var(--accent3);
     }
     .tag-ai {
-      background: rgba(155,107,255,0.15);
+      background: rgba(56,189,248,0.15);
       color: var(--teal2);
     }
 
@@ -565,7 +566,7 @@
     /* ── PRICING ── */
     .pricing-section {
       padding: 100px 40px;
-      background: linear-gradient(180deg, transparent, rgba(155,107,255,0.03) 50%, transparent);
+      background: linear-gradient(180deg, transparent, rgba(56,189,248,0.03) 50%, transparent);
     }
     .pricing-inner {
       max-width: 1100px;
@@ -589,7 +590,7 @@
       transition: all 0.3s;
     }
     .pricing-card.popular {
-      background: linear-gradient(135deg, rgba(79,124,255,0.08), rgba(155,107,255,0.05));
+      background: linear-gradient(135deg, rgba(79,124,255,0.08), rgba(56,189,248,0.05));
       border-color: rgba(79,124,255,0.4);
       position: relative;
     }
@@ -804,8 +805,10 @@
       gap: 9px;
     }
     .footer-logo-text {
+      font-family: 'Sora', 'Space Grotesk', sans-serif;
       font-size: 18px;
       font-weight: 700;
+      letter-spacing: -0.03em;
       color: var(--text);
     }
     .footer-links {
