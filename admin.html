@@ -4,62 +4,170 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>neos · Founder-Cockpit</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#121010;--bg2:#181311;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f5efe9;--text2:#a89a8c;--accent:#c9737f;--accent2:#e0a3ac;--gold:#d9bc82;--success:#34d399;--warning:#f0a35e;}
+:root{--bg:#f5f8fd;--bg2:#ffffff;--bg3:#ebf2fb;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--text3:#8b95a7;--accent:#3b6cf6;--accent2:#4f7cff;--accent3:#2747c8;--teal:#0ea5e9;--success:#10b981;--warning:#f59e0b;--error:#ef4444;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:"Inter",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:28px 18px 60px;}
-.wrap{max-width:1000px;margin:0 auto;}
-.head{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
-.mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#c9737f,#c9a96a);display:flex;align-items:center;justify-content:center;font-weight:800;}
-.head h1{font-size:19px;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:28px 18px 60px;}
+.wrap{max-width:1060px;margin:0 auto;}
+.head{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.word{font-family:'Sora',sans-serif;font-size:21px;font-weight:700;letter-spacing:-0.03em;background:linear-gradient(135deg,var(--accent2),#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.head h1{font-size:17px;font-weight:700;}
 .head .sub{font-size:12px;color:var(--text2);margin-left:auto;}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+.tabs{display:flex;gap:8px;margin-bottom:18px;}
+.tab{padding:8px 18px;border-radius:99px;border:1px solid var(--border2);background:var(--bg2);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px;}
 .kpi{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;}
 .kpi .l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;}
 .kpi .v{font-size:24px;font-weight:800;margin-top:2px;}
 .kpi .s{font-size:11px;color:var(--text2);}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 16px 12px;overflow-x:auto;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px 16px 12px;overflow-x:auto;margin-bottom:16px;}
+.card h3{font-size:13px;font-weight:700;padding:12px 0 4px;}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px;}
 th{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;text-align:left;padding:12px 8px 8px;}
-td{padding:10px 8px;border-top:1px solid var(--border);}
-.pill{display:inline-block;font-size:10px;font-weight:700;border-radius:99px;padding:2px 10px;}
-.p-trial{background:rgba(168,154,140,0.16);color:var(--text2);}
-.p-starter{background:rgba(217,188,130,0.14);color:var(--gold);}
-.p-growth{background:rgba(201,115,127,0.18);color:var(--accent2);}
-.p-pro{background:rgba(52,211,153,0.14);color:var(--success);}
+td{padding:10px 8px;border-top:1px solid var(--border);vertical-align:middle;}
+.pill{display:inline-block;font-size:10px;font-weight:700;border-radius:99px;padding:2px 10px;white-space:nowrap;}
+.p-trial{background:rgba(139,149,167,0.14);color:var(--text2);}
+.p-starter{background:rgba(14,165,233,0.12);color:var(--teal);}
+.p-growth{background:rgba(59,108,246,0.12);color:var(--accent3);}
+.p-pro{background:rgba(16,185,129,0.12);color:var(--success);}
+.s-neu{background:rgba(139,149,167,0.14);color:var(--text2);}
+.s-angeschrieben{background:rgba(14,165,233,0.12);color:var(--teal);}
+.s-gespraech{background:rgba(245,158,11,0.14);color:#b45309;}
+.s-trial{background:rgba(59,108,246,0.12);color:var(--accent3);}
+.s-mitglied{background:rgba(16,185,129,0.14);color:#047857;}
+.s-absage{background:rgba(239,68,68,0.10);color:var(--error);}
 .warn{color:var(--warning);}
-select{background:var(--bg);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:12px;}
+select,input,textarea{background:var(--bg);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 8px;font-family:inherit;font-size:12px;}
+textarea{width:100%;resize:vertical;}
 .center{text-align:center;padding:80px 20px;color:var(--text2);}
-.hidden{display:none;}
+.hidden{display:none !important;}
+.btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-p{background:var(--accent);color:#fff;}
+.btn-g{background:var(--bg3);color:var(--text);}
+.btn-d{background:rgba(239,68,68,0.10);color:var(--error);}
+.icon-btn{border:1px solid var(--border2);background:var(--bg2);border-radius:8px;padding:4px 8px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;}
+.chip{padding:5px 12px;border-radius:99px;border:1px solid var(--border2);background:var(--bg2);font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;font-family:inherit;}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+.due{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.35);border-radius:14px;padding:14px 16px;margin-bottom:16px;}
+.due h3{font-size:13px;font-weight:700;margin-bottom:8px;}
+.due-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid rgba(245,158,11,0.15);font-size:13px;flex-wrap:wrap;}
+.due-item:first-of-type{border-top:none;}
+.crm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.overlay{position:fixed;inset:0;background:rgba(20,25,42,0.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50;}
+.modal{background:var(--bg2);border-radius:16px;padding:22px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;}
+.modal h2{font-size:16px;margin-bottom:14px;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.fgrid .full{grid-column:1/-1;}
+.f label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:3px;}
+.f input,.f select,.f textarea{width:100%;}
+.tpl{background:var(--bg3);border-radius:10px;padding:12px;margin-top:12px;}
+.tpl .t{font-size:11px;font-weight:700;margin-bottom:6px;}
+.tpl-txt{font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.5;margin-bottom:8px;}
+.mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap;}
+a.linked{color:var(--accent);text-decoration:none;font-weight:600;}
+@media(max-width:640px){table{min-width:0;}.hide-m{display:none;}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="head"><div class="mark">n</div><h1>Founder-Cockpit</h1><span class="sub" id="stamp"></span></div>
+  <div class="head"><span class="word">neos</span><h1>Founder-Cockpit</h1><span class="sub" id="stamp"></span></div>
   <div id="loading" class="center">Lade Cockpit…</div>
   <div id="denied" class="center hidden">🔒 Kein Zugriff.<br/><span style="font-size:12px;">Diese Seite ist nur für den neos-Admin.</span></div>
   <div id="content" class="hidden">
-    <div class="kpis">
-      <div class="kpi"><div class="l">Salons</div><div class="v" id="kSalons">–</div><div class="s" id="kSalonsSub"></div></div>
-      <div class="kpi"><div class="l">Aktiv (7 Tage)</div><div class="v" id="kActive">–</div><div class="s" id="kActiveSub"></div></div>
-      <div class="kpi"><div class="l">MRR</div><div class="v" id="kMrr">–</div><div class="s">nach Plan-Preisen</div></div>
-      <div class="kpi"><div class="l">Kundinnen gesamt</div><div class="v" id="kCust">–</div><div class="s">über alle Salons</div></div>
-      <div class="kpi"><div class="l">Kampagnen-Nachrichten</div><div class="v" id="kCamp" style="color:var(--gold);">–</div><div class="s">deine Hero-Metrik</div></div>
+    <div class="tabs">
+      <button class="tab active" id="tabSalons" onclick="showTab('salons')">📊 Übersicht</button>
+      <button class="tab" id="tabCrm" onclick="showTab('crm')">🤝 CRM</button>
     </div>
-    <div class="card">
-      <table>
-        <thead><tr><th>Salon</th><th>Plan</th><th>Kundinnen</th><th>Termine</th><th>Nachr. 30d</th><th>Zuletzt aktiv</th><th>Registriert</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
+
+    <!-- ── ÜBERSICHT ── -->
+    <div id="viewSalons">
+      <div class="kpis">
+        <div class="kpi"><div class="l">Salons</div><div class="v" id="kSalons">–</div><div class="s" id="kSalonsSub"></div></div>
+        <div class="kpi"><div class="l">Aktiv (7 Tage)</div><div class="v" id="kActive">–</div><div class="s" id="kActiveSub"></div></div>
+        <div class="kpi"><div class="l">MRR</div><div class="v" id="kMrr">–</div><div class="s">nach Plan-Preisen</div></div>
+        <div class="kpi"><div class="l">Kundinnen gesamt</div><div class="v" id="kCust">–</div><div class="s">über alle Salons</div></div>
+        <div class="kpi"><div class="l">Kampagnen-Nachrichten</div><div class="v" id="kCamp" style="color:var(--accent);">–</div><div class="s">deine Hero-Metrik</div></div>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Salon</th><th>Plan</th><th>Kundinnen</th><th>Termine</th><th>Nachr. 30d</th><th>Zuletzt aktiv</th><th>Registriert</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── CRM ── -->
+    <div id="viewCrm" class="hidden">
+      <div class="kpis">
+        <div class="kpi"><div class="l">Leads gesamt</div><div class="v" id="cTotal">–</div><div class="s" id="cTotalSub"></div></div>
+        <div class="kpi"><div class="l">In Arbeit</div><div class="v" id="cOpen">–</div><div class="s">neu · angeschrieben · Gespräch</div></div>
+        <div class="kpi"><div class="l">Trials</div><div class="v" id="cTrial">–</div><div class="s">testen gerade</div></div>
+        <div class="kpi"><div class="l">Gründungsmitglieder</div><div class="v" id="cMember" style="color:var(--success);">–</div><div class="s">Ziel: 25</div></div>
+      </div>
+      <div class="due hidden" id="dueBox"><h3>⏰ Heute dran</h3><div id="dueList"></div></div>
+      <div class="crm-bar">
+        <div class="chips" id="chips" style="margin:0;"></div>
+        <button class="btn btn-p" onclick="openLead()">+ Lead</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Name / Studio</th><th class="hide-m">Stadt</th><th>Status</th><th>Nächster Schritt</th><th class="hide-m">Account</th><th>Aktion</th></tr></thead>
+          <tbody id="leadRows"></tbody>
+        </table>
+        <div id="leadEmpty" class="center hidden" style="padding:36px;">Noch keine Leads — leg den ersten an! 🚀</div>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- ── LEAD-MODAL ── -->
+<div class="overlay hidden" id="leadOverlay" onclick="if(event.target===this)closeLead()">
+  <div class="modal">
+    <h2 id="mTitle">Lead anlegen</h2>
+    <div class="fgrid">
+      <div class="f"><label>Name *</label><input id="fName" placeholder="Vor- und Nachname" /></div>
+      <div class="f"><label>Studio</label><input id="fStudio" placeholder="Studioname" /></div>
+      <div class="f"><label>Stadt</label><input id="fCity" /></div>
+      <div class="f"><label>Quelle</label><select id="fSource"><option value="">–</option><option>Treatwell-Netzwerk</option><option>Instagram</option><option>Empfehlung</option><option>Kaltakquise</option><option>Sonstiges</option></select></div>
+      <div class="f"><label>Telefon (WhatsApp)</label><input id="fPhone" placeholder="+49 …" /></div>
+      <div class="f"><label>E-Mail</label><input id="fEmail" /></div>
+      <div class="f"><label>Instagram</label><input id="fInsta" placeholder="@handle" /></div>
+      <div class="f"><label>Status</label><select id="fStatus">
+        <option value="neu">Neu</option><option value="angeschrieben">Angeschrieben</option><option value="gespraech">Im Gespräch</option><option value="trial">Trial</option><option value="mitglied">Gründungsmitglied</option><option value="absage">Absage</option>
+      </select></div>
+      <div class="f"><label>Nächster Schritt</label><input id="fNext" placeholder="z.B. Nachfassen" /></div>
+      <div class="f"><label>Fällig am</label><input id="fNextAt" type="date" /></div>
+      <div class="f full"><label>Notizen</label><textarea id="fNotes" rows="3" placeholder="Gesprächsnotizen, Einwände, Kontext…"></textarea></div>
+    </div>
+    <div class="tpl" id="tplBox">
+      <div class="t">📨 Vorlage per WhatsApp senden</div>
+      <select id="tplSelect" onchange="renderTpl()" style="margin-bottom:8px;width:100%;"></select>
+      <div class="tpl-txt" id="tplPreview"></div>
+      <button class="btn btn-g" onclick="sendTpl()">WhatsApp öffnen ↗</button>
+      <span style="font-size:11px;color:var(--text3);margin-left:6px;">setzt Status auf „Angeschrieben" + Nachfassen in 3 Tagen</span>
+    </div>
+    <div class="mrow">
+      <button class="btn btn-d hidden" id="mDelete" onclick="deleteLead()">Löschen</button>
+      <button class="btn btn-g" onclick="closeLead()">Abbrechen</button>
+      <button class="btn btn-p" id="mSave" onclick="saveLead()">Speichern</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const sb=supabase.createClient('https://tfzdwuzytoehjkicaaei.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmemR3dXp5dG9laGpraWNhYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDE3MjEsImV4cCI6MjA5NjU3NzcyMX0.NatCjPqlCyaKzX7TZK2VsE0jErRfexaNC193px_jxsE',{auth:{persistSession:true,autoRefreshToken:true}});
 const $=id=>document.getElementById(id);
 const fmtD=iso=>iso?iso.slice(0,10).split('-').reverse().join('.'):'–';
+const STATUS_LABEL={neu:'Neu',angeschrieben:'Angeschrieben',gespraech:'Im Gespräch',trial:'Trial',mitglied:'Gründungsmitglied',absage:'Absage'};
+const TEMPLATES=[
+ {name:'Erstansprache Gründungsstudio',text:`Hi {vorname}! Carlos hier — wir kennen uns noch von Treatwell. Ich hab was Eigenes gebaut und dachte sofort an dich: neos, eine Software, die dir hilft, dass deine Stammkundinnen wiederkommen. KI-Kundenkartei per Sprachnotiz, automatische Erinnerungen, Online-Buchung — läuft neben deinem bestehenden System, ersetzt nichts. Ich suche gerade 25 Gründungsstudios: Du bekommst den vollen Growth-Tarif zum Starter-Preis (49 € statt 99 €), dauerhaft — dafür will ich ehrliches Feedback. Hast du diese Woche 15 Minuten? Ich zeig's dir kurz per Video.`},
+ {name:'Nachfassen (freundlich)',text:`Hi {vorname}! Wollte nur kurz nachhaken — hast du meine Nachricht zu neos gesehen? Kein Stress, falls gerade viel los ist. Falls du neugierig bist: 15 Minuten reichen, ich zeig dir alles per Video. Die 25 Gründungsplätze füllen sich langsam, und ich hätte dich gern dabei 😊`},
+ {name:'Trial-Aktivierung (nach Registrierung)',text:`Hi {vorname}! Super, dass du dabei bist 😊 Mein Vorschlag: Wir richten dein Studio zusammen ein — dauert keine 20 Minuten. Ich ruf dich an, du klickst, und am Ende steht alles drin: Behandlungen, Kundinnen, Buchungslink. Wann passt es dir diese Woche?`}
+];
 function ago(iso){
   if(!iso)return'<span class="warn">noch nie ⚠</span>';
   const d=Math.floor((Date.now()-new Date(iso))/86400000);
@@ -67,11 +175,22 @@ function ago(iso){
   if(d===1)return'gestern';
   return d>7?`<span class="warn">vor ${d} Tagen ⚠</span>`:`vor ${d} Tagen`;
 }
-
-async function load(){
+function showTab(t){
+  $('tabSalons').classList.toggle('active',t==='salons');
+  $('tabCrm').classList.toggle('active',t==='crm');
+  $('viewSalons').classList.toggle('hidden',t!=='salons');
+  $('viewCrm').classList.toggle('hidden',t!=='crm');
+}
+async function authed(){
   const{data:{session}}=await sb.auth.getSession();
-  if(!session){window.location.href='/login';return;}
-  const res=await fetch('/api/admin',{headers:{'Authorization':'Bearer '+session.access_token}});
+  if(!session){window.location.href='/login';return null;}
+  return session.access_token;
+}
+
+// ── ÜBERSICHT ──
+async function load(){
+  const token=await authed();if(!token)return;
+  const res=await fetch('/api/admin',{headers:{'Authorization':'Bearer '+token}});
   $('loading').classList.add('hidden');
   if(res.status===403){$('denied').classList.remove('hidden');return;}
   const{kpis,salons,error}=await res.json();
@@ -87,7 +206,7 @@ async function load(){
   $('kCust').textContent=kpis.customers.toLocaleString('de-DE');
   $('kCamp').textContent=kpis.campaigns;
   $('rows').innerHTML=salons.map(s=>`<tr>
-    <td><strong>${s.name}</strong></td>
+    <td><strong>${esc(s.name)}</strong></td>
     <td><select onchange="setPlan('${s.id}',this.value,this)">
       ${['trial','starter','growth','pro'].map(p=>`<option value="${p}" ${s.plan===p?'selected':''}>${p.charAt(0).toUpperCase()+p.slice(1)}</option>`).join('')}
     </select></td>
@@ -97,15 +216,122 @@ async function load(){
     <td>${ago(s.last_active)}</td>
     <td style="color:var(--text2);">${fmtD(s.created_at)}</td>
   </tr>`).join('');
+  loadLeads(token);
 }
-
 async function setPlan(id,plan,sel){
   sel.disabled=true;
-  const{data:{session}}=await sb.auth.getSession();
-  const res=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({salon_id:id,plan})});
+  const token=await authed();
+  const res=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({salon_id:id,plan})});
   sel.disabled=false;
   if(!res.ok){alert('Fehler beim Umstellen');return;}
   load();
+}
+
+// ── CRM ──
+let LEADS=[],SALONINFO={},FILTER='alle',EDIT_ID=null;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function loadLeads(token){
+  token=token||await authed();if(!token)return;
+  const res=await fetch('/api/admin?resource=leads',{headers:{'Authorization':'Bearer '+token}});
+  if(!res.ok)return;
+  const d=await res.json();
+  LEADS=d.leads||[];SALONINFO=d.salonInfo||{};
+  renderCrm();
+}
+function renderCrm(){
+  const open=LEADS.filter(l=>['neu','angeschrieben','gespraech'].includes(l.status)).length;
+  $('cTotal').textContent=LEADS.length;
+  $('cOpen').textContent=open;
+  $('cTrial').textContent=LEADS.filter(l=>l.status==='trial').length;
+  $('cMember').textContent=LEADS.filter(l=>l.status==='mitglied').length;
+  const counts={alle:LEADS.length};
+  Object.keys(STATUS_LABEL).forEach(s=>{counts[s]=LEADS.filter(l=>l.status===s).length;});
+  $('chips').innerHTML=['alle',...Object.keys(STATUS_LABEL)].map(s=>
+    `<button class="chip ${FILTER===s?'on':''}" onclick="FILTER='${s}';renderCrm()">${s==='alle'?'Alle':STATUS_LABEL[s]}${counts[s]?` (${counts[s]})`:''}</button>`).join('');
+  const today=new Date().toISOString().slice(0,10);
+  const due=LEADS.filter(l=>l.next_action_at&&l.next_action_at<=today&&!['mitglied','absage'].includes(l.status));
+  $('dueBox').classList.toggle('hidden',!due.length);
+  $('dueList').innerHTML=due.map(l=>`<div class="due-item">
+    <strong>${esc(l.name)}</strong>${l.studio?' · '+esc(l.studio):''}
+    <span style="color:var(--text2);">${esc(l.next_action||'nachfassen')} (${fmtD(l.next_action_at)})</span>
+    ${waBtn(l)}<button class="icon-btn" onclick="openLead('${l.id}')">Öffnen</button>
+  </div>`).join('');
+  const list=FILTER==='alle'?LEADS:LEADS.filter(l=>l.status===FILTER);
+  $('leadEmpty').classList.toggle('hidden',!!list.length);
+  $('leadRows').innerHTML=list.map(l=>{
+    const si=l.salon_id?SALONINFO[l.salon_id]:null;
+    return `<tr>
+    <td><strong>${esc(l.name)}</strong>${l.studio?`<br/><span style="font-size:11px;color:var(--text2);">${esc(l.studio)}</span>`:''}</td>
+    <td class="hide-m">${esc(l.city||'–')}</td>
+    <td><select onchange="quickStatus('${l.id}',this.value)">
+      ${Object.keys(STATUS_LABEL).map(s=>`<option value="${s}" ${l.status===s?'selected':''}>${STATUS_LABEL[s]}</option>`).join('')}
+    </select></td>
+    <td style="font-size:12px;">${l.next_action?esc(l.next_action)+'<br/>':''}<span style="color:${l.next_action_at&&l.next_action_at<=new Date().toISOString().slice(0,10)?'var(--warning)':'var(--text3)'};">${l.next_action_at?fmtD(l.next_action_at):'–'}</span></td>
+    <td class="hide-m">${si?`<span class="pill p-${si.plan||'trial'}">${(si.plan||'trial')}</span>`:'<span style="color:var(--text3);font-size:11px;">–</span>'}</td>
+    <td style="white-space:nowrap;">${waBtn(l)}${l.instagram?`<a class="icon-btn" target="_blank" href="https://instagram.com/${esc(l.instagram.replace('@',''))}">📷</a>`:''}<button class="icon-btn" onclick="openLead('${l.id}')">✏️</button></td>
+  </tr>`;}).join('');
+}
+function waNum(p){if(!p)return null;let d=p.replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('0'))d='49'+d.slice(1);return d;}
+function waBtn(l){const n=waNum(l.phone);return n?`<a class="icon-btn" target="_blank" href="https://wa.me/${n}">💬</a>`:'';}
+async function quickStatus(id,status){
+  await apiLead({action:'lead_update',id,fields:{status}});
+  const l=LEADS.find(x=>x.id===id);if(l)l.status=status;
+  renderCrm();
+}
+function openLead(id){
+  EDIT_ID=id||null;
+  const l=id?LEADS.find(x=>x.id===id):{};
+  $('mTitle').textContent=id?'Lead bearbeiten':'Lead anlegen';
+  $('mDelete').classList.toggle('hidden',!id);
+  $('fName').value=l.name||'';$('fStudio').value=l.studio||'';$('fCity').value=l.city||'';
+  $('fSource').value=l.source||'';$('fPhone').value=l.phone||'';$('fEmail').value=l.email||'';
+  $('fInsta').value=l.instagram||'';$('fStatus').value=l.status||'neu';
+  $('fNext').value=l.next_action||'';$('fNextAt').value=l.next_action_at||'';$('fNotes').value=l.notes||'';
+  $('tplSelect').innerHTML=TEMPLATES.map((t,i)=>`<option value="${i}">${t.name}</option>`).join('');
+  renderTpl();
+  $('leadOverlay').classList.remove('hidden');
+}
+function closeLead(){$('leadOverlay').classList.add('hidden');EDIT_ID=null;}
+function tplText(){
+  const t=TEMPLATES[+$('tplSelect').value||0];
+  const vorname=($('fName').value||'').trim().split(' ')[0]||'du';
+  return t.text.replaceAll('{vorname}',vorname).replaceAll('{studio}',$('fStudio').value||'dein Studio');
+}
+function renderTpl(){$('tplPreview').textContent=tplText();}
+async function sendTpl(){
+  const n=waNum($('fPhone').value);
+  if(!n){alert('Bitte zuerst eine Telefonnummer eintragen.');return;}
+  window.open(`https://wa.me/${n}?text=${encodeURIComponent(tplText())}`,'_blank');
+  const in3=new Date(Date.now()+3*86400000).toISOString().slice(0,10);
+  $('fStatus').value='angeschrieben';$('fNext').value=$('fNext').value||'Nachfassen';$('fNextAt').value=in3;
+  await saveLead(true);
+}
+function collect(){
+  return {name:$('fName').value.trim(),studio:$('fStudio').value.trim(),city:$('fCity').value.trim(),
+    source:$('fSource').value,phone:$('fPhone').value.trim(),email:$('fEmail').value.trim(),
+    instagram:$('fInsta').value.trim(),status:$('fStatus').value,
+    next_action:$('fNext').value.trim(),next_action_at:$('fNextAt').value||'',notes:$('fNotes').value.trim()};
+}
+async function saveLead(keepOpen){
+  const f=collect();
+  if(!f.name){alert('Name fehlt.');return;}
+  $('mSave').disabled=true;
+  const r=EDIT_ID?await apiLead({action:'lead_update',id:EDIT_ID,fields:f}):await apiLead({action:'lead_create',lead:f});
+  $('mSave').disabled=false;
+  if(!r||r.error){alert('Fehler: '+(r&&r.error||'unbekannt'));return;}
+  if(!EDIT_ID&&r.lead)EDIT_ID=r.lead.id;
+  await loadLeads();
+  if(keepOpen!==true)closeLead();
+}
+async function deleteLead(){
+  if(!EDIT_ID||!confirm('Lead wirklich löschen?'))return;
+  await apiLead({action:'lead_delete',id:EDIT_ID});
+  closeLead();loadLeads();
+}
+async function apiLead(body){
+  const token=await authed();if(!token)return null;
+  const res=await fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify(body)});
+  try{return await res.json();}catch(e){return{error:'Netzwerkfehler'};}
 }
 load();
 </script>
