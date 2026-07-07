@@ -329,16 +329,17 @@ td.name{font-weight:600;color:var(--text);}
 <div class="page" id="page-suggestions">
 <div class="card"><div class="card-body" style="text-align:center;padding:60px 20px;">
 <div style="font-size:46px;margin-bottom:14px;">✨</div>
-<div style="font-size:18px;font-weight:800;margin-bottom:8px;">KI-Empfehlungen — bald verfügbar</div>
-<div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Die KI analysiert Behandlungshistorie und Kartei-Notizen deiner Kundinnen und schlägt passende Zusatzbehandlungen vor. Je mehr Sprachnotizen du aufnimmst, desto besser wird sie. Bis dahin: Die Reaktivierungs-Vorschläge findest du unter Kampagnen.</div>
-<button class="btn-sm btn-primary-sm" style="margin-top:18px;" onclick="showPage('campaigns',null)">Zu den Kampagnen</button>
+<div style="font-size:18px;font-weight:800;margin-bottom:8px;">KI-Beauty-Analyse — jetzt im Kundenprofil</div>
+<div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Fotografiere Haut, Wimpern, Nägel oder Brauen direkt in der Kabine — die KI liefert eine kosmetische Einschätzung plus passende Behandlungsempfehlungen aus deinem eigenen Angebot. Du findest sie im Kundenprofil unter „🔬 Analyse". Reaktivierungs-Vorschläge gibt's weiterhin unter Kampagnen.</div>
+<button class="btn-sm btn-primary-sm" style="margin-top:18px;" onclick="showPage('clients',null)">Zu den Kunden</button>
 </div></div>
 </div>
 <div class="page" id="page-photos">
 <div class="card"><div class="card-body" style="text-align:center;padding:60px 20px;">
 <div style="font-size:46px;margin-bottom:14px;">📸</div>
-<div style="font-size:18px;font-weight:800;margin-bottom:8px;">Vorher/Nachher-Fotos — bald verfügbar</div>
-<div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Dokumentiere Behandlungsergebnisse direkt in der Kundenkartei — sicher gespeichert und auf Wunsch als Erfolgs-Story für deine Kundin per WhatsApp.</div>
+<div style="font-size:18px;font-weight:800;margin-bottom:8px;">Analyse-Fotos — in der Kundenkartei</div>
+<div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Fotos aus der KI-Beauty-Analyse werden sicher und privat pro Kundin gespeichert — du findest sie im Kundenprofil unter „🔬 KI-Analysen". Eine Galerie-Ansicht mit Vorher/Nachher-Vergleich folgt.</div>
+<button class="btn-sm btn-primary-sm" style="margin-top:18px;" onclick="showPage('clients',null)">Zu den Kunden</button>
 </div></div>
 </div>
 <div class="page" id="page-academy">
@@ -537,7 +538,7 @@ td.name{font-weight:600;color:var(--text);}
       <div class="pricing-features">
         <div class="pricing-feature"><span class="check">✓</span>Alles aus Growth</div>
         <div class="pricing-feature"><span class="check">✓</span>Priority-Support &amp; persönliches Onboarding</div>
-        <div class="pricing-feature muted"><span class="check">—</span>KI-Hautanalyse per Foto <span style="opacity:.7;">(in Kürze)</span></div>
+        <div class="pricing-feature"><span class="check">✓</span>KI-Beauty-Analyse per Foto (Haut, Wimpern, Nägel, Brauen)</div>
         <div class="pricing-feature muted"><span class="check">—</span>Umsatz-Autopilot (füllt leere Slots) <span style="opacity:.7;">(in Kürze)</span></div>
         <div class="pricing-feature muted"><span class="check">—</span>Mehrere Mitarbeiter &amp; Standorte <span style="opacity:.7;">(in Kürze)</span></div>
       </div>
@@ -640,16 +641,36 @@ td.name{font-weight:600;color:var(--text);}
 <div id="pfOptIn" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">⭐ Bewertung</div>
 <div id="pfReviews" style="font-size:13px;margin-bottom:18px;"></div>
+<div style="font-weight:700;margin-bottom:8px;">🔬 KI-Analysen</div>
+<div id="pfAnalyses" style="font-size:13px;margin-bottom:18px;"></div>
 <div style="font-weight:700;margin-bottom:8px;">🧠 KI-Kartei</div>
 <div id="pfNotes" style="font-size:13px;"></div>
 <div class="modal-actions" style="margin-top:20px;">
   <button class="btn-sm btn-ghost-sm" onclick="closeModal('profile')">Schließen</button>
+  <button class="btn-sm btn-ghost-sm" id="pfAnalyzeBtn">🔬 Analyse</button>
   <button class="btn-sm btn-ghost-sm" id="pfFormBtn">📋 Anamnese</button>
   <button class="btn-sm btn-ghost-sm" id="pfReviewBtn">⭐ Bewertung anfragen</button>
   <button class="btn-sm btn-ghost-sm" id="pfEditBtn">✏️ Bearbeiten</button>
   <button class="btn-sm btn-primary-sm" id="pfNoteBtn">🎤 Notiz aufnehmen</button>
 </div>
 </div>
+</div>
+<div class="modal-overlay" id="modal-analysis">
+<div class="modal"><div class="modal-title">🔬 KI-Beauty-Analyse — <span id="anCustomerName"></span></div><div class="modal-form">
+<div class="form-group"><label>Was soll analysiert werden?</label>
+<div id="anCats" style="display:flex;gap:8px;flex-wrap:wrap;">
+  <button class="btn-sm btn-primary-sm an-cat" data-cat="haut" onclick="setAnCat('haut')">🧖 Haut</button>
+  <button class="btn-sm btn-ghost-sm an-cat" data-cat="wimpern" onclick="setAnCat('wimpern')">👁️ Wimpern</button>
+  <button class="btn-sm btn-ghost-sm an-cat" data-cat="naegel" onclick="setAnCat('naegel')">💅 Nägel</button>
+  <button class="btn-sm btn-ghost-sm an-cat" data-cat="brauen" onclick="setAnCat('brauen')">🖌️ Brauen</button>
+</div></div>
+<div class="form-group"><label>Foto (Kamera oder Galerie)</label>
+<input type="file" id="anFile" accept="image/*" onchange="anPreview(this)" />
+<img id="anImg" alt="" style="display:none;max-width:100%;max-height:260px;border-radius:10px;margin-top:8px;" />
+</div>
+<div class="form-group"><label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;line-height:1.5;font-weight:400;"><input type="checkbox" id="anConsent" style="width:auto;margin-top:2px;" /> Die Kundin wurde informiert und hat der Foto-Aufnahme und KI-Auswertung zugestimmt.</label></div>
+<div id="anResult" style="display:none;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:10px;padding:14px;font-size:13px;line-height:1.7;"></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('analysis')">Schließen</button><button class="btn-sm btn-primary-sm" id="anRunBtn" onclick="runAnalysis()">✨ Analysieren &amp; speichern</button></div></div>
 </div>
 <div class="modal-overlay" id="modal-voiceNote">
 <div class="modal"><div class="modal-title">🎤 Sprachnotiz — <span id="vnCustomerName"></span></div><div class="modal-form">
@@ -1084,6 +1105,121 @@ async function requestReview(customerId,customerName,phone){
 async function copyReviewLink(i){
   await navigator.clipboard.writeText(location.origin+'/r/'+pfReviewsCache[i].token);
   showToast('Link kopiert ✓','success');
+}
+
+// ===== KI-Beauty-Analyse (Haut, Wimpern, Nägel, Brauen) =====
+let anCustomerId=null,anCustomerName='',anCat='haut',anImageData=null,anAnalysesCache=[];
+const AN_CATS={haut:'🧖 Haut',wimpern:'👁️ Wimpern',naegel:'💅 Nägel',brauen:'🖌️ Brauen'};
+
+function openAnalysis(c){
+  anCustomerId=c.id;anCustomerName=c.name;anImageData=null;
+  document.getElementById('anCustomerName').textContent=c.name;
+  document.getElementById('anFile').value='';
+  document.getElementById('anImg').style.display='none';
+  document.getElementById('anResult').style.display='none';
+  document.getElementById('anConsent').checked=false;
+  setAnCat('haut');
+  closeModal('profile');openModal('analysis');
+}
+
+function setAnCat(cat){
+  anCat=cat;
+  document.querySelectorAll('#anCats .an-cat').forEach(b=>{
+    const on=b.dataset.cat===cat;
+    b.classList.toggle('btn-primary-sm',on);
+    b.classList.toggle('btn-ghost-sm',!on);
+  });
+}
+
+function anPreview(input){
+  const f=input.files&&input.files[0];if(!f)return;
+  const img=new Image();
+  img.onload=()=>{
+    // Client-seitig verkleinern: hält Upload klein & unter dem Edge-Body-Limit
+    const max=1200,scale=Math.min(1,max/Math.max(img.width,img.height));
+    const cv=document.createElement('canvas');
+    cv.width=Math.round(img.width*scale);cv.height=Math.round(img.height*scale);
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+    const dataUrl=cv.toDataURL('image/jpeg',0.85);
+    anImageData=dataUrl.split(',')[1];
+    const el=document.getElementById('anImg');el.src=dataUrl;el.style.display='block';
+    URL.revokeObjectURL(img.src);
+  };
+  img.onerror=()=>showToast('Bild konnte nicht gelesen werden','error');
+  img.src=URL.createObjectURL(f);
+}
+
+async function runAnalysis(){
+  if(!anImageData){showToast('Bitte zuerst ein Foto aufnehmen oder auswählen','error');return;}
+  if(!document.getElementById('anConsent').checked){showToast('Bitte die Einwilligung der Kundin bestätigen','error');return;}
+  const btn=document.getElementById('anRunBtn');btn.disabled=true;btn.textContent='Analysiere… (ca. 10 Sek.)';
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const treatments=(trRows||[]).filter(t=>t.active&&t.name).map(t=>t.name);
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+      body:JSON.stringify({category:anCat,imageBase64:anImageData,mediaType:'image/jpeg',customerName:anCustomerName,treatments})});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    const r=json.result;
+    if(r.bild_ok===false){
+      const el=document.getElementById('anResult');
+      el.innerHTML='⚠️ '+(r.bild_problem||'Bild nicht auswertbar — bitte neues Foto aufnehmen.');
+      el.style.display='block';
+    }else{
+      // Foto in privaten Bucket + Analyse in Kartei speichern
+      const path=currentUser.id+'/'+anCustomerId+'/'+Date.now()+'.jpg';
+      const blob=await(await fetch('data:image/jpeg;base64,'+anImageData)).blob();
+      const up=await sb.storage.from('analysis').upload(path,blob,{contentType:'image/jpeg'});
+      const ins=await sb.from('analyses').insert({salon_id:currentUser.id,customer_id:anCustomerId,category:anCat,photo_path:up.error?null:path,result:r,consent_at:new Date().toISOString()});
+      if(ins.error)throw new Error(ins.error.message);
+      renderAnalysisResult(r);
+      showToast('Analyse gespeichert ✓','success');
+      loadCustomerAnalyses(anCustomerId);
+    }
+  }catch(e){showToast(e.message,'error');}
+  btn.disabled=false;btn.textContent='✨ Analysieren & speichern';
+}
+
+function renderAnalysisResult(r,photoUrl){
+  const grad={leicht:'var(--success)',mittel:'#f0a35e',deutlich:'#e2574c'};
+  const el=document.getElementById('anResult');
+  el.innerHTML=[
+    photoUrl?`<img src="${photoUrl}" style="max-width:100%;max-height:220px;border-radius:10px;margin-bottom:10px;" />`:'',
+    r.eindruck?`<div style="margin-bottom:8px;">${r.eindruck}</div>`:'',
+    (r.beobachtungen||[]).length?'<div style="font-weight:700;margin-bottom:4px;">Beobachtungen</div>'+r.beobachtungen.map(b=>`<div>• ${b.punkt}${b.auspraegung?` <span style="color:${grad[b.auspraegung]||'var(--text2)'};font-size:11px;">(${b.auspraegung})</span>`:''}</div>`).join(''):'',
+    (r.empfehlungen||[]).length?'<div style="font-weight:700;margin:10px 0 4px;">Empfehlungen fürs Beratungsgespräch</div>'+r.empfehlungen.map(e=>`<div>✨ <strong>${e.behandlung}</strong> — ${e.warum}</div>`).join(''):'',
+    (r.pflege_zuhause||[]).length?'<div style="font-weight:700;margin:10px 0 4px;">Pflege zuhause</div>'+r.pflege_zuhause.map(p=>`<div>• ${p}</div>`).join(''):'',
+    r.hinweis_fachperson?`<div style="margin-top:10px;color:#f0a35e;">⚕️ ${r.hinweis_fachperson}</div>`:'',
+    '<div style="margin-top:10px;font-size:11px;color:var(--text2);">Kosmetische KI-Einschätzung — keine medizinische Diagnose.</div>'
+  ].join('');
+  el.style.display='block';
+}
+
+async function loadCustomerAnalyses(customerId){
+  const{data}=await sb.from('analyses').select('id,customer_id,category,result,photo_path,created_at').eq('customer_id',customerId).order('created_at',{ascending:false}).limit(5);
+  anAnalysesCache=data||[];
+  const el=document.getElementById('pfAnalyses');
+  if(!anAnalysesCache.length){el.innerHTML='<span style="color:var(--text2);">Noch keine Analyse — über „🔬 Analyse" Foto von Haut, Wimpern, Nägeln oder Brauen auswerten.</span>';return;}
+  el.innerHTML=anAnalysesCache.map((a,i)=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><span>${AN_CATS[a.category]||a.category} · ${a.created_at.slice(0,10).split('-').reverse().join('.')}</span><button class="btn-send" onclick="viewAnalysis(${i})">Ansehen</button></div>`
+  ).join('');
+}
+
+async function viewAnalysis(i){
+  const a=anAnalysesCache[i];if(!a)return;
+  anCustomerId=a.customer_id;anCustomerName=document.getElementById('pfName').textContent;anImageData=null;
+  document.getElementById('anCustomerName').textContent=anCustomerName;
+  document.getElementById('anFile').value='';
+  document.getElementById('anImg').style.display='none';
+  document.getElementById('anConsent').checked=false;
+  setAnCat(a.category);
+  let url=null;
+  if(a.photo_path){
+    const{data:s}=await sb.storage.from('analysis').createSignedUrl(a.photo_path,3600);
+    url=s?.signedUrl||null;
+  }
+  renderAnalysisResult(a.result||{},url);
+  closeModal('profile');openModal('analysis');
 }
 
 function viewForm(i){
@@ -1875,8 +2011,10 @@ async function openCustomerProfile(customerId){
   document.getElementById('pfEditBtn').onclick=()=>openEditCustomer(c.id);
   document.getElementById('pfFormBtn').onclick=()=>requestForm(c.id,c.name,c.phone);
   document.getElementById('pfReviewBtn').onclick=()=>requestReview(c.id,c.name,c.phone);
+  document.getElementById('pfAnalyzeBtn').onclick=()=>openAnalysis(c);
   loadCustomerForms(c.id);
   loadCustomerReviews(c.id);
+  loadCustomerAnalyses(c.id);
   document.getElementById('pfAppointments').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   document.getElementById('pfNotes').innerHTML='<span style="color:var(--text2);">Lade…</span>';
   openModal('profile');
