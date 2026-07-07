@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#f5f8fd;--bg2:#ffffff;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--accent2:#4f7cff;--success:#10b981;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
+body.embed{background:transparent;padding:6px 4px 20px;}
+.wrap{width:100%;max-width:480px;}
+.salon-name{text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;}
+.sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:6px;}
+.acad-badge{display:block;width:fit-content;margin:0 auto 18px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(79,124,255,0.10);border:1px solid rgba(79,124,255,0.25);border-radius:99px;padding:4px 12px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
+.course{border:1px solid var(--border2);border-radius:14px;padding:15px;margin-bottom:10px;cursor:pointer;transition:border-color .15s;}
+.course:hover,.course.sel{border-color:var(--accent);background:rgba(79,124,255,0.06);}
+.course .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+.course .nm{font-weight:700;font-size:16px;line-height:1.3;}
+.course .pr{font-weight:800;font-size:16px;white-space:nowrap;}
+.course .desc{font-size:13px;color:var(--text2);line-height:1.55;margin-top:6px;}
+.course .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.tag{font-size:11.5px;font-weight:600;color:var(--text2);background:rgba(0,0,0,0.045);border-radius:7px;padding:3px 8px;}
+.tag.free{color:var(--success);background:rgba(16,185,129,0.10);}
+.tag.full{color:#b45309;background:rgba(245,158,11,0.12);}
+.tag.online{color:var(--accent2);background:rgba(79,124,255,0.10);}
+input{width:100%;background:rgba(0,0,0,0.04);border:1px solid var(--border2);border-radius:11px;padding:13px 14px;color:var(--text);font-size:15px;font-family:inherit;margin-bottom:10px;}
+input:focus{outline:none;border-color:var(--accent);}
+input.invalid{border-color:#f87171 !important;}
+.btn{width:100%;background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn:disabled{opacity:.5;cursor:default;}
+.step-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+.note{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;}
+.done{text-align:center;padding:40px 10px;}
+.done .big{font-size:52px;margin-bottom:14px;}
+.done h2{margin-bottom:10px;}
+.done p{color:var(--text2);font-size:14px;line-height:1.6;}
+.hidden{display:none !important;}
+.err{color:#f87171;font-size:13px;text-align:center;margin-top:10px;}
+.powered{text-align:center;margin-top:26px;font-size:12px;color:var(--text2);}
+.powered b{background:linear-gradient(135deg,#7aa0ff,#b89bff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.loading{text-align:center;color:var(--text2);padding:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img id="studioLogo" class="hidden" style="width:56px;height:56px;border-radius:14px;object-fit:cover;display:block;margin:6px auto 10px;" />
+  <div class="salon-name" id="salonName">&nbsp;</div>
+  <span class="acad-badge">🎓 Academy</span>
+  <div class="sub hidden" id="salonDesc" style="margin-top:-10px;margin-bottom:18px;"></div>
+
+  <div id="loading" class="loading">Lade…</div>
+  <div id="unavailable" class="done hidden"><div class="big">🎓</div><h2>Academy nicht verfügbar</h2><p>Aktuell sind hier keine Schulungen buchbar.</p></div>
+
+  <div id="flow" class="hidden">
+    <div class="card"><div class="step-title">1 · Kurs wählen</div><div id="courseList"></div></div>
+    <div class="card hidden" id="stepData">
+      <div class="step-title">2 · Deine Daten</div>
+      <input type="text" id="acName" placeholder="Dein Name" autocomplete="name" />
+      <input type="tel" id="acPhone" placeholder="Handynummer (für die Bestätigung)" autocomplete="tel" />
+      <input type="email" id="acEmail" placeholder="E-Mail-Adresse (optional)" autocomplete="email" />
+      <button class="btn" id="acSubmit" onclick="submitEnroll()">Platz anfragen</button>
+      <div class="err hidden" id="acErr"></div>
+      <div class="note" id="payNote">Die Anmeldung ist zunächst unverbindlich — du bekommst alle Details zur Zahlung persönlich per WhatsApp.</div>
+    </div>
+  </div>
+
+  <div id="done" class="done hidden">
+    <div class="big" id="doneIcon">🎓</div>
+    <h2 id="doneTitle"></h2>
+    <p id="doneText"></p>
+  </div>
+
+  <div class="powered">bereitgestellt mit <b>neos</b></div>
+</div>
+
+<script>
+const slug=location.pathname.split('/').filter(Boolean).pop();
+let salon=null,courses=[],selC=null;
+const $=id=>document.getElementById(id);
+const fmtPrice=p=>p?Number(p).toLocaleString('de-DE',{minimumFractionDigits:0})+' €':'';
+const fmtDate=iso=>{if(!iso)return null;const[y,m,d]=iso.slice(0,10).split('-');const t=iso.slice(11,16);return`${d}.${m}.${y}${t&&t!=='00:00'?' · '+t+' Uhr':''}`;};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function applyBrandColor(color){
+  if(!color)return;
+  const s=document.createElement('style');
+  s.textContent=`.btn{background:${color} !important;}
+.course:hover,.course.sel{border-color:${color} !important;}
+.acad-badge{color:${color} !important;border-color:${color}40 !important;background:${color}14 !important;}
+input:focus{border-color:${color} !important;}`;
+  document.head.appendChild(s);
+}
+
+async function init(){
+  if(new URLSearchParams(location.search).get('embed')==='1')document.body.classList.add('embed');
+  try{
+    const res=await fetch('/api/academy?slug='+encodeURIComponent(slug));
+    if(!res.ok)throw 0;
+    const json=await res.json();
+    salon=json.salon;courses=json.courses;
+    $('salonName').textContent=salon.name;
+    document.title=salon.name+' · Academy';
+    if(salon.logoUrl){$('studioLogo').src=salon.logoUrl;$('studioLogo').classList.remove('hidden');}
+    if(salon.description){$('salonDesc').textContent=salon.description;$('salonDesc').classList.remove('hidden');}
+    applyBrandColor(salon.brandColor);
+    $('loading').classList.add('hidden');
+    if(!courses.length){$('unavailable').classList.remove('hidden');return;}
+    $('flow').classList.remove('hidden');
+    $('courseList').innerHTML=courses.map(c=>{
+      const seatTag=c.seats_free>0
+        ?`<span class="tag free">✓ ${c.seats_free} ${c.seats_free===1?'Platz':'Plätze'} frei</span>`
+        :`<span class="tag full">Warteliste</span>`;
+      return`<div class="course" onclick="pickC('${c.id}',this)">
+        <div class="top"><div class="nm">${esc(c.title)}</div><div class="pr">${fmtPrice(c.price)}</div></div>
+        ${c.description?`<div class="desc">${esc(c.description)}</div>`:''}
+        <div class="meta">
+          ${c.starts_at?`<span class="tag">📅 ${fmtDate(c.starts_at)}</span>`:''}
+          ${c.duration_label?`<span class="tag">⏱ ${esc(c.duration_label)}</span>`:''}
+          ${c.is_online?`<span class="tag online">🎥 Online</span>`:(c.location?`<span class="tag">📍 ${esc(c.location)}</span>`:'')}
+          ${seatTag}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    $('loading').classList.add('hidden');
+    $('unavailable').classList.remove('hidden');
+  }
+}
+
+function pickC(id,el){
+  selC=id;
+  document.querySelectorAll('#courseList .course').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  const c=courses.find(x=>x.id===id);
+  $('acSubmit').textContent=c.seats_free>0?'Platz anfragen':'Auf die Warteliste';
+  $('stepData').classList.remove('hidden');
+  setTimeout(()=>$('stepData').scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+async function submitEnroll(){
+  const name=$('acName').value.trim(),phone=$('acPhone').value.trim(),email=$('acEmail').value.trim();
+  const err=$('acErr');err.classList.add('hidden');
+  [$('acName'),$('acPhone'),$('acEmail')].forEach(i=>i.classList.remove('invalid'));
+  let bad=[];
+  if(!name)bad.push($('acName'));
+  if(phone.replace(/[^0-9]/g,'').length<6)bad.push($('acPhone'));
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))bad.push($('acEmail'));
+  if(bad.length){
+    bad.forEach(i=>i.classList.add('invalid'));
+    err.textContent='Bitte Name und Handynummer angeben.';err.classList.remove('hidden');
+    bad[0].focus();return;
+  }
+  const btn=$('acSubmit');btn.disabled=true;btn.textContent='Einen Moment…';
+  try{
+    const res=await fetch('/api/academy',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({slug,course_id:selC,name,phone,email})});
+    const json=await res.json();
+    if(!res.ok)throw new Error(json.error||'Fehler');
+    $('flow').classList.add('hidden');
+    $('done').classList.remove('hidden');
+    if(json.status==='warteliste'){
+      $('doneIcon').textContent='⏳';
+      $('doneTitle').textContent='Du stehst auf der Warteliste!';
+      $('doneText').textContent=`„${json.courseTitle}" ist aktuell ausgebucht. Sobald ein Platz frei wird, meldet sich die Academy bei dir.`;
+    }else{
+      $('doneIcon').textContent='🎓';
+      $('doneTitle').textContent='Anmeldung eingegangen!';
+      $('doneText').textContent=`Dein Platz für „${json.courseTitle}" ist reserviert. Die Academy meldet sich mit allen Details zur Zahlung und zum Ablauf bei dir.`;
+    }
+  }catch(e){
+    err.textContent=e.message;err.classList.remove('hidden');
+    btn.disabled=false;const c=courses.find(x=>x.id===selC);
+    btn.textContent=c&&c.seats_free>0?'Platz anfragen':'Auf die Warteliste';
+  }
+}
+init();
+</script>
+</body></html>

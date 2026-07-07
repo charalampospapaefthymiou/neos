@@ -253,6 +253,8 @@ td.name{font-weight:600;color:var(--text);}
 <button class="nav-item" onclick="showPage('campaigns',this)"><span class="icon">🚀</span> Kampagnen</button>
 <button class="nav-item" onclick="showPage('suggestions',this)"><span class="icon">✨</span> KI-Empfehlungen</button>
 <button class="nav-item" onclick="showPage('photos',this)"><span class="icon">📸</span> Fotos</button>
+<div class="nav-label">Academy</div>
+<button class="nav-item" onclick="showPage('academy',this)"><span class="icon">🎓</span> Academy</button>
 <div class="nav-label">Konto</div>
 <button class="nav-item" onclick="showPage('settings',this)"><span class="icon">⚙️</span> Einstellungen</button>
 <button class="nav-item" onclick="showPage('upgrade',this)"><span class="icon">⚡</span> Plan upgraden</button>
@@ -338,6 +340,48 @@ td.name{font-weight:600;color:var(--text);}
 <div style="font-size:18px;font-weight:800;margin-bottom:8px;">Vorher/Nachher-Fotos — bald verfügbar</div>
 <div style="font-size:13px;color:var(--text2);max-width:440px;margin:0 auto;line-height:1.7;">Dokumentiere Behandlungsergebnisse direkt in der Kundenkartei — sicher gespeichert und auf Wunsch als Erfolgs-Story für deine Kundin per WhatsApp.</div>
 </div></div>
+</div>
+<div class="page" id="page-academy">
+<!-- Freischalt-Screen -->
+<div id="acadActivate" style="display:none;">
+<div class="card" style="max-width:640px;margin:0 auto;"><div class="card-body" style="text-align:center;padding:50px 24px;">
+<div style="font-size:46px;margin-bottom:14px;">🎓</div>
+<div style="font-size:20px;font-weight:800;margin-bottom:8px;">neos academy</div>
+<div style="font-size:13.5px;color:var(--text2);max-width:470px;margin:0 auto;line-height:1.7;">Du gibst Schulungen oder planst deine eigene Academy? Verwalte Kurse, Anmeldungen, Warteliste und Zertifikate direkt hier — mit eigener Anmeldeseite im Look deines Studios. Keine extra Software nötig.</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0 24px;font-size:12px;font-weight:600;color:var(--text2);">
+<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">📚 Kurs-Verwaltung</span>
+<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">🔗 Eigene Anmeldeseite</span>
+<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">👥 Teilnehmer &amp; Warteliste</span>
+<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">🎓 Verifizierbare Zertifikate</span>
+</div>
+<button class="btn-sm btn-primary-sm" style="padding:12px 26px;font-size:14px;" onclick="enableAcademy()">Academy jetzt freischalten</button>
+</div></div>
+</div>
+<!-- Academy-Hauptansicht -->
+<div id="acadMain" style="display:none;">
+<div class="stats-grid" style="margin-bottom:16px;">
+<div class="stat-card"><div class="stat-card-label">Teilnehmerinnen gesamt</div><div class="stat-card-value" id="acadStatParts">–</div><div class="stat-card-change" id="acadStatWait">&nbsp;</div></div>
+<div class="stat-card"><div class="stat-card-label">Kursumsatz (bezahlt)</div><div class="stat-card-value" style="color:var(--success)" id="acadStatRevenue">€0</div><div class="stat-card-change">alle Kurse</div></div>
+<div class="stat-card"><div class="stat-card-label">Zertifikate ausgestellt</div><div class="stat-card-value" id="acadStatCerts">0</div><div class="stat-card-change">öffentlich verifizierbar</div></div>
+<div class="stat-card"><div class="stat-card-label">Nächster Kurs</div><div class="stat-card-value" id="acadStatNext" style="font-size:17px;line-height:1.4;">–</div><div class="stat-card-change" id="acadStatNextSub">&nbsp;</div></div>
+</div>
+<div id="acadNoSlug" style="display:none;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;">⚠️ Damit deine öffentliche Academy-Seite erreichbar ist, lege zuerst deinen Link-Namen fest: Einstellungen → „Online-Buchungen" → „Dein Buchungslink". Der Buchungs-Modus kann dabei ausgeschaltet bleiben.</div>
+<div id="acadLinkBox" style="display:none;background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;">
+🎓 Deine Academy-Seite: <a id="acadLinkA" target="_blank" style="color:var(--accent2);"></a>
+<button class="btn-sm btn-ghost-sm" style="margin-left:8px;" onclick="copyAcademyLink(this)">Kopieren</button>
+</div>
+<div class="card" style="margin-bottom:16px;"><div class="card-header"><span class="card-title">📚 Deine Kurse</span><button class="btn-sm btn-primary-sm" onclick="openCourseModal()">+ Kurs anlegen</button></div>
+<div class="card-body"><div id="acadCourseList" style="display:flex;flex-direction:column;gap:8px;"><div style="color:var(--text2);font-size:13px;">Lade…</div></div></div></div>
+<div class="card" id="acadPartsCard" style="display:none;"><div class="card-header"><span class="card-title" id="acadPartsTitle">👥 Teilnehmerinnen</span><span style="font-size:12px;color:var(--text2);" id="acadPartsSub"></span></div>
+<div class="card-body">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+<input class="setting-input" type="text" id="acadAddName" placeholder="Name" style="flex:1;min-width:140px;" />
+<input class="setting-input" type="tel" id="acadAddPhone" placeholder="Handynummer" style="flex:1;min-width:140px;" />
+<button class="btn-sm btn-ghost-sm" onclick="addParticipant()">+ Manuell hinzufügen</button>
+</div>
+<div class="table-wrap"><table><thead><tr><th>Name</th><th>Kontakt</th><th>Status</th><th>Zertifikat</th><th>Aktion</th></tr></thead><tbody id="acadPartsBody"></tbody></table></div>
+</div></div>
+</div>
 </div>
 <div class="page" id="page-settings">
 <div class="card" style="max-width:700px"><div class="card-body">
@@ -635,6 +679,19 @@ td.name{font-weight:600;color:var(--text);}
 <div class="form-group"><label>Nachricht</label><textarea>Hey {{Name}}, wir vermissen dich! Es ist schon eine Weile her — darf ich dir einen Termin vorschlagen? Dein Team von {{Studio}}</textarea></div>
 </div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('sendCampaign')">Abbrechen</button><button class="btn-sm btn-primary-sm" onclick="sendCampaign()">Jetzt senden 🚀</button></div></div>
 </div>
+<div class="modal-overlay" id="modal-course">
+<div class="modal"><div class="modal-title" id="courseModalTitle">Kurs anlegen</div><div class="modal-form">
+<div class="form-group"><label>Kurstitel *</label><input type="text" id="crsTitle" placeholder="z.B. Wimpernlifting Basiskurs" /></div>
+<div class="form-group"><label>Beschreibung</label><textarea id="crsDesc" placeholder="Was lernen die Teilnehmerinnen? Für wen ist der Kurs?"></textarea></div>
+<div style="display:flex;gap:10px;"><div class="form-group" style="flex:1;"><label>Datum</label><input type="date" id="crsDate" /></div>
+<div class="form-group" style="flex:1;"><label>Uhrzeit</label><input type="time" id="crsTime" /></div></div>
+<div style="display:flex;gap:10px;"><div class="form-group" style="flex:1;"><label>Dauer (Anzeige)</label><input type="text" id="crsDuration" placeholder="z.B. 1 Tag / 4 Stunden" /></div>
+<div class="form-group" style="flex:1;"><label>Preis €</label><input type="number" id="crsPrice" min="0" step="1" placeholder="299" /></div></div>
+<div style="display:flex;gap:10px;"><div class="form-group" style="flex:1;"><label>Max. Plätze</label><input type="number" id="crsSeats" min="1" step="1" value="8" /></div>
+<div class="form-group" style="flex:1;"><label>Ort</label><input type="text" id="crsLocation" placeholder="Studio-Adresse (leer bei online)" /></div></div>
+<div class="form-group"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="crsOnline" style="width:auto;" /> 🎥 Online-Kurs (per Video)</label></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('course')">Abbrechen</button><button class="btn-sm btn-primary-sm" id="crsSaveBtn" onclick="saveCourse()">Kurs speichern</button></div></div>
+</div>
 <nav class="bottom-nav">
 <button onclick="showPage('dashboard',null);setBottomNav(this)" class="active"><span class="bn-icon">📊</span>Dashboard</button>
 <button onclick="showPage('clients',null);setBottomNav(this)"><span class="bn-icon">👥</span>Kunden</button>
@@ -761,7 +818,7 @@ async function startCheckout(plan){
 })();
 
 async function logout(){await sb.auth.signOut();window.location.href="/login";}
-const pageTitles={dashboard:"Dashboard",clients:"Kunden",calendar:"Termine",campaigns:"Kampagnen",suggestions:"KI-Empfehlungen",photos:"Fotos",settings:"Einstellungen",upgrade:"Plan upgraden"};
+const pageTitles={dashboard:"Dashboard",clients:"Kunden",calendar:"Termine",campaigns:"Kampagnen",suggestions:"KI-Empfehlungen",photos:"Fotos",academy:"Academy",settings:"Einstellungen",upgrade:"Plan upgraden"};
 function showPage(name,btn){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
@@ -771,6 +828,7 @@ function showPage(name,btn){
   if(name==="clients")renderClientsTable(clientsData);
   if(name==="calendar")loadCalendar();
   if(name==="campaigns")loadCampaigns();
+  if(name==="academy")loadAcademy();
 }
 // ===== Echte Daten aus Supabase =====
 let clientsData=[];
@@ -1947,6 +2005,225 @@ async function loadNoteHistory(customerId){
     el.innerHTML='<div style="margin-top:10px;font-weight:700;">Letzte Einträge:</div>'+data.map(n=>`<div style="margin-top:6px;padding:8px;background:rgba(0,0,0,0.03);border-radius:8px;">${n.created_at.slice(0,10)} — ${n.structured?.zusammenfassung||'–'}</div>`).join('');
   }
 }
+// ===== Academy =====
+let acadCourses=[],acadEnrolls=[],acadSelCourse=null,acadSlug=null,acadEditCourse=null;
+const acadEsc=s=>String(s||'').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const acadFmtDate=iso=>{if(!iso)return null;const[y,m,d]=iso.slice(0,10).split('-');const t=iso.slice(11,16);return `${d}.${m}.${y}${t&&t!=='00:00'?' · '+t+' Uhr':''}`;};
+const ACAD_TAKEN=['angemeldet','bezahlt','absolviert'];
+
+async function loadAcademy(){
+  const{data:prof}=await sb.from('profiles').select('academy_enabled,booking_slug').eq('id',currentUser.id).single();
+  const enabled=!!prof?.academy_enabled;
+  document.getElementById('acadActivate').style.display=enabled?'none':'block';
+  document.getElementById('acadMain').style.display=enabled?'block':'none';
+  if(!enabled)return;
+  acadSlug=prof.booking_slug||null;
+  const linkBox=document.getElementById('acadLinkBox'),noSlug=document.getElementById('acadNoSlug');
+  if(acadSlug){
+    const url=location.origin+'/academy/'+acadSlug;
+    const a=document.getElementById('acadLinkA');a.textContent=url;a.href=url;
+    linkBox.style.display='block';noSlug.style.display='none';
+  }else{linkBox.style.display='none';noSlug.style.display='block';}
+  const[{data:courses},{data:enrolls}]=await Promise.all([
+    sb.from('courses').select('*').order('starts_at',{ascending:true,nullsFirst:false}),
+    sb.from('enrollments').select('*').order('created_at',{ascending:true})
+  ]);
+  acadCourses=courses||[];acadEnrolls=enrolls||[];
+  renderAcadStats();renderAcadCourses();
+  if(acadSelCourse&&acadCourses.some(c=>c.id===acadSelCourse))renderAcadParts();
+  else{acadSelCourse=null;document.getElementById('acadPartsCard').style.display='none';}
+}
+
+async function enableAcademy(){
+  const{error}=await sb.from('profiles').update({academy_enabled:true}).eq('id',currentUser.id);
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  showToast('🎓 Academy freigeschaltet!','success');
+  loadAcademy();
+}
+
+function acadCountTaken(courseId){return acadEnrolls.filter(e=>e.course_id===courseId&&ACAD_TAKEN.includes(e.status)).length;}
+
+function renderAcadStats(){
+  const active=acadEnrolls.filter(e=>e.status!=='storniert');
+  document.getElementById('acadStatParts').textContent=active.length;
+  const wait=acadEnrolls.filter(e=>e.status==='warteliste').length;
+  document.getElementById('acadStatWait').textContent=wait?wait+' auf der Warteliste':'keine Warteliste';
+  const priceMap={};acadCourses.forEach(c=>priceMap[c.id]=Number(c.price)||0);
+  const revenue=acadEnrolls.filter(e=>['bezahlt','absolviert'].includes(e.status)).reduce((s,e)=>s+(priceMap[e.course_id]||0),0);
+  document.getElementById('acadStatRevenue').textContent='€'+revenue.toLocaleString('de-DE');
+  document.getElementById('acadStatCerts').textContent=acadEnrolls.filter(e=>e.cert_issued_at).length;
+  const today=new Date().toISOString().slice(0,10);
+  const next=acadCourses.find(c=>c.active&&c.starts_at&&c.starts_at.slice(0,10)>=today);
+  document.getElementById('acadStatNext').textContent=next?next.title:'–';
+  document.getElementById('acadStatNextSub').textContent=next&&next.starts_at?acadFmtDate(next.starts_at):' ';
+}
+
+function renderAcadCourses(){
+  const el=document.getElementById('acadCourseList');
+  if(!acadCourses.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;padding:8px 0;">Noch keine Kurse — lege deinen ersten Kurs an. Er erscheint sofort auf deiner Academy-Seite.</div>';return;}
+  el.innerHTML=acadCourses.map(c=>{
+    const taken=acadCountTaken(c.id);
+    const wait=acadEnrolls.filter(e=>e.course_id===c.id&&e.status==='warteliste').length;
+    const full=taken>=c.seats;
+    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--border);border-radius:12px;padding:12px 14px;${c.active?'':'opacity:.55;'}">
+      <div style="flex:1;min-width:180px;">
+        <div style="font-weight:700;font-size:14px;">${acadEsc(c.title)}${c.is_online?' <span style="font-size:11px;color:var(--accent2);background:rgba(79,124,255,0.12);padding:2px 7px;border-radius:6px;">🎥 Online</span>':''}${c.active?'':' <span style="font-size:11px;color:var(--text2);">(inaktiv)</span>'}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px;">${c.starts_at?'📅 '+acadFmtDate(c.starts_at)+' · ':''}${c.price?Number(c.price).toLocaleString('de-DE')+' € · ':''}<span style="${full?'color:#b45309;font-weight:600;':''}">${taken}/${c.seats} Plätze</span>${wait?' · ⏳ '+wait+' Warteliste':''}</div>
+      </div>
+      <button class="btn-sm btn-primary-sm" onclick="openCourseParts('${c.id}')">👥 Teilnehmer</button>
+      <button class="btn-sm btn-ghost-sm" onclick="openCourseModal('${c.id}')">✏️</button>
+      <button class="toggle ${c.active?'on':''}" title="Kurs aktiv/inaktiv" onclick="toggleCourseActive('${c.id}')"></button>
+      <button class="btn-sm btn-ghost-sm" title="Löschen" onclick="deleteCourse('${c.id}')">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function openCourseModal(id){
+  acadEditCourse=id||null;
+  const c=id?acadCourses.find(x=>x.id===id):null;
+  document.getElementById('courseModalTitle').textContent=c?'Kurs bearbeiten':'Kurs anlegen';
+  document.getElementById('crsTitle').value=c?.title||'';
+  document.getElementById('crsDesc').value=c?.description||'';
+  document.getElementById('crsDate').value=c?.starts_at?c.starts_at.slice(0,10):'';
+  document.getElementById('crsTime').value=c?.starts_at?c.starts_at.slice(11,16):'';
+  document.getElementById('crsDuration').value=c?.duration_label||'';
+  document.getElementById('crsPrice').value=c?.price??'';
+  document.getElementById('crsSeats').value=c?.seats||8;
+  document.getElementById('crsLocation').value=c?.location||'';
+  document.getElementById('crsOnline').checked=!!c?.is_online;
+  openModal('course');
+}
+
+async function saveCourse(){
+  const title=document.getElementById('crsTitle').value.trim();
+  if(!title){showToast('Bitte einen Kurstitel angeben','error');return;}
+  const date=document.getElementById('crsDate').value,time=document.getElementById('crsTime').value;
+  const row={
+    salon_id:currentUser.id,title,
+    description:document.getElementById('crsDesc').value.trim()||null,
+    starts_at:date?`${date}T${time||'00:00'}:00Z`:null,
+    duration_label:document.getElementById('crsDuration').value.trim()||null,
+    price:document.getElementById('crsPrice').value?Number(document.getElementById('crsPrice').value):null,
+    seats:Math.max(1,Number(document.getElementById('crsSeats').value)||8),
+    location:document.getElementById('crsLocation').value.trim()||null,
+    is_online:document.getElementById('crsOnline').checked
+  };
+  const btn=document.getElementById('crsSaveBtn');btn.disabled=true;
+  const{error}=acadEditCourse
+    ?await sb.from('courses').update(row).eq('id',acadEditCourse)
+    :await sb.from('courses').insert(row);
+  btn.disabled=false;
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  closeModal('course');
+  showToast(acadEditCourse?'Kurs aktualisiert ✓':'Kurs angelegt ✓','success');
+  loadAcademy();
+}
+
+async function toggleCourseActive(id){
+  const c=acadCourses.find(x=>x.id===id);if(!c)return;
+  const{error}=await sb.from('courses').update({active:!c.active}).eq('id',id);
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  loadAcademy();
+}
+
+async function deleteCourse(id){
+  const c=acadCourses.find(x=>x.id===id);if(!c)return;
+  const n=acadEnrolls.filter(e=>e.course_id===id).length;
+  if(!confirm(`„${c.title}" wirklich löschen?${n?` ${n} Anmeldung(en) werden mitgelöscht.`:''}`))return;
+  const{error}=await sb.from('courses').delete().eq('id',id);
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  if(acadSelCourse===id)acadSelCourse=null;
+  showToast('Kurs gelöscht','success');
+  loadAcademy();
+}
+
+function openCourseParts(id){
+  acadSelCourse=id;
+  renderAcadParts();
+  setTimeout(()=>document.getElementById('acadPartsCard').scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+function renderAcadParts(){
+  const c=acadCourses.find(x=>x.id===acadSelCourse);if(!c)return;
+  document.getElementById('acadPartsCard').style.display='block';
+  document.getElementById('acadPartsTitle').textContent='👥 Teilnehmerinnen — '+c.title;
+  const parts=acadEnrolls.filter(e=>e.course_id===acadSelCourse);
+  document.getElementById('acadPartsSub').textContent=`${acadCountTaken(c.id)}/${c.seats} Plätze belegt`;
+  const body=document.getElementById('acadPartsBody');
+  if(!parts.length){body.innerHTML='<tr><td colspan="5" style="color:var(--text2);font-size:13px;">Noch keine Anmeldungen. Teile deinen Academy-Link — Anmeldungen erscheinen hier automatisch.</td></tr>';return;}
+  const sts=['angemeldet','warteliste','bezahlt','absolviert','storniert'];
+  body.innerHTML=parts.map(p=>{
+    const digits=(p.phone||'').replace(/[^0-9]/g,'');
+    const wa=digits?`<a class="btn-sm btn-ghost-sm" style="text-decoration:none;" target="_blank" href="https://wa.me/${digits.startsWith('0')?'49'+digits.slice(1):digits}">💬</a>`:'';
+    let cert;
+    if(p.cert_issued_at){
+      cert=`<button class="btn-sm btn-ghost-sm" onclick="copyCertLink('${p.cert_token}',this)">🔗 Link</button> <button class="btn-sm btn-ghost-sm" title="Per WhatsApp senden" onclick="shareCert('${p.id}')">📤</button>`;
+    }else if(p.status==='absolviert'){
+      cert=`<button class="btn-sm btn-primary-sm" onclick="issueCert('${p.id}')">🎓 Ausstellen</button>`;
+    }else{cert='<span style="font-size:12px;color:var(--text2);">–</span>';}
+    return `<tr>
+      <td style="font-weight:600;">${acadEsc(p.name)}</td>
+      <td style="font-size:12px;color:var(--text2);">${acadEsc(p.phone||'')}${p.email?'<br/>'+acadEsc(p.email):''}</td>
+      <td><select class="setting-input" style="min-width:130px;width:130px;" onchange="setEnrollStatus('${p.id}',this.value)">${sts.map(s=>`<option value="${s}" ${p.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select></td>
+      <td>${cert}</td>
+      <td>${wa}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function setEnrollStatus(id,status){
+  const patch={status};
+  if(status==='bezahlt')patch.paid_at=new Date().toISOString();
+  const{error}=await sb.from('enrollments').update(patch).eq('id',id);
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  showToast('Status aktualisiert ✓','success');
+  const e=acadEnrolls.find(x=>x.id===id);if(e){Object.assign(e,patch);}
+  renderAcadStats();renderAcadCourses();renderAcadParts();
+}
+
+async function addParticipant(){
+  const name=document.getElementById('acadAddName').value.trim();
+  const phone=document.getElementById('acadAddPhone').value.trim();
+  if(!name||phone.replace(/[^0-9]/g,'').length<6){showToast('Bitte Name und Handynummer angeben','error');return;}
+  const{error}=await sb.from('enrollments').insert({course_id:acadSelCourse,salon_id:currentUser.id,name,phone,status:'angemeldet'});
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  document.getElementById('acadAddName').value='';document.getElementById('acadAddPhone').value='';
+  showToast('Teilnehmerin hinzugefügt ✓','success');
+  loadAcademy();
+}
+
+async function issueCert(id){
+  const p=acadEnrolls.find(x=>x.id===id);if(!p)return;
+  if(!confirm(`Zertifikat für ${p.name} ausstellen? Es ist danach öffentlich unter dem Prüf-Link abrufbar.`))return;
+  const{error}=await sb.from('enrollments').update({cert_issued_at:new Date().toISOString()}).eq('id',id);
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  p.cert_issued_at=new Date().toISOString();
+  showToast('🎓 Zertifikat ausgestellt!','success');
+  renderAcadStats();renderAcadParts();
+}
+
+function copyCertLink(token,btn){
+  navigator.clipboard.writeText(location.origin+'/cert/'+token).then(()=>{
+    if(btn){btn.textContent='✓';setTimeout(()=>btn.textContent='🔗 Link',1500);}
+    showToast('Zertifikats-Link kopiert ✓','success');
+  });
+}
+
+function shareCert(id){
+  const p=acadEnrolls.find(x=>x.id===id);if(!p)return;
+  const c=acadCourses.find(x=>x.id===p.course_id);
+  const digits=(p.phone||'').replace(/[^0-9]/g,'');
+  const to=digits.startsWith('0')?'49'+digits.slice(1):digits;
+  const msg=`Hallo ${p.name.split(' ')[0]}! 🎓 Herzlichen Glückwunsch zum Abschluss${c?` von „${c.title}"`:''}! Hier ist dein offizielles Zertifikat — der Link dient gleichzeitig als Echtheitsnachweis: ${location.origin}/cert/${p.cert_token}`;
+  window.open(`https://wa.me/${to}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function copyAcademyLink(btn){
+  navigator.clipboard.writeText(location.origin+'/academy/'+acadSlug).then(()=>{
+    btn.textContent='✓ Kopiert';setTimeout(()=>btn.textContent='Kopieren',1600);
+  });
+}
+
 function openModal(n){document.getElementById("modal-"+n).classList.add("open");}
 function closeModal(n){document.getElementById("modal-"+n).classList.remove("open");}
 document.querySelectorAll(".modal-overlay").forEach(o=>{o.addEventListener("click",e=>{if(e.target===o)o.classList.remove("open");});});

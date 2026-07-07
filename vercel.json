@@ -6,6 +6,8 @@
     { "source": "/book/:slug", "destination": "/book.html" },
     { "source": "/f/:token", "destination": "/form.html" },
     { "source": "/r/:token", "destination": "/review.html" },
+    { "source": "/academy/:slug", "destination": "/academy.html" },
+    { "source": "/cert/:token", "destination": "/cert.html" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/rechtliches", "destination": "/rechtliches.html" }
   ],

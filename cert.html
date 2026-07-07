@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Zertifikat</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+<style>
+:root{--bg:#f5f8fd;--bg2:#ffffff;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--accent2:#4f7cff;--gold:#b98a2f;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 14px 60px;}
+.cert{width:100%;max-width:680px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:14px;box-shadow:0 20px 60px rgba(17,24,39,0.08);}
+.inner{border:2px solid var(--accent);border-radius:12px;padding:44px 34px 36px;text-align:center;position:relative;}
+.inner::before{content:'';position:absolute;inset:6px;border:1px solid var(--border2);border-radius:8px;pointer-events:none;}
+.logo{width:64px;height:64px;border-radius:16px;object-fit:cover;display:block;margin:0 auto 14px;}
+.studio{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px;}
+.acad{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--text2);margin-bottom:28px;}
+h1{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:600;letter-spacing:1px;margin-bottom:6px;}
+.sub{font-size:13px;color:var(--text2);margin-bottom:22px;}
+.name{font-family:'Cormorant Garamond',serif;font-size:36px;font-style:italic;font-weight:500;margin-bottom:6px;border-bottom:1px solid var(--border2);display:inline-block;padding:0 26px 8px;}
+.for{font-size:13px;color:var(--text2);margin:16px 0 6px;}
+.course{font-size:21px;font-weight:800;margin-bottom:8px;line-height:1.35;}
+.meta{font-size:13px;color:var(--text2);margin-bottom:28px;}
+.footer{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:10px;text-align:left;}
+.certno{font-size:11px;color:var(--text2);line-height:1.6;}
+.certno b{color:var(--text);font-size:12px;letter-spacing:0.5px;}
+.seal{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#dfb45e,var(--gold));display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;box-shadow:0 4px 14px rgba(185,138,47,0.35);flex-shrink:0;}
+.verify{margin-top:18px;font-size:12px;color:var(--text2);text-align:center;line-height:1.6;}
+.verify a{color:var(--accent);text-decoration:none;word-break:break-all;}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#0d7a4f;background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.3);border-radius:99px;padding:6px 14px;margin-top:20px;}
+.actions{display:flex;gap:10px;margin-top:22px;}
+.btn{flex:1;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+.btn-p{background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;}
+.btn-g{background:transparent;border:1px solid var(--border2);color:var(--text);}
+.done{text-align:center;padding:60px 10px;max-width:420px;}
+.done .big{font-size:52px;margin-bottom:14px;}
+.done p{color:var(--text2);font-size:14px;line-height:1.6;}
+.hidden{display:none !important;}
+.powered{text-align:center;margin-top:24px;font-size:12px;color:var(--text2);}
+.powered b{background:linear-gradient(135deg,#7aa0ff,#b89bff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.loading{text-align:center;color:var(--text2);padding:60px 30px;}
+@media print{
+  body{background:#fff;padding:0;}
+  .actions,.powered,.badge{display:none !important;}
+  .cert{box-shadow:none;border:none;max-width:none;}
+}
+</style>
+</head>
+<body>
+<div id="loading" class="loading">Prüfe Zertifikat…</div>
+<div id="invalid" class="done hidden"><div class="big">🔍</div><h2>Kein gültiges Zertifikat</h2><p>Für diesen Link liegt kein ausgestelltes Zertifikat vor. Bitte prüfe den Link oder wende dich an die Academy.</p></div>
+
+<div id="wrap" class="hidden" style="width:100%;max-width:680px;">
+  <div class="cert">
+    <div class="inner">
+      <img id="logo" class="logo hidden" />
+      <div class="studio" id="studio"></div>
+      <div class="acad">Academy · Zertifikat</div>
+      <h1>Zertifikat</h1>
+      <div class="sub">Hiermit wird bestätigt, dass</div>
+      <div class="name" id="pname"></div>
+      <div class="for">die folgende Schulung erfolgreich abgeschlossen hat:</div>
+      <div class="course" id="ctitle"></div>
+      <div class="meta" id="cmeta"></div>
+      <div class="footer">
+        <div class="certno">Zertifikat-Nr.<br/><b id="certno"></b><br/><span id="issued"></span></div>
+        <div class="seal">🎓</div>
+      </div>
+      <div class="verify">Echtheit dieses Zertifikats jederzeit prüfbar unter<br/><a id="verifyLink" href=""></a></div>
+    </div>
+  </div>
+  <div style="text-align:center;"><span class="badge">✓ Verifiziert — dieses Zertifikat ist echt</span></div>
+  <div class="actions">
+    <button class="btn btn-p" onclick="window.print()">🖨 Drucken / als PDF speichern</button>
+    <button class="btn btn-g" onclick="copyLink(this)">🔗 Link kopieren</button>
+  </div>
+</div>
+
+<div class="powered">bereitgestellt mit <b>neos</b></div>
+
+<script>
+const token=location.pathname.split('/').filter(Boolean).pop();
+const $=id=>document.getElementById(id);
+const fmtDate=iso=>{if(!iso)return'';const[y,m,d]=iso.split('-');return`${d}.${m}.${y}`;};
+
+async function init(){
+  try{
+    const res=await fetch('/api/cert?token='+encodeURIComponent(token));
+    if(!res.ok)throw 0;
+    const j=await res.json();
+    $('studio').textContent=j.studioName;
+    document.title='Zertifikat · '+j.participant;
+    if(j.logoUrl){$('logo').src=j.logoUrl;$('logo').classList.remove('hidden');}
+    if(j.brandColor){
+      const s=document.createElement('style');
+      s.textContent=`.inner{border-color:${j.brandColor} !important;}.btn-p{background:${j.brandColor} !important;}`;
+      document.head.appendChild(s);
+    }
+    $('pname').textContent=j.participant;
+    $('ctitle').textContent=j.courseTitle;
+    const meta=[];
+    if(j.courseDate)meta.push('Kurstermin: '+fmtDate(j.courseDate));
+    if(j.durationLabel)meta.push(j.durationLabel);
+    if(j.isOnline)meta.push('Online-Schulung');
+    $('cmeta').textContent=meta.join(' · ');
+    $('certno').textContent=j.certNo;
+    $('issued').textContent='Ausgestellt am '+fmtDate(j.issuedAt);
+    const url=location.origin+'/cert/'+token;
+    $('verifyLink').textContent=url.replace('https://','');
+    $('verifyLink').href=url;
+    $('loading').classList.add('hidden');
+    $('wrap').classList.remove('hidden');
+  }catch(e){
+    $('loading').classList.add('hidden');
+    $('invalid').classList.remove('hidden');
+  }
+}
+function copyLink(btn){
+  navigator.clipboard.writeText(location.origin+'/cert/'+token).then(()=>{
+    btn.textContent='✓ Kopiert';setTimeout(()=>btn.textContent='🔗 Link kopieren',1600);
+  });
+}
+init();
+</script>
+</body></html>
