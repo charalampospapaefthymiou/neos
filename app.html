@@ -482,6 +482,12 @@ td.name{font-weight:600;color:var(--text);}
 <div class="settings-section"><div class="settings-title">📆 Kalender-Verknüpfung</div>
 <div class="setting-row"><div class="setting-info"><h4>Google / Apple / Outlook</h4><p>Deine neos-Termine erscheinen automatisch in deinem Kalender. In Google: „Weitere Kalender" → „+" → „Per URL" → Link einfügen.</p></div>
 <button class="btn-sm btn-primary-sm" onclick="copyIcsLink(this)">Kalender-Link kopieren</button></div>
+<div class="setting-row"><div class="setting-info"><h4>Externen Kalender einlesen</h4><p>ICS-Link von Treatwell, Google &amp; Co. — Termine von dort erscheinen als „belegt" in deinem neos-Kalender und werden beim Anlegen auf Konflikte geprüft. Treatwell: Einstellungen → Kalendersynchronisation → Link kopieren.</p></div>
+<input class="setting-input" type="url" id="extIcsInput" placeholder="https://…/kalender.ics" style="min-width:220px;" /></div>
+<div style="display:flex;gap:8px;margin-top:10px;">
+<button class="btn-sm btn-primary-sm" onclick="saveExtIcs()">Externen Kalender speichern</button>
+<span id="extIcsStatus" style="font-size:12px;color:var(--text2);align-self:center;"></span>
+</div>
 </div>
 <div class="settings-section"><div class="settings-title">⭐ Bewertungen</div>
 <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Jede Kundin bekommt dieselbe Einladung — einen Google-Bewertungslink plus die Möglichkeit, dir privat direktes Feedback zu schreiben. Es gibt keine Vorfilterung nach Zufriedenheit (rechtlich nicht zulässig).</div>
@@ -741,7 +747,26 @@ td.name{font-weight:600;color:var(--text);}
 <div style="display:flex;gap:10px;"><div class="form-group" style="flex:1;"><label>Max. Plätze</label><input type="number" id="crsSeats" min="1" step="1" value="8" /></div>
 <div class="form-group" style="flex:1;"><label>Ort</label><input type="text" id="crsLocation" placeholder="Studio-Adresse (leer bei online)" /></div></div>
 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="crsOnline" style="width:auto;" /> 🎥 Online-Kurs (per Video)</label></div>
+<div class="form-group"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" id="crsInstallments" style="width:auto;" /> 💳 Ratenzahlung möglich <span style="font-weight:400;color:var(--text2);font-size:11px;">(wird öffentlich am Kurs angezeigt)</span></label></div>
+<div class="form-group"><label>📚 Lehrplan / Module <span style="font-weight:400;color:var(--text2);font-size:11px;">(erscheinen auf deiner Academy-Seite)</span></label>
+<div id="crsModList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+<button class="btn-sm btn-ghost-sm" onclick="addCrsModule()">+ Modul hinzufügen</button>
+</div>
 </div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('course')">Abbrechen</button><button class="btn-sm btn-primary-sm" id="crsSaveBtn" onclick="saveCourse()">Kurs speichern</button></div></div>
+</div>
+<div class="modal-overlay" id="modal-installments">
+<div class="modal"><div class="modal-title">💳 Ratenplan — <span id="insName"></span></div><div class="modal-form">
+<div id="insCourseInfo" style="font-size:12.5px;color:var(--text2);margin-bottom:12px;"></div>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:rgba(59,108,246,0.06);border:1px solid rgba(59,108,246,0.15);border-radius:10px;padding:10px 12px;margin-bottom:12px;">
+  <input class="setting-input" type="number" id="insCount" min="2" max="12" value="3" style="width:64px;min-width:0;" /> ×
+  <input class="setting-input" type="number" id="insAmount" min="1" step="0.01" placeholder="€" style="width:92px;min-width:0;" />
+  <span style="font-size:12px;color:var(--text2);">ab</span>
+  <input class="setting-input" type="date" id="insStart" style="width:140px;min-width:0;" />
+  <button class="btn-sm btn-primary-sm" onclick="genInstallments()">Plan erstellen</button>
+</div>
+<div id="insList" style="display:flex;flex-direction:column;gap:6px;"></div>
+<div id="insSum" style="font-size:12.5px;font-weight:600;margin-top:10px;text-align:right;"></div>
+</div><div class="modal-actions"><button class="btn-sm btn-ghost-sm" onclick="closeModal('installments')">Schließen</button><button class="btn-sm btn-ghost-sm" onclick="addInstallmentRow()">+ Rate</button><button class="btn-sm btn-primary-sm" onclick="saveInstallments()">Ratenplan speichern</button></div></div>
 </div>
 <nav class="bottom-nav">
 <button onclick="showPage('dashboard',null);setBottomNav(this)" class="active"><span class="bn-icon">📊</span>Dashboard</button>
@@ -1508,6 +1533,8 @@ async function loadCalendar(){
     .gte('starts_at',from+'T00:00:00Z').lte('starts_at',to+'T23:59:59Z')
     .neq('status','cancelled').order('starts_at');
   if(error){showToast('Kalender: '+error.message,'error');return;}
+  await loadExtEvents(from,to);
+  const extByDay={};extEvents.forEach(e=>{const k=e.start.slice(0,10);(extByDay[k]=extByDay[k]||[]).push(e);});
   const byDay={};calApptsById={};(data||[]).forEach(a=>{calApptsById[a.id]=a;const k=a.starts_at.slice(0,10);(byDay[k]=byDay[k]||[]).push(a);});
   const names=['Mo','Di','Mi','Do','Fr','Sa','So'];
   const todayIso=new Date(Date.now()).toISOString().slice(0,10);
@@ -1527,7 +1554,17 @@ async function loadCalendar(){
       const tr=(a.treatments?.name||'').replace(/</g,'&lt;');
       return `<div class="cal-ev st-${a.status}" style="top:${top}px;height:${height}px;" onclick="openApptEdit('${a.id}')"><span class="evt">${a.starts_at.slice(11,16)}</span> ${nm}<div class="evx">${tr}${lbl}</div></div>`;
     }).join('');
-    return `<div class="cal-col${iso===todayIso?' today':''}"><div class="cal-col-head">${names[i]}<span>${iso.slice(8,10)}.${iso.slice(5,7)}.</span></div><div class="cal-col-body" style="height:${totalH}px;background-size:100% ${HOUR}px;" onclick="onCalSlotClick(event,'${iso}',${HOUR},${calStart})" title="Klicken, um hier einen Termin anzulegen">${evs}</div></div>`;
+    // Externe Kalender-Termine (Treatwell/Google) als "belegt"-Blöcke
+    const extEvs=(extByDay[iso]||[]).map(e=>{
+      if(e.allDay)return `<div style="position:absolute;top:0;left:2px;right:2px;height:20px;background:repeating-linear-gradient(45deg,rgba(91,102,120,0.16),rgba(91,102,120,0.16) 6px,rgba(91,102,120,0.08) 6px,rgba(91,102,120,0.08) 12px);border:1px dashed rgba(91,102,120,0.4);border-radius:6px;font-size:9.5px;color:var(--text2);padding:2px 6px;overflow:hidden;white-space:nowrap;pointer-events:none;z-index:1;">🔗 ${(e.summary||'Extern belegt').replace(/</g,'&lt;')}</div>`;
+      const sm=parseInt(e.start.slice(11,13),10)*60+parseInt(e.start.slice(14,16),10);
+      let dur=e.end?((new Date(e.end.slice(0,16)))-(new Date(e.start.slice(0,16))))/60000:60;
+      if(!dur||dur<20)dur=20;
+      const top=Math.max(0,((sm-calStart*60)/60)*HOUR);
+      const height=Math.max(18,(Math.min(dur,(endH*60)-sm)/60)*HOUR);
+      return `<div title="Externer Kalender: ${(e.summary||'belegt').replace(/"/g,'&quot;')}" style="position:absolute;top:${top}px;height:${height}px;left:2px;right:2px;background:repeating-linear-gradient(45deg,rgba(91,102,120,0.15),rgba(91,102,120,0.15) 6px,rgba(91,102,120,0.06) 6px,rgba(91,102,120,0.06) 12px);border:1px dashed rgba(91,102,120,0.45);border-radius:8px;font-size:10px;color:var(--text2);padding:2px 6px;overflow:hidden;pointer-events:none;z-index:1;">🔗 ${e.start.slice(11,16)} ${(e.summary||'Extern belegt').replace(/</g,'&lt;')}</div>`;
+    }).join('');
+    return `<div class="cal-col${iso===todayIso?' today':''}"><div class="cal-col-head">${names[i]}<span>${iso.slice(8,10)}.${iso.slice(5,7)}.</span></div><div class="cal-col-body" style="height:${totalH}px;background-size:100% ${HOUR}px;" onclick="onCalSlotClick(event,'${iso}',${HOUR},${calStart})" title="Klicken, um hier einen Termin anzulegen">${extEvs}${evs}</div></div>`;
   }).join('');
   document.getElementById('calGrid').innerHTML=`<div class="cal-scroll">${times}<div class="cal-cols">${cols}</div></div>`;
 }
@@ -1580,6 +1617,17 @@ async function saveAppt(){
   if(conflict){
     const nm=conflict.customers?.name||'ein anderer Termin';
     if(!confirm(`Achtung: überschneidet sich mit ${nm} (${conflict.starts_at.slice(11,16)} Uhr). Trotzdem speichern?`))return;
+  }
+  // Konflikt mit externem Kalender (Treatwell/Google)
+  if(extIcsConfigured){
+    if(!extEvents.some(e=>e.start.slice(0,10)===date))await loadExtEvents(date,date);
+    const extConflict=extEvents.find(e=>{
+      if(e.start.slice(0,10)!==date||e.allDay)return false;
+      const es=parseInt(e.start.slice(11,13),10)*60+parseInt(e.start.slice(14,16),10);
+      let dur=e.end?((new Date(e.end.slice(0,16)))-(new Date(e.start.slice(0,16))))/60000:60;
+      return startMin<es+(dur||60)&&endMin>es;
+    });
+    if(extConflict&&!confirm(`Achtung: In deinem externen Kalender ist ${extConflict.start.slice(11,16)} Uhr bereits belegt („${extConflict.summary||'Termin'}"). Trotzdem speichern?`))return;
   }
   const{error}=await sb.from('appointments').insert({salon_id:currentUser.id,customer_id,treatment_id,starts_at:`${date}T${time}:00Z`,ends_at:`${date}T${end}:00Z`,status:'booked'});
   if(error){showToast(error.message,'error');return;}
@@ -1684,7 +1732,9 @@ function renderHoursInputs(hours){
 }
 
 async function loadBookingSettings(){
-  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link,google_review_link,whatsapp_number,logo_url,brand_color,studio_description,address,contact_email,instagram_url,website_url').eq('id',currentUser.id).single();
+  const{data}=await sb.from('profiles').select('booking_slug,booking,studio_name,consult_link,google_review_link,whatsapp_number,logo_url,brand_color,studio_description,address,contact_email,instagram_url,website_url,external_ics_url').eq('id',currentUser.id).single();
+  document.getElementById('extIcsInput').value=data?.external_ics_url||'';
+  extIcsConfigured=!!data?.external_ics_url;
   const b=data?.booking||{};
   document.getElementById('bkMode').value=b.mode||'off';
   document.getElementById('bkSlug').value=data?.booking_slug||'';
@@ -1716,6 +1766,44 @@ async function loadBookingSettings(){
   endSel.innerHTML=Array.from({length:13},(_,k)=>{const h=k+12;return `<option value="${h}"${h===ce?' selected':''}>${lbl(h)}</option>`;}).join('');
   renderHoursInputs(b.hours);
   updateBookingLinkBox();
+}
+
+let extIcsConfigured=false,extEvents=[];
+
+async function saveExtIcs(){
+  const url=document.getElementById('extIcsInput').value.trim();
+  if(url&&!/^https:\/\//i.test(url)){showToast('Die ICS-URL muss mit https:// beginnen','error');return;}
+  const{error}=await sb.from('profiles').update({external_ics_url:url||null}).eq('id',currentUser.id);
+  if(error){showToast(error.message,'error');return;}
+  extIcsConfigured=!!url;
+  const st=document.getElementById('extIcsStatus');
+  if(url){
+    st.textContent='Prüfe Feed…';
+    try{
+      const{data:{session}}=await sb.auth.getSession();
+      const today=new Date().toISOString().slice(0,10);
+      const in14=new Date(Date.now()+14*86400000).toISOString().slice(0,10);
+      const res=await fetch(`/api/extcal?from=${today}&to=${in14}`,{headers:{'Authorization':'Bearer '+session.access_token}});
+      const json=await res.json();
+      if(!res.ok)throw new Error(json.error||'Feed-Fehler');
+      st.textContent=`✓ Verbunden — ${json.events.length} externe Termine in den nächsten 14 Tagen`;
+      st.style.color='var(--success)';
+      showToast('Externer Kalender verbunden ✓','success');
+    }catch(e){st.textContent='⚠️ '+e.message;st.style.color='#b45309';}
+  }else{st.textContent='Externer Kalender entfernt';showToast('Externer Kalender entfernt','success');}
+  loadCalendar();
+}
+
+async function loadExtEvents(from,to){
+  extEvents=[];
+  if(!extIcsConfigured)return;
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    const res=await fetch(`/api/extcal?from=${from}&to=${to}`,{headers:{'Authorization':'Bearer '+session.access_token}});
+    if(!res.ok)return;
+    const json=await res.json();
+    extEvents=json.events||[];
+  }catch(e){}
 }
 
 async function saveCalView(){
@@ -2242,6 +2330,8 @@ function renderAcadCourses(){
           <div style="font-size:12px;color:var(--text2);margin-top:3px;">${c.starts_at?'📅 '+acadFmtDate(c.starts_at)+' · ':''}${c.price?Number(c.price).toLocaleString('de-DE')+' € · ':''}<span style="${full?'color:#b45309;font-weight:700;':'font-weight:600;'}">${taken}/${c.seats} Plätze</span>${wait?' · <span style="color:#b45309;">⏳ '+wait+' Warteliste</span>':''}</div>
         </div>
         <button class="btn-sm btn-primary-sm" onclick="openCourseParts('${c.id}')">👥 Teilnehmer</button>
+        <button class="btn-sm btn-ghost-sm" title="Story-Bild für Instagram (1080×1920) erzeugen" onclick="makeStoryImage('${c.id}',this)">📸 Story</button>
+        <button class="btn-sm btn-ghost-sm" title="Kurs-Link kopieren (für Bio/Posts)" onclick="copyCourseLink('${c.id}',this)">🔗</button>
         <button class="btn-sm btn-ghost-sm" onclick="openCourseModal('${c.id}')">✏️</button>
         <button class="toggle ${c.active?'on':''}" title="Kurs aktiv/inaktiv" onclick="toggleCourseActive('${c.id}')"></button>
         <button class="btn-sm btn-ghost-sm" title="Löschen" onclick="deleteCourse('${c.id}')">🗑</button>
@@ -2265,7 +2355,53 @@ function openCourseModal(id){
   document.getElementById('crsSeats').value=c?.seats||8;
   document.getElementById('crsLocation').value=c?.location||'';
   document.getElementById('crsOnline').checked=!!c?.is_online;
+  document.getElementById('crsInstallments').checked=!!c?.allow_installments;
+  renderCrsModules(Array.isArray(c?.modules)?c.modules:[]);
   openModal('course');
+}
+
+// ===== Modul-Editor im Kurs-Modal =====
+function crsModRow(m,i){
+  const esc=s=>(s||'').replace(/"/g,'&quot;');
+  return `<div class="crs-mod-row" style="display:flex;gap:6px;align-items:flex-start;">
+    <div style="width:24px;height:34px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--accent2);">${i+1}</div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+      <input class="setting-input crs-mod-t" style="width:100%;" value="${esc(m.title)}" placeholder="Modul-Titel, z.B. Theorie &amp; Hygiene" />
+      <input class="setting-input crs-mod-d" style="width:100%;font-size:12px;" value="${esc(m.desc)}" placeholder="Kurzbeschreibung (optional)" />
+    </div>
+    <button class="btn-sm btn-ghost-sm" style="width:34px;" title="Nach oben" onclick="moveCrsModule(${i},-1)">↑</button>
+    <button class="btn-sm btn-ghost-sm" style="width:34px;" title="Nach unten" onclick="moveCrsModule(${i},1)">↓</button>
+    <button class="btn-sm btn-ghost-sm" style="width:34px;" title="Entfernen" onclick="removeCrsModule(${i})">✕</button>
+  </div>`;
+}
+function renderCrsModules(mods){
+  document.getElementById('crsModList').innerHTML=mods.map((m,i)=>crsModRow(m,i)).join('');
+}
+function collectCrsModules(){
+  return [...document.querySelectorAll('#crsModList .crs-mod-row')].map(r=>({
+    title:r.querySelector('.crs-mod-t').value.trim(),
+    desc:r.querySelector('.crs-mod-d').value.trim()
+  })).filter(m=>m.title);
+}
+function addCrsModule(){
+  const mods=collectCrsModules();mods.push({title:'',desc:''});
+  renderCrsModules(mods);
+  const rows=document.querySelectorAll('#crsModList .crs-mod-t');
+  rows[rows.length-1]?.focus();
+}
+function removeCrsModule(i){const mods=collectCrsModules0();mods.splice(i,1);renderCrsModules(mods);}
+function moveCrsModule(i,dir){
+  const mods=collectCrsModules0();
+  const j=i+dir;if(j<0||j>=mods.length)return;
+  [mods[i],mods[j]]=[mods[j],mods[i]];
+  renderCrsModules(mods);
+}
+// Variante ohne Leere-Filterung (für Reorder/Delete, damit leere Zeilen nicht verschwinden)
+function collectCrsModules0(){
+  return [...document.querySelectorAll('#crsModList .crs-mod-row')].map(r=>({
+    title:r.querySelector('.crs-mod-t').value,
+    desc:r.querySelector('.crs-mod-d').value
+  }));
 }
 
 async function saveCourse(){
@@ -2280,7 +2416,9 @@ async function saveCourse(){
     price:document.getElementById('crsPrice').value?Number(document.getElementById('crsPrice').value):null,
     seats:Math.max(1,Number(document.getElementById('crsSeats').value)||8),
     location:document.getElementById('crsLocation').value.trim()||null,
-    is_online:document.getElementById('crsOnline').checked
+    is_online:document.getElementById('crsOnline').checked,
+    allow_installments:document.getElementById('crsInstallments').checked,
+    modules:collectCrsModules()
   };
   const btn=document.getElementById('crsSaveBtn');btn.disabled=true;
   const{error}=acadEditCourse
@@ -2335,12 +2473,19 @@ function renderAcadParts(){
     }else if(p.status==='absolviert'){
       cert=`<button class="btn-sm btn-primary-sm" onclick="issueCert('${p.id}')">🎓 Ausstellen</button>`;
     }else{cert='<span style="font-size:12px;color:var(--text2);">–</span>';}
+    const ins=Array.isArray(p.installments)?p.installments:null;
+    let rateBadge='';
+    if(ins&&ins.length){
+      const paid=ins.filter(r=>r.paid_at).length;
+      const overdue=ins.some(r=>!r.paid_at&&r.due<new Date().toISOString().slice(0,10));
+      rateBadge=`<div style="font-size:11px;margin-top:3px;font-weight:700;color:${overdue?'#e11d48':(paid===ins.length?'var(--success)':'var(--text2)')};cursor:pointer;" onclick="openInstallments('${p.id}')">💳 ${paid}/${ins.length} Raten${overdue?' · fällig!':''}</div>`;
+    }
     return `<tr>
       <td style="font-weight:600;">${acadEsc(p.name)}</td>
       <td style="font-size:12px;color:var(--text2);">${acadEsc(p.phone||'')}${p.email?'<br/>'+acadEsc(p.email):''}</td>
-      <td><select class="setting-input" style="min-width:130px;width:130px;" onchange="setEnrollStatus('${p.id}',this.value)">${sts.map(s=>`<option value="${s}" ${p.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select></td>
+      <td><select class="setting-input" style="min-width:130px;width:130px;" onchange="setEnrollStatus('${p.id}',this.value)">${sts.map(s=>`<option value="${s}" ${p.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}</select>${rateBadge}</td>
       <td>${cert}</td>
-      <td>${wa}</td>
+      <td style="white-space:nowrap;"><button class="btn-sm btn-ghost-sm" title="Ratenplan" onclick="openInstallments('${p.id}')">💳</button> ${wa}</td>
     </tr>`;
   }).join('');
 }
@@ -2374,6 +2519,175 @@ async function issueCert(id){
   p.cert_issued_at=new Date().toISOString();
   showToast('🎓 Zertifikat ausgestellt!','success');
   renderAcadStats();renderAcadParts();
+}
+
+async function copyCourseLink(courseId,btn){
+  await navigator.clipboard.writeText(location.origin+'/academy/'+acadSlug+'?kurs='+courseId);
+  showToast('Kurs-Link kopiert ✓ — perfekt für Link in Bio','success');
+}
+
+// ===== Ratenplan-Verwaltung =====
+let insEnrollId=null;
+
+function openInstallments(enrollId){
+  const p=acadEnrolls.find(x=>x.id===enrollId);if(!p)return;
+  insEnrollId=enrollId;
+  const c=acadCourses.find(x=>x.id===p.course_id);
+  document.getElementById('insName').textContent=p.name;
+  document.getElementById('insCourseInfo').textContent=(c?c.title:'')+(c&&c.price?' · Kurspreis '+Number(c.price).toLocaleString('de-DE')+' €':'');
+  if(c&&c.price){
+    const n=Number(document.getElementById('insCount').value)||3;
+    document.getElementById('insAmount').value=(Math.ceil(c.price/n*100)/100).toFixed(2);
+  }
+  document.getElementById('insStart').value=new Date().toISOString().slice(0,10);
+  renderInsList(Array.isArray(p.installments)?JSON.parse(JSON.stringify(p.installments)):[]);
+  openModal('installments');
+}
+
+let insRows=[];
+function renderInsList(rows){
+  insRows=rows;
+  const el=document.getElementById('insList');
+  if(!rows.length){el.innerHTML='<div style="font-size:12.5px;color:var(--text2);">Noch kein Ratenplan — oben erstellen oder Raten einzeln hinzufügen.</div>';updateInsSum();return;}
+  const today=new Date().toISOString().slice(0,10);
+  el.innerHTML=rows.map((r,i)=>{
+    const overdue=!r.paid_at&&r.due<today;
+    return `<div style="display:flex;gap:6px;align-items:center;${overdue?'background:rgba(225,29,72,0.05);border-radius:8px;padding:3px 4px;':''}">
+      <span style="width:20px;font-size:11px;font-weight:800;color:var(--text2);text-align:center;">${i+1}.</span>
+      <input class="setting-input" type="date" value="${r.due||''}" style="width:138px;min-width:0;" onchange="insRows[${i}].due=this.value;renderInsList(insRows)" />
+      <input class="setting-input" type="number" step="0.01" min="0" value="${r.amount??''}" style="width:88px;min-width:0;" onchange="insRows[${i}].amount=Number(this.value);updateInsSum()" />
+      <button class="btn-sm ${r.paid_at?'btn-primary-sm':'btn-ghost-sm'}" style="min-width:88px;" onclick="insRows[${i}].paid_at=insRows[${i}].paid_at?null:new Date().toISOString();renderInsList(insRows)">${r.paid_at?'✓ bezahlt':'offen'}</button>
+      ${overdue?`<button class="btn-sm btn-ghost-sm" title="Per WhatsApp erinnern" onclick="remindInstallment(${i})">💬</button>`:''}
+      <button class="btn-sm btn-ghost-sm" style="width:32px;" onclick="insRows.splice(${i},1);renderInsList(insRows)">✕</button>
+    </div>`;
+  }).join('');
+  updateInsSum();
+}
+function updateInsSum(){
+  const sum=insRows.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const paid=insRows.filter(r=>r.paid_at).reduce((s,r)=>s+(Number(r.amount)||0),0);
+  const p=acadEnrolls.find(x=>x.id===insEnrollId);
+  const c=p?acadCourses.find(x=>x.id===p.course_id):null;
+  let warn='';
+  if(c&&c.price&&Math.abs(sum-Number(c.price))>0.01)warn=` <span style="color:#b45309;">(Kurspreis: ${Number(c.price).toLocaleString('de-DE')} €)</span>`;
+  document.getElementById('insSum').innerHTML=insRows.length?`Summe: ${sum.toLocaleString('de-DE',{minimumFractionDigits:2})} € · davon bezahlt: <span style="color:var(--success);">${paid.toLocaleString('de-DE',{minimumFractionDigits:2})} €</span>${warn}`:'';
+}
+function genInstallments(){
+  const n=Math.max(2,Math.min(12,Number(document.getElementById('insCount').value)||3));
+  const amount=Number(document.getElementById('insAmount').value);
+  const start=document.getElementById('insStart').value;
+  if(!amount||!start){showToast('Bitte Betrag und Startdatum angeben','error');return;}
+  const rows=[];
+  const d0=new Date(start+'T12:00:00');
+  for(let i=0;i<n;i++){
+    const d=new Date(d0);d.setMonth(d.getMonth()+i);
+    rows.push({due:d.toISOString().slice(0,10),amount:Math.round(amount*100)/100,paid_at:null});
+  }
+  renderInsList(rows);
+}
+function addInstallmentRow(){
+  insRows.push({due:new Date().toISOString().slice(0,10),amount:null,paid_at:null});
+  renderInsList(insRows);
+}
+function remindInstallment(i){
+  const p=acadEnrolls.find(x=>x.id===insEnrollId);if(!p)return;
+  const c=acadCourses.find(x=>x.id===p.course_id);
+  const r=insRows[i];
+  const digits=(p.phone||'').replace(/[^0-9]/g,'');
+  if(!digits){showToast('Keine Handynummer hinterlegt','error');return;}
+  const msg=`Hallo ${p.name.split(' ')[0]}! Kleine Erinnerung: Die Rate über ${Number(r.amount).toLocaleString('de-DE')} € für „${c?.title||'deinen Kurs'}" war am ${r.due.split('-').reverse().join('.')} fällig. Melde dich gern bei Fragen. 😊`;
+  window.open('https://wa.me/'+(digits.startsWith('0')?'49'+digits.slice(1):digits)+'?text='+encodeURIComponent(msg),'_blank');
+}
+async function saveInstallments(){
+  const clean=insRows.filter(r=>r.due&&Number(r.amount)>0);
+  const p=acadEnrolls.find(x=>x.id===insEnrollId);if(!p)return;
+  const patch={installments:clean.length?clean:null};
+  const allPaid=clean.length&&clean.every(r=>r.paid_at);
+  if(allPaid&&p.status!=='absolviert'&&p.status!=='storniert'){patch.status='bezahlt';patch.paid_at=p.paid_at||new Date().toISOString();}
+  const{error}=await sb.from('enrollments').update(patch).eq('id',insEnrollId);
+  if(error){showToast('Fehler: '+error.message,'error');return;}
+  Object.assign(p,patch);
+  closeModal('installments');
+  showToast(allPaid?'Alle Raten bezahlt — Status auf „Bezahlt" gesetzt ✓':'Ratenplan gespeichert ✓','success');
+  renderAcadStats();renderAcadParts();
+}
+
+// ===== Story-Grafik-Generator (1080×1920 PNG im Studio-Branding) =====
+async function makeStoryImage(courseId,btn){
+  const c=acadCourses.find(x=>x.id===courseId);if(!c)return;
+  const old=btn.textContent;btn.textContent='⏳ …';btn.disabled=true;
+  try{
+    const{data:prof}=await sb.from('profiles').select('studio_name,brand_color,logo_url').eq('id',currentUser.id).single();
+    const brand=prof?.brand_color||'#3b6cf6';
+    await Promise.all([
+      document.fonts.load('800 88px Sora'),document.fonts.load('700 44px Sora'),
+      document.fonts.load('600 36px "Plus Jakarta Sans"'),document.fonts.load('700 40px "Plus Jakarta Sans"')
+    ]).catch(()=>{});
+    const cv=document.createElement('canvas');cv.width=1080;cv.height=1920;
+    const x=cv.getContext('2d');
+    // Hintergrund: Brand-Verlauf + weiche Lichtkreise
+    const g=x.createLinearGradient(0,0,1080,1920);
+    g.addColorStop(0,'#10173a');g.addColorStop(.55,brand);g.addColorStop(1,'#0ea5e9');
+    x.fillStyle=g;x.fillRect(0,0,1080,1920);
+    const orb=(cx,cy,r,a)=>{const rg=x.createRadialGradient(cx,cy,0,cx,cy,r);rg.addColorStop(0,'rgba(255,255,255,'+a+')');rg.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=rg;x.fillRect(cx-r,cy-r,r*2,r*2);};
+    orb(950,220,420,.16);orb(120,1700,380,.13);orb(180,300,260,.10);
+    // Logo (falls vorhanden, CORS-tolerant)
+    if(prof?.logo_url){
+      try{
+        const img=await new Promise((res,rej)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>res(im);im.onerror=rej;im.src=prof.logo_url;});
+        const s=140;x.save();
+        const rr=(px,py,w,h,r)=>{x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath();};
+        rr(470,150,s,s,34);x.clip();x.drawImage(img,470,150,s,s);x.restore();
+      }catch(e){}
+    }
+    x.textAlign='center';x.fillStyle='rgba(255,255,255,0.92)';
+    x.font='700 40px "Plus Jakarta Sans"';
+    x.fillText(prof?.studio_name||'Academy',540,360);
+    // Badge
+    x.font='700 30px "Plus Jakarta Sans"';
+    const bw=300;x.fillStyle='rgba(255,255,255,0.16)';
+    x.beginPath();x.roundRect(540-bw/2,400,bw,64,32);x.fill();
+    x.fillStyle='#fff';x.fillText('🎓 ACADEMY',540,443);
+    // Kurstitel (mehrzeilig)
+    x.font='800 88px Sora';x.fillStyle='#ffffff';
+    const words=c.title.split(' ');let lines=[],line='';
+    for(const w of words){const t=line?line+' '+w:w;if(x.measureText(t).width>900&&line){lines.push(line);line=w;}else line=t;}
+    if(line)lines.push(line);
+    lines=lines.slice(0,4);
+    let ty=720-((lines.length-1)*55);
+    lines.forEach(l=>{x.fillText(l,540,ty);ty+=110;});
+    // Info-Zeilen
+    x.font='600 42px "Plus Jakarta Sans"';x.fillStyle='rgba(255,255,255,0.95)';
+    let iy=ty+60;
+    const infos=[
+      c.starts_at?'📅  '+acadFmtDate(c.starts_at):null,
+      c.duration_label?'⏱  '+c.duration_label:null,
+      c.is_online?'🎥  Online-Kurs':(c.location?'📍  '+c.location:null),
+      c.allow_installments?'💳  Ratenzahlung möglich':null
+    ].filter(Boolean);
+    infos.forEach(t=>{x.fillText(t,540,iy);iy+=72;});
+    // Preis + Plätze
+    if(c.price){
+      x.font='800 76px Sora';x.fillText(Number(c.price).toLocaleString('de-DE')+' €',540,iy+70);iy+=170;
+    }else iy+=60;
+    const free=Math.max(0,c.seats-acadCountTaken(c.id));
+    x.font='700 38px "Plus Jakarta Sans"';x.fillStyle='rgba(255,255,255,0.85)';
+    x.fillText(free>0?('Nur '+free+' '+(free===1?'Platz':'Plätze')+' verfügbar'):'Warteliste offen',540,iy);
+    // CTA unten
+    x.fillStyle='rgba(255,255,255,0.97)';
+    x.beginPath();x.roundRect(190,1660,700,110,55);x.fill();
+    x.fillStyle='#14192a';x.font='800 44px Sora';
+    x.fillText('Anmeldung → Link in Bio',540,1730);
+    // Download
+    cv.toBlob(blob=>{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='story-'+(c.title.toLowerCase().replace(/[^a-z0-9äöüß]+/g,'-').slice(0,40))+'.png';
+      a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    },'image/png');
+    showToast('📸 Story-Bild erstellt — im Download-Ordner','success');
+  }catch(e){showToast('Story-Bild: '+e.message,'error');}
+  btn.textContent=old;btn.disabled=false;
 }
 
 function copyCertLink(token,btn){

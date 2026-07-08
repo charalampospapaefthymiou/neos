@@ -146,6 +146,38 @@ input.invalid{border-color:#f43f5e !important;box-shadow:0 0 0 4px rgba(244,63,9
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
 @keyframes pop{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
 
+/* ===== Kurs-Detail Overlay ===== */
+.dt-overlay{position:fixed;inset:0;background:rgba(20,25,42,0.45);backdrop-filter:blur(6px);z-index:50;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.dt-overlay.open{opacity:1;pointer-events:auto;}
+.dt-sheet{width:100%;max-width:560px;max-height:88vh;overflow-y:auto;background:var(--bg2);border-radius:24px 24px 0 0;padding:24px 22px 30px;transform:translateY(40px);transition:transform .38s cubic-bezier(.22,1,.36,1);position:relative;}
+.dt-overlay.open .dt-sheet{transform:none;}
+@media(min-width:640px){.dt-overlay{align-items:center;padding:20px;}.dt-sheet{border-radius:24px;transform:translateY(20px) scale(.98);}}
+.dt-grab{width:44px;height:5px;border-radius:99px;background:var(--border2);margin:0 auto 16px;}
+.dt-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(17,24,39,0.06);color:var(--text2);font-size:15px;cursor:pointer;transition:background .2s;}
+.dt-close:hover{background:rgba(17,24,39,0.12);}
+.dt-title{font-family:'Sora',sans-serif;font-size:21px;font-weight:800;letter-spacing:-0.02em;line-height:1.3;padding-right:36px;}
+.dt-price{margin-top:6px;}
+.dt-desc{font-size:14px;color:var(--text2);line-height:1.7;margin-top:12px;}
+.dt-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;}
+.dt-sec{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.dt-sec::after{content:'';flex:1;height:1px;background:var(--border);}
+.mod{border:1px solid var(--border);border-radius:13px;margin-bottom:8px;overflow:hidden;background:var(--bg2);}
+.mod-head{display:flex;align-items:center;gap:11px;padding:13px 14px;cursor:pointer;user-select:none;transition:background .2s;}
+.mod-head:hover{background:rgba(59,108,246,0.04);}
+.mod-num{width:26px;height:26px;border-radius:9px;background:var(--grad);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mod-t{flex:1;font-weight:700;font-size:14px;}
+.mod-arrow{color:var(--text2);font-size:12px;transition:transform .3s;}
+.mod.open .mod-arrow{transform:rotate(180deg);}
+.mod-body{max-height:0;overflow:hidden;transition:max-height .35s cubic-bezier(.22,1,.36,1);}
+.mod-body-in{padding:0 14px 14px 51px;font-size:13px;color:var(--text2);line-height:1.65;}
+.dt-cta-row{display:flex;gap:10px;margin-top:22px;}
+.dt-cta-row .btn{flex:1;}
+.btn-icon{flex-shrink:0;width:54px;border-radius:14px;border:1.5px solid rgba(59,108,246,0.3);background:rgba(59,108,246,0.07);color:var(--accent);font-size:19px;cursor:pointer;transition:all .2s;}
+.btn-icon:hover{background:rgba(59,108,246,0.13);transform:translateY(-1px);}
+.dt-link{font-size:12.5px;font-weight:700;color:var(--accent);cursor:pointer;margin-top:11px;display:inline-flex;align-items:center;gap:5px;transition:opacity .2s;}
+.dt-link:hover{opacity:.75;}
+.tag.rate{color:#7c3aed;background:rgba(124,58,237,0.09);}
+
 .hidden{display:none !important;}
 .loading{text-align:center;color:var(--text2);padding:44px 0;}
 .load-dots{display:inline-flex;gap:5px;}
@@ -217,6 +249,23 @@ input.invalid{border-color:#f43f5e !important;box-shadow:0 0 0 4px rgba(244,63,9
   </div>
 
   <div class="powered">bereitgestellt mit <b>neos</b></div>
+</div>
+
+<div class="dt-overlay" id="dtOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="dt-sheet">
+    <div class="dt-grab"></div>
+    <button class="dt-close" onclick="closeDetail()">✕</button>
+    <div class="dt-title" id="dtTitle"></div>
+    <div class="price-chip dt-price" id="dtPrice"></div>
+    <div class="dt-meta" id="dtMeta"></div>
+    <div class="dt-desc" id="dtDesc"></div>
+    <div id="dtSeats" class="seats" style="margin-top:16px;"></div>
+    <div id="dtModules"></div>
+    <div class="dt-cta-row">
+      <button class="btn" id="dtEnroll">Diesen Kurs wählen</button>
+      <button class="btn-icon" id="dtShare" title="Kurs teilen" onclick="shareCourse()">↗</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -301,14 +350,20 @@ async function init(){
           ${c.starts_at?`<span class="tag">📅 ${fmtDate(c.starts_at)}</span>`:''}
           ${c.duration_label?`<span class="tag">⏱ ${esc(c.duration_label)}</span>`:''}
           ${c.is_online?`<span class="tag online">🎥 Online</span>`:(c.location?`<span class="tag">📍 ${esc(c.location)}</span>`:'')}
+          ${(c.modules||[]).length?`<span class="tag">📚 ${c.modules.length} Module</span>`:''}
+          ${c.allow_installments?`<span class="tag rate">💳 Ratenzahlung möglich</span>`:''}
           ${soonTag}
         </div>
         <div class="seats">
           <div class="seats-row"><span class="seats-label">Auslastung</span><span class="seats-val ${st.cls}">${st.label}</span></div>
           <div class="seats-bar"><div class="seats-fill ${st.cls}" data-pct="${st.pct}"></div></div>
         </div>
+        ${((c.modules||[]).length||c.description)?`<span class="dt-link" onclick="event.stopPropagation();openDetail('${c.id}')">Details &amp; Lehrplan ansehen →</span>`:''}
       </div>`;
     }).join('');
+    // Deep-Link: /academy/:slug?kurs=<id> öffnet Kurs-Details direkt
+    const deepId=new URLSearchParams(location.search).get('kurs');
+    if(deepId&&courses.some(c=>c.id===deepId))setTimeout(()=>openDetail(deepId),450);
     // Progress-Bars animiert füllen, sobald sichtbar
     requestAnimationFrame(()=>setTimeout(()=>{
       document.querySelectorAll('.seats-fill').forEach(f=>f.style.width=f.dataset.pct+'%');
@@ -319,6 +374,68 @@ async function init(){
   }
 }
 
+let dtCourse=null;
+
+function openDetail(id){
+  const c=courses.find(x=>x.id===id);if(!c)return;
+  dtCourse=c;
+  const st=seatState(c);
+  $('dtTitle').textContent=c.title;
+  $('dtPrice').textContent=fmtPrice(c.price);
+  $('dtDesc').textContent=c.description||'';
+  $('dtDesc').style.display=c.description?'block':'none';
+  $('dtMeta').innerHTML=[
+    c.starts_at?`<span class="tag">📅 ${fmtDate(c.starts_at)}</span>`:'',
+    c.duration_label?`<span class="tag">⏱ ${esc(c.duration_label)}</span>`:'',
+    c.is_online?`<span class="tag online">🎥 Online</span>`:(c.location?`<span class="tag">📍 ${esc(c.location)}</span>`:''),
+    c.allow_installments?`<span class="tag rate">💳 Ratenzahlung möglich</span>`:''
+  ].filter(Boolean).join('');
+  $('dtSeats').innerHTML=`<div class="seats-row"><span class="seats-label">Auslastung</span><span class="seats-val ${st.cls}">${st.label}</span></div><div class="seats-bar"><div class="seats-fill ${st.cls}" style="width:${st.pct}%"></div></div>`;
+  const mods=c.modules||[];
+  $('dtModules').innerHTML=mods.length?`<div class="dt-sec">Lehrplan · ${mods.length} Module</div>`+mods.map((m,i)=>`
+    <div class="mod" id="mod${i}">
+      <div class="mod-head" onclick="toggleMod(${i})">
+        <div class="mod-num">${i+1}</div>
+        <div class="mod-t">${esc(m.title||'Modul '+(i+1))}</div>
+        ${m.desc?'<div class="mod-arrow">▾</div>':''}
+      </div>
+      ${m.desc?`<div class="mod-body"><div class="mod-body-in">${esc(m.desc)}</div></div>`:''}
+    </div>`).join(''):'';
+  $('dtEnroll').textContent=c.seats_free>0?'Diesen Kurs wählen':'Auf die Warteliste';
+  $('dtEnroll').onclick=()=>{
+    closeDetail();
+    const el=[...document.querySelectorAll('#courseList .course')].find(x=>x.innerHTML.includes(`'${c.id}'`));
+    if(el)pickC(c.id,el);
+  };
+  $('dtOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  history.replaceState(null,'', location.pathname+'?kurs='+c.id);
+}
+
+function closeDetail(){
+  $('dtOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  history.replaceState(null,'',location.pathname);
+}
+
+function toggleMod(i){
+  const el=$('mod'+i);if(!el)return;
+  const body=el.querySelector('.mod-body');if(!body)return;
+  const open=el.classList.toggle('open');
+  body.style.maxHeight=open?body.scrollHeight+'px':'0';
+}
+
+async function shareCourse(){
+  if(!dtCourse)return;
+  const url=location.origin+location.pathname+'?kurs='+dtCourse.id;
+  const data={title:dtCourse.title,text:`${dtCourse.title} — ${salon?.name||'Academy'}`,url};
+  if(navigator.share){try{await navigator.share(data);}catch(e){}}
+  else{
+    await navigator.clipboard.writeText(url);
+    const b=$('dtShare');b.textContent='✓';setTimeout(()=>b.textContent='↗',1500);
+  }
+}
+
 function pickC(id,el){
   selC=id;
   document.querySelectorAll('#courseList .course').forEach(o=>o.classList.remove('sel'));
@@ -326,6 +443,9 @@ function pickC(id,el){
   const c=courses.find(x=>x.id===id);
   const st=seatState(c);
   $('selSummary').innerHTML=`<span class="ico">${c.is_online?'🎥':'🎓'}</span><div><b>${esc(c.title)}</b><div class="sm">${[c.starts_at?fmtDate(c.starts_at):null,fmtPrice(c.price)||null,st.label].filter(Boolean).join(' · ')}</div></div>`;
+  $('payNote').textContent=c.allow_installments
+    ?'Die Anmeldung ist zunächst unverbindlich — du bekommst alle Details persönlich per WhatsApp. Ratenzahlung ist bei diesem Kurs möglich, sprich uns einfach an.'
+    :'Die Anmeldung ist zunächst unverbindlich — du bekommst alle Details zur Zahlung persönlich per WhatsApp.';
   $('acSubmit').textContent=c.seats_free>0?'Platz verbindlich anfragen':'Auf die Warteliste setzen';
   $('st2').classList.add('on');$('sl1').classList.add('fill');
   const sd=$('stepData');
