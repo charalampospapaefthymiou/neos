@@ -46,7 +46,7 @@ export default async function handler(req) {
       if (!salon) return json({ error: 'Academy nicht verfügbar' }, 404);
       // Kurse: aktiv und (ohne Datum oder in der Zukunft, Toleranz bis Vortag)
       const today = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-      const courses = await rest(`courses?salon_id=eq.${salon.id}&active=eq.true&or=(starts_at.is.null,starts_at.gte.${today}T00:00:00Z)&select=id,title,description,starts_at,duration_label,price,seats,location,is_online&order=starts_at.asc.nullslast`);
+      const courses = await rest(`courses?salon_id=eq.${salon.id}&active=eq.true&or=(starts_at.is.null,starts_at.gte.${today}T00:00:00Z)&select=id,title,description,starts_at,duration_label,price,seats,location,is_online,modules,allow_installments&order=starts_at.asc.nullslast`);
       const taken = await seatsTaken(courses.map(c => c.id));
       return json({
         salon: {
