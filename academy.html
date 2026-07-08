@@ -4,63 +4,205 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Academy</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
 <style>
-:root{--bg:#f5f8fd;--bg2:#ffffff;--border:rgba(17,24,39,0.10);--border2:rgba(17,24,39,0.16);--text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--accent2:#4f7cff;--success:#10b981;}
+:root{
+  --bg:#f5f8fd;--bg2:#ffffff;--border:rgba(17,24,39,0.08);--border2:rgba(17,24,39,0.14);
+  --text:#14192a;--text2:#5b6678;--accent:#3b6cf6;--accent2:#0ea5e9;--success:#10b981;--amber:#f59e0b;
+  --grad:linear-gradient(135deg,#3b6cf6,#0ea5e9);
+  --shadow-sm:0 1px 3px rgba(20,25,42,0.06),0 4px 14px rgba(20,25,42,0.05);
+  --shadow-lg:0 4px 10px rgba(59,108,246,0.10),0 18px 44px rgba(59,108,246,0.16);
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:20px 14px 60px;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;padding:26px 14px 60px;overflow-x:hidden;}
 body.embed{background:transparent;padding:6px 4px 20px;}
-.wrap{width:100%;max-width:480px;}
-.salon-name{text-align:center;font-size:22px;font-weight:800;margin-bottom:4px;}
-.sub{text-align:center;font-size:13px;color:var(--text2);margin-bottom:6px;}
-.acad-badge{display:block;width:fit-content;margin:0 auto 18px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(79,124,255,0.10);border:1px solid rgba(79,124,255,0.25);border-radius:99px;padding:4px 12px;}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px;}
-.course{border:1px solid var(--border2);border-radius:14px;padding:15px;margin-bottom:10px;cursor:pointer;transition:border-color .15s;}
-.course:hover,.course.sel{border-color:var(--accent);background:rgba(79,124,255,0.06);}
-.course .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-.course .nm{font-weight:700;font-size:16px;line-height:1.3;}
-.course .pr{font-weight:800;font-size:16px;white-space:nowrap;}
-.course .desc{font-size:13px;color:var(--text2);line-height:1.55;margin-top:6px;}
-.course .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
-.tag{font-size:11.5px;font-weight:600;color:var(--text2);background:rgba(0,0,0,0.045);border-radius:7px;padding:3px 8px;}
-.tag.free{color:var(--success);background:rgba(16,185,129,0.10);}
-.tag.full{color:#b45309;background:rgba(245,158,11,0.12);}
-.tag.online{color:var(--accent2);background:rgba(79,124,255,0.10);}
-input{width:100%;background:rgba(0,0,0,0.04);border:1px solid var(--border2);border-radius:11px;padding:13px 14px;color:var(--text);font-size:15px;font-family:inherit;margin-bottom:10px;}
-input:focus{outline:none;border-color:var(--accent);}
-input.invalid{border-color:#f87171 !important;}
-.btn{width:100%;background:linear-gradient(135deg,#4f7cff,#3258d8);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;}
-.btn:disabled{opacity:.5;cursor:default;}
-.step-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
-.note{font-size:12px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;}
-.done{text-align:center;padding:40px 10px;}
-.done .big{font-size:52px;margin-bottom:14px;}
-.done h2{margin-bottom:10px;}
-.done p{color:var(--text2);font-size:14px;line-height:1.6;}
+
+/* ===== Ambient Background ===== */
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.5;pointer-events:none;z-index:0;}
+.orb1{width:420px;height:420px;background:radial-gradient(circle,rgba(59,108,246,0.22),transparent 70%);top:-140px;right:-120px;animation:drift1 22s ease-in-out infinite alternate;}
+.orb2{width:380px;height:380px;background:radial-gradient(circle,rgba(14,165,233,0.20),transparent 70%);bottom:-120px;left:-140px;animation:drift2 26s ease-in-out infinite alternate;}
+@keyframes drift1{from{transform:translate(0,0) scale(1);}to{transform:translate(-50px,60px) scale(1.12);}}
+@keyframes drift2{from{transform:translate(0,0) scale(1);}to{transform:translate(60px,-50px) scale(1.08);}}
+body.embed .orb{display:none;}
+
+.wrap{width:100%;max-width:560px;position:relative;z-index:1;}
+
+/* ===== Hero ===== */
+.hero{text-align:center;margin-bottom:26px;animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both;}
+.logo-ring{width:78px;height:78px;margin:0 auto 14px;border-radius:24px;padding:3px;background:var(--grad);box-shadow:0 8px 28px rgba(59,108,246,0.30);animation:pop .8s cubic-bezier(.34,1.56,.64,1) both .15s;}
+.logo-ring img{width:100%;height:100%;border-radius:21px;object-fit:cover;display:block;background:#fff;}
+.logo-ring .mono{width:100%;height:100%;border-radius:21px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;}
+.salon-name{font-family:'Sora',sans-serif;font-size:27px;font-weight:800;letter-spacing:-0.02em;line-height:1.2;}
+.acad-badge{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;background:var(--grad);border-radius:99px;padding:6px 16px;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(59,108,246,0.30);}
+.acad-badge::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.55),transparent);animation:shimmer 3.2s ease-in-out infinite;}
+@keyframes shimmer{0%,55%{left:-80%;}85%,100%{left:130%;}}
+.sub{font-size:14px;color:var(--text2);margin-top:12px;line-height:1.6;max-width:440px;margin-left:auto;margin-right:auto;}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px;}
+.hero-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:99px;padding:6px 12px;text-decoration:none;transition:all .2s;box-shadow:var(--shadow-sm);}
+a.hero-chip:hover{color:var(--accent);border-color:rgba(59,108,246,0.35);transform:translateY(-1px);}
+
+/* ===== Countdown ===== */
+.countdown{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:16px 18px;margin-bottom:18px;text-align:center;box-shadow:var(--shadow-sm);animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both .1s;position:relative;overflow:hidden;}
+.countdown::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--grad);}
+.cd-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:2px;}
+.cd-course{font-weight:700;font-size:14px;margin-bottom:10px;}
+.cd-grid{display:flex;justify-content:center;gap:8px;}
+.cd-cell{min-width:58px;background:linear-gradient(180deg,rgba(59,108,246,0.06),rgba(14,165,233,0.05));border:1px solid rgba(59,108,246,0.15);border-radius:12px;padding:8px 6px;}
+.cd-num{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums;line-height:1.1;}
+.cd-unit{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-top:2px;}
+
+/* ===== Steps ===== */
+.steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:16px;animation:fadeUp .7s both .15s;}
+.step{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--text2);transition:color .3s;}
+.step .dot{width:26px;height:26px;border-radius:50%;background:var(--bg2);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .35s;}
+.step.on{color:var(--accent);}
+.step.on .dot{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 4px 12px rgba(59,108,246,0.35);}
+.step.done .dot{background:var(--success);border-color:transparent;color:#fff;}
+.step-line{width:44px;height:2px;background:var(--border2);margin:0 10px;border-radius:2px;position:relative;overflow:hidden;}
+.step-line::after{content:'';position:absolute;inset:0;background:var(--grad);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.22,1,.36,1);}
+.step-line.fill::after{transform:scaleX(1);}
+
+/* ===== Cards & Courses ===== */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow-sm);}
+.card-anim{animation:fadeUp .7s cubic-bezier(.22,1,.36,1) both .2s;}
+.section-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.course{position:relative;border:1.5px solid var(--border2);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;background:var(--bg2);transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s,border-color .25s;overflow:hidden;animation:fadeUp .6s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0s);}
+.course::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:var(--grad);opacity:0;transition:opacity .25s;}
+.course:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:rgba(59,108,246,0.4);}
+.course:hover::before{opacity:1;}
+.course.sel{border-color:var(--accent);box-shadow:var(--shadow-lg);background:linear-gradient(180deg,rgba(59,108,246,0.045),rgba(14,165,233,0.03));}
+.course.sel::before{opacity:1;}
+.course .check{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transform:scale(.4);transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.course.sel .check{opacity:1;transform:scale(1);}
+.course .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding-right:20px;}
+.course .nm{font-family:'Sora',sans-serif;font-weight:700;font-size:16.5px;line-height:1.35;letter-spacing:-0.01em;}
+.price-chip{font-family:'Sora',sans-serif;font-weight:800;font-size:15px;white-space:nowrap;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.course .desc{font-size:13px;color:var(--text2);line-height:1.6;margin-top:7px;}
+.course .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--text2);background:rgba(17,24,39,0.04);border-radius:8px;padding:4px 9px;}
+.tag.online{color:var(--accent2);background:rgba(14,165,233,0.10);}
+.tag.soon{color:var(--accent);background:rgba(59,108,246,0.09);}
+
+/* Seat progress */
+.seats{margin-top:12px;}
+.seats-row{display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;margin-bottom:5px;}
+.seats-label{color:var(--text2);}
+.seats-val{color:var(--success);}
+.seats-val.warn{color:var(--amber);}
+.seats-val.full{color:#b45309;}
+.seats-bar{height:6px;background:rgba(17,24,39,0.06);border-radius:99px;overflow:hidden;}
+.seats-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#34d399);width:0;transition:width 1.1s cubic-bezier(.22,1,.36,1);}
+.seats-fill.warn{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.seats-fill.full{background:linear-gradient(90deg,#f43f5e,#fb7185);}
+
+/* ===== Form ===== */
+#stepData{transform-origin:top center;}
+#stepData.enter{animation:slideIn .5s cubic-bezier(.22,1,.36,1) both;}
+@keyframes slideIn{from{opacity:0;transform:translateY(18px) scale(.985);}to{opacity:1;transform:none;}}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;}
+input{width:100%;background:rgba(17,24,39,0.03);border:1.5px solid var(--border2);border-radius:13px;padding:14px 15px;color:var(--text);font-size:15px;font-family:inherit;transition:border-color .2s,box-shadow .2s,background .2s;}
+input::placeholder{color:rgba(91,102,120,0.55);}
+input:focus{outline:none;border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(59,108,246,0.12);}
+input.invalid{border-color:#f43f5e !important;box-shadow:0 0 0 4px rgba(244,63,94,0.10);animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(5px);}75%{transform:translateX(-3px);}}
+.summary{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(59,108,246,0.06),rgba(14,165,233,0.05));border:1px solid rgba(59,108,246,0.18);border-radius:13px;padding:11px 14px;margin-bottom:16px;font-size:13px;}
+.summary .ico{font-size:18px;}
+.summary b{font-weight:700;}
+.summary .sm{color:var(--text2);font-size:12px;margin-top:1px;}
+
+.btn{position:relative;width:100%;background:var(--grad);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;overflow:hidden;transition:transform .2s,box-shadow .2s;box-shadow:0 6px 20px rgba(59,108,246,0.35);}
+.btn::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.35),transparent);transition:left .6s ease;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(59,108,246,0.45);}
+.btn:hover::after{left:130%;}
+.btn:active{transform:translateY(0);}
+.btn:disabled{opacity:.65;cursor:default;transform:none;}
+.spinner{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.note{font-size:12px;color:var(--text2);text-align:center;margin-top:12px;line-height:1.6;}
+.err{color:#e11d48;font-size:13px;font-weight:600;text-align:center;margin-top:12px;}
+
+/* ===== Success ===== */
+.done{text-align:center;padding:34px 14px 20px;animation:fadeUp .6s both;}
+.check-wrap{width:88px;height:88px;margin:0 auto 18px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 36px rgba(59,108,246,0.40);animation:pop .7s cubic-bezier(.34,1.56,.64,1) both .1s;}
+.check-wrap svg{width:44px;height:44px;}
+.check-wrap.wait{background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 12px 36px rgba(245,158,11,0.40);}
+.check-path{stroke:#fff;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;fill:none;stroke-dasharray:60;stroke-dashoffset:60;animation:draw .55s ease-out forwards .5s;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+.done h2{font-family:'Sora',sans-serif;font-size:22px;letter-spacing:-0.01em;margin-bottom:10px;}
+.done p{color:var(--text2);font-size:14px;line-height:1.65;max-width:400px;margin:0 auto;}
+.done-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px;}
+.btn-mini{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;color:var(--accent);background:rgba(59,108,246,0.08);border:1.5px solid rgba(59,108,246,0.25);border-radius:12px;padding:11px 18px;cursor:pointer;text-decoration:none;font-family:inherit;transition:all .2s;}
+.btn-mini:hover{background:rgba(59,108,246,0.14);transform:translateY(-1px);}
+
+/* Confetti */
+.confetti{position:fixed;top:-12px;border-radius:3px;pointer-events:none;z-index:99;animation:confetti-fall linear forwards;}
+@keyframes confetti-fall{to{transform:translateY(105vh) rotate(680deg);opacity:.2;}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+@keyframes pop{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
+
 .hidden{display:none !important;}
-.err{color:#f87171;font-size:13px;text-align:center;margin-top:10px;}
-.powered{text-align:center;margin-top:26px;font-size:12px;color:var(--text2);}
-.powered b{background:linear-gradient(135deg,#7aa0ff,#b89bff);-webkit-background-clip:text;background-clip:text;color:transparent;}
-.loading{text-align:center;color:var(--text2);padding:30px;}
+.loading{text-align:center;color:var(--text2);padding:44px 0;}
+.load-dots{display:inline-flex;gap:5px;}
+.load-dots span{width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.4;animation:pulse 1.2s ease-in-out infinite;}
+.load-dots span:nth-child(2){animation-delay:.18s;}
+.load-dots span:nth-child(3){animation-delay:.36s;}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(1);}50%{opacity:1;transform:scale(1.25);}}
+
+.powered{text-align:center;margin-top:28px;font-size:12px;color:var(--text2);}
+.powered b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  html{scroll-behavior:auto;}
+}
 </style>
 </head>
 <body>
+<div class="orb orb1"></div><div class="orb orb2"></div>
 <div class="wrap">
-  <img id="studioLogo" class="hidden" style="width:56px;height:56px;border-radius:14px;object-fit:cover;display:block;margin:6px auto 10px;" />
-  <div class="salon-name" id="salonName">&nbsp;</div>
-  <span class="acad-badge">🎓 Academy</span>
-  <div class="sub hidden" id="salonDesc" style="margin-top:-10px;margin-bottom:18px;"></div>
+  <div class="hero">
+    <div class="logo-ring" id="logoRing"><div class="mono">🎓</div></div>
+    <div class="salon-name" id="salonName">&nbsp;</div>
+    <div><span class="acad-badge">✦ Academy</span></div>
+    <div class="sub hidden" id="salonDesc"></div>
+    <div class="hero-meta" id="heroMeta"></div>
+  </div>
 
-  <div id="loading" class="loading">Lade…</div>
-  <div id="unavailable" class="done hidden"><div class="big">🎓</div><h2>Academy nicht verfügbar</h2><p>Aktuell sind hier keine Schulungen buchbar.</p></div>
+  <div id="loading" class="loading"><div class="load-dots"><span></span><span></span><span></span></div><div style="margin-top:12px;font-size:13px;">Kurse werden geladen…</div></div>
+  <div id="unavailable" class="done hidden"><div style="font-size:52px;margin-bottom:14px;">🎓</div><h2>Academy nicht verfügbar</h2><p>Aktuell sind hier keine Schulungen buchbar.</p></div>
+
+  <div id="countdown" class="countdown hidden">
+    <div class="cd-label">Nächster Kurs startet in</div>
+    <div class="cd-course" id="cdCourse"></div>
+    <div class="cd-grid">
+      <div class="cd-cell"><div class="cd-num" id="cdD">0</div><div class="cd-unit">Tage</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdH">0</div><div class="cd-unit">Std</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdM">0</div><div class="cd-unit">Min</div></div>
+      <div class="cd-cell"><div class="cd-num" id="cdS">0</div><div class="cd-unit">Sek</div></div>
+    </div>
+  </div>
 
   <div id="flow" class="hidden">
-    <div class="card"><div class="step-title">1 · Kurs wählen</div><div id="courseList"></div></div>
+    <div class="steps">
+      <div class="step on" id="st1"><div class="dot">1</div>Kurs</div>
+      <div class="step-line" id="sl1"></div>
+      <div class="step" id="st2"><div class="dot">2</div>Daten</div>
+      <div class="step-line" id="sl2"></div>
+      <div class="step" id="st3"><div class="dot">✓</div>Fertig</div>
+    </div>
+    <div class="card card-anim"><div class="section-title">Wähle deinen Kurs</div><div id="courseList"></div></div>
     <div class="card hidden" id="stepData">
-      <div class="step-title">2 · Deine Daten</div>
-      <input type="text" id="acName" placeholder="Dein Name" autocomplete="name" />
-      <input type="tel" id="acPhone" placeholder="Handynummer (für die Bestätigung)" autocomplete="tel" />
-      <input type="email" id="acEmail" placeholder="E-Mail-Adresse (optional)" autocomplete="email" />
+      <div class="section-title">Deine Daten</div>
+      <div class="summary" id="selSummary"></div>
+      <div class="field"><label for="acName">Name *</label><input type="text" id="acName" placeholder="Vor- und Nachname" autocomplete="name" /></div>
+      <div class="field"><label for="acPhone">Handynummer *</label><input type="tel" id="acPhone" placeholder="Für die persönliche Bestätigung" autocomplete="tel" /></div>
+      <div class="field"><label for="acEmail">E-Mail (optional)</label><input type="email" id="acEmail" placeholder="Für die Kursunterlagen" autocomplete="email" /></div>
       <button class="btn" id="acSubmit" onclick="submitEnroll()">Platz anfragen</button>
       <div class="err hidden" id="acErr"></div>
       <div class="note" id="payNote">Die Anmeldung ist zunächst unverbindlich — du bekommst alle Details zur Zahlung persönlich per WhatsApp.</div>
@@ -68,9 +210,10 @@ input.invalid{border-color:#f87171 !important;}
   </div>
 
   <div id="done" class="done hidden">
-    <div class="big" id="doneIcon">🎓</div>
+    <div class="check-wrap" id="doneIconWrap"><svg viewBox="0 0 52 52"><path class="check-path" d="M14 27l8 8 16-17"/></svg></div>
     <h2 id="doneTitle"></h2>
     <p id="doneText"></p>
+    <div class="done-actions" id="doneActions"></div>
   </div>
 
   <div class="powered">bereitgestellt mit <b>neos</b></div>
@@ -78,20 +221,50 @@ input.invalid{border-color:#f87171 !important;}
 
 <script>
 const slug=location.pathname.split('/').filter(Boolean).pop();
-let salon=null,courses=[],selC=null;
+let salon=null,courses=[],selC=null,cdTimer=null;
 const $=id=>document.getElementById(id);
 const fmtPrice=p=>p?Number(p).toLocaleString('de-DE',{minimumFractionDigits:0})+' €':'';
 const fmtDate=iso=>{if(!iso)return null;const[y,m,d]=iso.slice(0,10).split('-');const t=iso.slice(11,16);return`${d}.${m}.${y}${t&&t!=='00:00'?' · '+t+' Uhr':''}`;};
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// starts_at ist naive Lokalzeit mit Z-Suffix (App-Konvention) → als lokale Zeit interpretieren
+const localDate=iso=>iso?new Date(iso.slice(0,10)+'T'+(iso.slice(11,19)||'00:00:00')):null;
 
 function applyBrandColor(color){
   if(!color)return;
   const s=document.createElement('style');
-  s.textContent=`.btn{background:${color} !important;}
-.course:hover,.course.sel{border-color:${color} !important;}
-.acad-badge{color:${color} !important;border-color:${color}40 !important;background:${color}14 !important;}
-input:focus{border-color:${color} !important;}`;
+  s.textContent=`:root{--accent:${color};--grad:linear-gradient(135deg,${color},${color}cc);}
+.btn{background:linear-gradient(135deg,${color},${color}cc) !important;box-shadow:0 6px 20px ${color}59 !important;}
+.acad-badge,.logo-ring,.check-wrap:not(.wait),.step.on .dot{background:linear-gradient(135deg,${color},${color}cc) !important;}
+.course.sel,.course:hover{border-color:${color} !important;}
+.course::before,.step-line::after{background:linear-gradient(135deg,${color},${color}cc) !important;}
+input:focus{border-color:${color} !important;box-shadow:0 0 0 4px ${color}1f !important;}
+.price-chip,.cd-num,.powered b{background:linear-gradient(135deg,${color},${color}cc) !important;-webkit-background-clip:text !important;background-clip:text !important;}
+.btn-mini{color:${color} !important;background:${color}14 !important;border-color:${color}40 !important;}
+.summary{background:${color}0d !important;border-color:${color}2e !important;}`;
   document.head.appendChild(s);
+}
+
+function startCountdown(){
+  const now=new Date();
+  const next=courses.filter(c=>c.starts_at&&localDate(c.starts_at)>now).sort((a,b)=>a.starts_at<b.starts_at?-1:1)[0];
+  if(!next)return;
+  $('cdCourse').textContent=next.title;
+  $('countdown').classList.remove('hidden');
+  const target=localDate(next.starts_at);
+  const tick=()=>{
+    let ms=target-new Date();
+    if(ms<0){clearInterval(cdTimer);$('countdown').classList.add('hidden');return;}
+    const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4),s=Math.floor(ms%6e4/1e3);
+    $('cdD').textContent=d;$('cdH').textContent=h;$('cdM').textContent=m;$('cdS').textContent=s;
+  };
+  tick();cdTimer=setInterval(tick,1000);
+}
+
+function seatState(c){
+  const pct=c.seats?Math.min(100,Math.round(c.seats_taken/c.seats*100)):0;
+  const cls=c.seats_free===0?'full':(c.seats_free<=2?'warn':'');
+  const label=c.seats_free===0?'Ausgebucht — Warteliste offen':(c.seats_free===1?'Nur noch 1 Platz frei':c.seats_free+' von '+c.seats+' Plätzen frei');
+  return{pct,cls,label};
 }
 
 async function init(){
@@ -103,27 +276,43 @@ async function init(){
     salon=json.salon;courses=json.courses;
     $('salonName').textContent=salon.name;
     document.title=salon.name+' · Academy';
-    if(salon.logoUrl){$('studioLogo').src=salon.logoUrl;$('studioLogo').classList.remove('hidden');}
+    if(salon.logoUrl)$('logoRing').innerHTML='<img src="'+esc(salon.logoUrl)+'" alt="" />';
     if(salon.description){$('salonDesc').textContent=salon.description;$('salonDesc').classList.remove('hidden');}
+    const meta=[];
+    if(salon.address)meta.push('<span class="hero-chip">📍 '+esc(salon.address)+'</span>');
+    if(salon.instagram)meta.push('<a class="hero-chip" target="_blank" rel="noopener" href="'+esc(salon.instagram)+'">📷 Instagram</a>');
+    $('heroMeta').innerHTML=meta.join('');
     applyBrandColor(salon.brandColor);
     $('loading').classList.add('hidden');
     if(!courses.length){$('unavailable').classList.remove('hidden');return;}
     $('flow').classList.remove('hidden');
-    $('courseList').innerHTML=courses.map(c=>{
-      const seatTag=c.seats_free>0
-        ?`<span class="tag free">✓ ${c.seats_free} ${c.seats_free===1?'Platz':'Plätze'} frei</span>`
-        :`<span class="tag full">Warteliste</span>`;
-      return`<div class="course" onclick="pickC('${c.id}',this)">
-        <div class="top"><div class="nm">${esc(c.title)}</div><div class="pr">${fmtPrice(c.price)}</div></div>
+    startCountdown();
+    const now=new Date();
+    $('courseList').innerHTML=courses.map((c,i)=>{
+      const st=seatState(c);
+      const ld=localDate(c.starts_at);
+      const days=ld?Math.ceil((ld-now)/864e5):null;
+      const soonTag=(days!==null&&days>=0&&days<=14)?'<span class="tag soon">🔥 '+(days===0?'Heute':days===1?'Morgen':'in '+days+' Tagen')+'</span>':'';
+      return`<div class="course" style="--d:${0.08*i}s" onclick="pickC('${c.id}',this)">
+        <div class="check">✓</div>
+        <div class="top"><div class="nm">${esc(c.title)}</div><div class="price-chip">${fmtPrice(c.price)}</div></div>
         ${c.description?`<div class="desc">${esc(c.description)}</div>`:''}
         <div class="meta">
           ${c.starts_at?`<span class="tag">📅 ${fmtDate(c.starts_at)}</span>`:''}
           ${c.duration_label?`<span class="tag">⏱ ${esc(c.duration_label)}</span>`:''}
           ${c.is_online?`<span class="tag online">🎥 Online</span>`:(c.location?`<span class="tag">📍 ${esc(c.location)}</span>`:'')}
-          ${seatTag}
+          ${soonTag}
+        </div>
+        <div class="seats">
+          <div class="seats-row"><span class="seats-label">Auslastung</span><span class="seats-val ${st.cls}">${st.label}</span></div>
+          <div class="seats-bar"><div class="seats-fill ${st.cls}" data-pct="${st.pct}"></div></div>
         </div>
       </div>`;
     }).join('');
+    // Progress-Bars animiert füllen, sobald sichtbar
+    requestAnimationFrame(()=>setTimeout(()=>{
+      document.querySelectorAll('.seats-fill').forEach(f=>f.style.width=f.dataset.pct+'%');
+    },350));
   }catch(e){
     $('loading').classList.add('hidden');
     $('unavailable').classList.remove('hidden');
@@ -135,9 +324,37 @@ function pickC(id,el){
   document.querySelectorAll('#courseList .course').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel');
   const c=courses.find(x=>x.id===id);
-  $('acSubmit').textContent=c.seats_free>0?'Platz anfragen':'Auf die Warteliste';
-  $('stepData').classList.remove('hidden');
-  setTimeout(()=>$('stepData').scrollIntoView({behavior:'smooth',block:'start'}),80);
+  const st=seatState(c);
+  $('selSummary').innerHTML=`<span class="ico">${c.is_online?'🎥':'🎓'}</span><div><b>${esc(c.title)}</b><div class="sm">${[c.starts_at?fmtDate(c.starts_at):null,fmtPrice(c.price)||null,st.label].filter(Boolean).join(' · ')}</div></div>`;
+  $('acSubmit').textContent=c.seats_free>0?'Platz verbindlich anfragen':'Auf die Warteliste setzen';
+  $('st2').classList.add('on');$('sl1').classList.add('fill');
+  const sd=$('stepData');
+  sd.classList.remove('hidden');sd.classList.remove('enter');void sd.offsetWidth;sd.classList.add('enter');
+  setTimeout(()=>sd.scrollIntoView({behavior:'smooth',block:'start'}),120);
+}
+
+function confetti(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const colors=['#3b6cf6','#0ea5e9','#10b981','#f59e0b','#f43f5e','#8b5cf6'];
+  for(let i=0;i<70;i++){
+    const p=document.createElement('div');p.className='confetti';
+    const sz=5+Math.random()*7;
+    p.style.cssText=`left:${Math.random()*100}vw;width:${sz}px;height:${sz*(0.5+Math.random())}px;background:${colors[i%colors.length]};animation-duration:${2.2+Math.random()*2.4}s;animation-delay:${Math.random()*0.6}s;`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),5600);
+  }
+}
+
+function icsFor(c){
+  const dt=c.starts_at?c.starts_at.slice(0,10).replace(/-/g,'')+'T'+(c.starts_at.slice(11,16)||'09:00').replace(':','')+'00':null;
+  if(!dt)return null;
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//neos academy//DE','BEGIN:VEVENT',
+    'UID:'+c.id+'@neos-academy','DTSTART:'+dt,
+    'SUMMARY:'+c.title.replace(/[,;]/g,' '),
+    c.location?'LOCATION:'+c.location.replace(/[,;]/g,' '):'',
+    'DESCRIPTION:Kurs bei '+(salon?.name||'').replace(/[,;]/g,' '),
+    'END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+  return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
 }
 
 async function submitEnroll(){
@@ -153,27 +370,37 @@ async function submitEnroll(){
     err.textContent='Bitte Name und Handynummer angeben.';err.classList.remove('hidden');
     bad[0].focus();return;
   }
-  const btn=$('acSubmit');btn.disabled=true;btn.textContent='Einen Moment…';
+  const btn=$('acSubmit');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Einen Moment…';
   try{
     const res=await fetch('/api/academy',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({slug,course_id:selC,name,phone,email})});
     const json=await res.json();
     if(!res.ok)throw new Error(json.error||'Fehler');
+    const c=courses.find(x=>x.id===selC);
+    $('countdown').classList.add('hidden');
     $('flow').classList.add('hidden');
     $('done').classList.remove('hidden');
+    const wrap=$('doneIconWrap');
+    const actions=[];
     if(json.status==='warteliste'){
-      $('doneIcon').textContent='⏳';
+      wrap.classList.add('wait');
       $('doneTitle').textContent='Du stehst auf der Warteliste!';
-      $('doneText').textContent=`„${json.courseTitle}" ist aktuell ausgebucht. Sobald ein Platz frei wird, meldet sich die Academy bei dir.`;
+      $('doneText').textContent=`„${json.courseTitle}" ist aktuell ausgebucht. Sobald ein Platz frei wird, meldet sich die Academy sofort bei dir.`;
     }else{
-      $('doneIcon').textContent='🎓';
-      $('doneTitle').textContent='Anmeldung eingegangen!';
-      $('doneText').textContent=`Dein Platz für „${json.courseTitle}" ist reserviert. Die Academy meldet sich mit allen Details zur Zahlung und zum Ablauf bei dir.`;
+      $('doneTitle').textContent='Dein Platz ist reserviert! 🎉';
+      $('doneText').textContent=`Deine Anmeldung für „${json.courseTitle}" ist eingegangen. Die Academy meldet sich persönlich mit allen Details zu Zahlung und Ablauf bei dir.`;
+      const ics=c?icsFor(c):null;
+      if(ics)actions.push(`<a class="btn-mini" download="${esc(c.title)}.ics" href="${ics}">📅 In meinen Kalender</a>`);
+      confetti();
     }
+    if(salon?.instagram)actions.push(`<a class="btn-mini" target="_blank" rel="noopener" href="${esc(salon.instagram)}">📷 Instagram folgen</a>`);
+    $('doneActions').innerHTML=actions.join('');
+    $('st3').classList.add('on');$('sl2').classList.add('fill');
+    window.scrollTo({top:0,behavior:'smooth'});
   }catch(e){
     err.textContent=e.message;err.classList.remove('hidden');
     btn.disabled=false;const c=courses.find(x=>x.id===selC);
-    btn.textContent=c&&c.seats_free>0?'Platz anfragen':'Auf die Warteliste';
+    btn.textContent=c&&c.seats_free>0?'Platz verbindlich anfragen':'Auf die Warteliste setzen';
   }
 }
 init();

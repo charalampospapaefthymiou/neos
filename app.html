@@ -343,20 +343,50 @@ td.name{font-weight:600;color:var(--text);}
 </div></div>
 </div>
 <div class="page" id="page-academy">
+<style>
+@keyframes acadFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+@keyframes acadFadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+@keyframes acadOrb{from{transform:translate(0,0) scale(1);}to{transform:translate(-30px,24px) scale(1.15);}}
+.acad-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#16224d 0%,#3b6cf6 60%,#0ea5e9 100%);border-radius:22px;color:#fff;text-align:center;padding:56px 26px 50px;max-width:720px;margin:0 auto;box-shadow:0 20px 50px rgba(59,108,246,0.28);animation:acadFadeUp .6s cubic-bezier(.22,1,.36,1) both;}
+.acad-hero .horb{position:absolute;border-radius:50%;filter:blur(50px);opacity:.45;pointer-events:none;}
+.acad-hero .horb.a{width:260px;height:260px;background:#7dd3fc;top:-90px;right:-70px;animation:acadOrb 9s ease-in-out infinite alternate;}
+.acad-hero .horb.b{width:220px;height:220px;background:#818cf8;bottom:-90px;left:-60px;animation:acadOrb 11s ease-in-out infinite alternate-reverse;}
+.acad-hero .cap{font-size:52px;display:inline-block;animation:acadFloat 4s ease-in-out infinite;filter:drop-shadow(0 10px 22px rgba(0,0,0,0.30));}
+.acad-hero h2{font-family:'Sora',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:12px 0 10px;}
+.acad-hero .lead{font-size:14px;line-height:1.75;opacity:.92;max-width:480px;margin:0 auto;}
+.acad-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;max-width:560px;margin:26px auto;}
+.acad-feat{background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22);backdrop-filter:blur(8px);border-radius:14px;padding:13px 10px;font-size:12px;font-weight:700;transition:transform .2s,background .2s;animation:acadFadeUp .6s both;}
+.acad-feat:hover{transform:translateY(-3px);background:rgba(255,255,255,0.17);}
+.acad-feat .fi{font-size:21px;display:block;margin-bottom:6px;}
+.acad-cta{background:#fff;color:#1d2b64;border:none;border-radius:14px;padding:15px 34px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.22);transition:transform .2s,box-shadow .2s;}
+.acad-cta:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,0.28);}
+.acad-hero .usp{font-size:11.5px;opacity:.78;margin-top:14px;}
+.acad-course{position:relative;border:1px solid var(--border);border-radius:14px;padding:14px 16px;background:var(--bg2,#fff);transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s,border-color .2s;overflow:hidden;animation:acadFadeUp .5s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d,0s);}
+.acad-course::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,#3b6cf6,#0ea5e9);opacity:0;transition:opacity .2s;}
+.acad-course:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(59,108,246,0.14);border-color:rgba(59,108,246,0.35);}
+.acad-course:hover::before{opacity:1;}
+.acad-bar{height:6px;background:rgba(17,24,39,0.07);border-radius:99px;overflow:hidden;margin-top:9px;}
+.acad-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#34d399);width:0;transition:width .9s cubic-bezier(.22,1,.36,1);}
+.acad-fill.warn{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.acad-fill.full{background:linear-gradient(90deg,#f43f5e,#fb7185);}
+@media (prefers-reduced-motion: reduce){.acad-hero,.acad-feat,.acad-course{animation:none;}.acad-hero .cap,.acad-hero .horb{animation:none;}}
+</style>
 <!-- Freischalt-Screen -->
 <div id="acadActivate" style="display:none;">
-<div class="card" style="max-width:640px;margin:0 auto;"><div class="card-body" style="text-align:center;padding:50px 24px;">
-<div style="font-size:46px;margin-bottom:14px;">🎓</div>
-<div style="font-size:20px;font-weight:800;margin-bottom:8px;">neos academy</div>
-<div style="font-size:13.5px;color:var(--text2);max-width:470px;margin:0 auto;line-height:1.7;">Du gibst Schulungen oder planst deine eigene Academy? Verwalte Kurse, Anmeldungen, Warteliste und Zertifikate direkt hier — mit eigener Anmeldeseite im Look deines Studios. Keine extra Software nötig.</div>
-<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:20px 0 24px;font-size:12px;font-weight:600;color:var(--text2);">
-<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">📚 Kurs-Verwaltung</span>
-<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">🔗 Eigene Anmeldeseite</span>
-<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">👥 Teilnehmer &amp; Warteliste</span>
-<span style="background:rgba(79,124,255,0.08);border:1px solid rgba(79,124,255,0.2);border-radius:99px;padding:5px 12px;">🎓 Verifizierbare Zertifikate</span>
+<div class="acad-hero">
+<div class="horb a"></div><div class="horb b"></div>
+<span class="cap">🎓</span>
+<h2>neos academy</h2>
+<div class="lead">Du gibst Schulungen oder planst deine eigene Academy? Verwalte Kurse, Anmeldungen, Warteliste und Zertifikate an einem Ort — mit einer eleganten Anmeldeseite im Look deines Studios. Keine extra Software nötig.</div>
+<div class="acad-feats">
+<div class="acad-feat" style="--d:.05s"><span class="fi">📚</span>Kurs-Verwaltung</div>
+<div class="acad-feat" style="--d:.12s"><span class="fi">🔗</span>Eigene Anmeldeseite</div>
+<div class="acad-feat" style="--d:.19s"><span class="fi">👥</span>Teilnehmer &amp; Warteliste</div>
+<div class="acad-feat" style="--d:.26s"><span class="fi">🎓</span>Verifizierbare Zertifikate</div>
 </div>
-<button class="btn-sm btn-primary-sm" style="padding:12px 26px;font-size:14px;" onclick="enableAcademy()">Academy jetzt freischalten</button>
-</div></div>
+<button class="acad-cta" onclick="enableAcademy()">Academy jetzt freischalten ✨</button>
+<div class="usp">Kostenlos in deinem Plan enthalten · sofort startklar</div>
+</div>
 </div>
 <!-- Academy-Hauptansicht -->
 <div id="acadMain" style="display:none;">
@@ -2199,21 +2229,27 @@ function renderAcadStats(){
 function renderAcadCourses(){
   const el=document.getElementById('acadCourseList');
   if(!acadCourses.length){el.innerHTML='<div style="color:var(--text2);font-size:13px;padding:8px 0;">Noch keine Kurse — lege deinen ersten Kurs an. Er erscheint sofort auf deiner Academy-Seite.</div>';return;}
-  el.innerHTML=acadCourses.map(c=>{
+  el.innerHTML=acadCourses.map((c,i)=>{
     const taken=acadCountTaken(c.id);
     const wait=acadEnrolls.filter(e=>e.course_id===c.id&&e.status==='warteliste').length;
     const full=taken>=c.seats;
-    return `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--border);border-radius:12px;padding:12px 14px;${c.active?'':'opacity:.55;'}">
-      <div style="flex:1;min-width:180px;">
-        <div style="font-weight:700;font-size:14px;">${acadEsc(c.title)}${c.is_online?' <span style="font-size:11px;color:var(--accent2);background:rgba(79,124,255,0.12);padding:2px 7px;border-radius:6px;">🎥 Online</span>':''}${c.active?'':' <span style="font-size:11px;color:var(--text2);">(inaktiv)</span>'}</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:2px;">${c.starts_at?'📅 '+acadFmtDate(c.starts_at)+' · ':''}${c.price?Number(c.price).toLocaleString('de-DE')+' € · ':''}<span style="${full?'color:#b45309;font-weight:600;':''}">${taken}/${c.seats} Plätze</span>${wait?' · ⏳ '+wait+' Warteliste':''}</div>
+    const pct=c.seats?Math.min(100,Math.round(taken/c.seats*100)):0;
+    const barCls=full?'full':(c.seats-taken<=2?'warn':'');
+    return `<div class="acad-course" style="--d:${0.06*i}s;${c.active?'':'opacity:.55;'}">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-weight:700;font-size:14.5px;">${acadEsc(c.title)}${c.is_online?' <span style="font-size:11px;color:var(--accent2);background:rgba(14,165,233,0.12);padding:2px 7px;border-radius:6px;">🎥 Online</span>':''}${c.active?'':' <span style="font-size:11px;color:var(--text2);">(inaktiv)</span>'}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px;">${c.starts_at?'📅 '+acadFmtDate(c.starts_at)+' · ':''}${c.price?Number(c.price).toLocaleString('de-DE')+' € · ':''}<span style="${full?'color:#b45309;font-weight:700;':'font-weight:600;'}">${taken}/${c.seats} Plätze</span>${wait?' · <span style="color:#b45309;">⏳ '+wait+' Warteliste</span>':''}</div>
+        </div>
+        <button class="btn-sm btn-primary-sm" onclick="openCourseParts('${c.id}')">👥 Teilnehmer</button>
+        <button class="btn-sm btn-ghost-sm" onclick="openCourseModal('${c.id}')">✏️</button>
+        <button class="toggle ${c.active?'on':''}" title="Kurs aktiv/inaktiv" onclick="toggleCourseActive('${c.id}')"></button>
+        <button class="btn-sm btn-ghost-sm" title="Löschen" onclick="deleteCourse('${c.id}')">🗑</button>
       </div>
-      <button class="btn-sm btn-primary-sm" onclick="openCourseParts('${c.id}')">👥 Teilnehmer</button>
-      <button class="btn-sm btn-ghost-sm" onclick="openCourseModal('${c.id}')">✏️</button>
-      <button class="toggle ${c.active?'on':''}" title="Kurs aktiv/inaktiv" onclick="toggleCourseActive('${c.id}')"></button>
-      <button class="btn-sm btn-ghost-sm" title="Löschen" onclick="deleteCourse('${c.id}')">🗑</button>
+      <div class="acad-bar"><div class="acad-fill ${barCls}" data-pct="${pct}"></div></div>
     </div>`;
   }).join('');
+  requestAnimationFrame(()=>setTimeout(()=>{el.querySelectorAll('.acad-fill').forEach(f=>f.style.width=f.dataset.pct+'%');},200));
 }
 
 function openCourseModal(id){
